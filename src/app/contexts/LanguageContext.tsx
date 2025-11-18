@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { useCookies } from 'react-cookie'
 
 type Language = 'zh' | 'en'
 
