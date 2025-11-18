@@ -1,65 +1,240 @@
-import Image from "next/image";
+'use client'
+
+import { ArrowRight, Play, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
+import { useLanguage } from './contexts/LanguageContext'
+import { useAuth } from './contexts/AuthContext'
+import { useRouter } from 'next/navigation'
+import LoginModal from './components/LoginModal'
 
 export default function Home() {
+  const { language, setLanguage, t } = useLanguage()
+  const { openLogin, requireAuth } = useAuth()
+  const router = useRouter()
+  const go = (path: string) => requireAuth(() => router.push(path))
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Header */}
+      <header className="fixed top-0 w-full bg-black/20 backdrop-blur-md z-50 border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2">
+              <Box className="h-8 w-8 text-purple-400" />
+              <span className="text-2xl font-bold text-white">AI3D Pro</span>
+            </div>
+            <nav className="hidden md:flex space-x-8">
+              <button onClick={() => go('/generator')} className="text-gray-300 hover:text-white transition-colors">{t('nav.product')}</button>
+              <button onClick={() => go('/pricing')} className="text-gray-300 hover:text-white transition-colors">{t('nav.pricing')}</button>
+              <button onClick={() => openLogin()} className="text-gray-300 hover:text-white transition-colors">{t('nav.api')}</button>
+              <button onClick={() => openLogin()} className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</button>
+            </nav>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')}
+                className="flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700 text-white px-3 py-2 rounded-lg transition-colors"
+              >
+                <Globe className="h-4 w-4" />
+                <span className="text-sm font-medium">{language === 'zh' ? 'EN' : '中文'}</span>
+              </button>
+              <button onClick={openLogin} className="text-gray-300 hover:text-white transition-colors">{t('nav.login')}</button>
+              <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
+                {t('nav.startTrial')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+            {t('home.title')}
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              {t('home.title.highlight')}
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            {t('home.subtitle')}
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <button onClick={() => go('/generator')} className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
+              <span>{t('home.startCreating')}</span>
+              <ArrowRight className="h-5 w-5" />
+            </button>
+            <button onClick={() => go('/gallery')} className="border border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2">
+              <Play className="h-5 w-5" />
+              <span>{t('home.watchDemo')}</span>
+            </button>
+          </div>
+          
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white">50K+</div>
+              <div className="text-gray-400">{t('home.activeUsers')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white">1M+</div>
+              <div className="text-gray-400">{t('home.generatedModels')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white">95%</div>
+              <div className="text-gray-400">{t('home.accuracy')}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white">&lt;30s</div>
+              <div className="text-gray-400">{t('home.generationTime')}</div>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* Features */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4">{t('home.features.title')}</h2>
+            <p className="text-xl text-gray-300">{t('home.features.subtitle')}</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-8 rounded-2xl border border-purple-500/20">
+              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+                <ImageIcon className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('home.feature1.title')}</h3>
+              <p className="text-gray-300 mb-6">{t('home.feature1.desc')}</p>
+              <ul className="text-gray-400 space-y-2">
+                <li>• {t('home.feature1.bullet1')}</li>
+                <li>• {t('home.feature1.bullet2')}</li>
+                <li>• {t('home.feature1.bullet3')}</li>
+              </ul>
+            </div>
+            
+            <div className="bg-gradient-to-br from-blue-900/50 to-cyan-900/50 p-8 rounded-2xl border border-blue-500/20">
+              <div className="bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+                <Zap className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('home.feature2.title')}</h3>
+              <p className="text-gray-300 mb-6">{t('home.feature2.desc')}</p>
+              <ul className="text-gray-400 space-y-2">
+                <li>• {t('home.feature2.bullet1')}</li>
+                <li>• {t('home.feature2.bullet2')}</li>
+                <li>• {t('home.feature2.bullet3')}</li>
+              </ul>
+            </div>
+            
+            <div className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 p-8 rounded-2xl border border-green-500/20">
+              <div className="bg-green-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('home.feature3.title')}</h3>
+              <p className="text-gray-300 mb-6">{t('home.feature3.desc')}</p>
+              <ul className="text-gray-400 space-y-2">
+                <li>• {t('home.feature3.bullet1')}</li>
+                <li>• {t('home.feature3.bullet2')}</li>
+                <li>• {t('home.feature3.bullet3')}</li>
+              </ul>
+            </div>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* Demo Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4">{t('home.demo.title')}</h2>
+            <p className="text-xl text-gray-300">{t('home.demo.subtitle')}</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+                <h4 className="text-lg font-semibold text-white mb-3">{t('home.demo.title')}</h4>
+                <p className="text-gray-300">{t('home.demo.subtitle')}</p>
+              </div>
+              <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
+                <h4 className="text-lg font-semibold text-white mb-3">{t('home.demo.title')}</h4>
+                <p className="text-gray-300">{t('home.demo.subtitle')}</p>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 rounded-2xl p-8 border border-purple-500/20 text-center">
+              <div className="bg-gray-700 rounded-lg h-64 mb-6 flex items-center justify-center">
+                <Box className="h-24 w-24 text-purple-400" />
+              </div>
+              <h4 className="text-xl font-semibold text-white mb-2">{t('home.demo.title')}</h4>
+              <p className="text-gray-300">{t('home.demo.subtitle')}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-900/50 to-pink-900/50">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold text-white mb-6">{t('home.cta.title')}</h2>
+          <p className="text-xl text-gray-300 mb-8">
+            {t('home.cta.subtitle')}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button onClick={() => go('/generator')} className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
+              {t('home.cta.freeTrial')}
+            </button>
+            <button onClick={() => go('/pricing')} className="border border-white text-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
+              {t('home.cta.viewPricing')}
+            </button>
+          </div>
+          <div className="flex items-center justify-center space-x-2 mt-6 text-gray-300">
+            <Star className="h-5 w-5 text-yellow-400" />
+            <span>{t('home.footer.support')}</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-black border-t border-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <Box className="h-6 w-6 text-purple-400" />
+                <span className="text-xl font-bold text-white">AI3D Pro</span>
+              </div>
+              <p className="text-gray-400">{t('home.subtitle')}</p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">{t('nav.product')}</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><button onClick={() => go('/generator')} className="hover:text-white">{t('home.feature2.title')}</button></li>
+                <li><button onClick={() => go('/generator')} className="hover:text-white">{t('home.feature1.title')}</button></li>
+                <li><button onClick={openLogin} className="hover:text-white">{t('nav.api')}</button></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">{t('home.footer.company')}</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white">{t('home.footer.aboutUs')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('home.footer.careers')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('home.footer.contact')}</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">{t('home.footer.support')}</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white">{t('home.footer.helpCenter')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('home.footer.community')}</a></li>
+                <li><a href="#" className="hover:text-white">{t('home.footer.status')}</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2024 AI3D Pro. {t('home.footer.rights')}</p>
+          </div>
+        </div>
+      </footer>
+      <LoginModal />
     </div>
-  );
+  )
 }
