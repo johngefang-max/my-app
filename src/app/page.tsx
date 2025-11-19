@@ -1,16 +1,22 @@
 'use client'
 
 import { ArrowRight, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
+import DotGridBackground from './components/DotGridBackground'
 import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import LoginModal from './components/LoginModal'
 
 export default function Home() {
   const { language, setLanguage, t } = useLanguage()
-  const { openLogin, requireAuth } = useAuth()
+  const { openLogin, requireAuth, isAuthenticated, logout } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const go = (path: string) => requireAuth(() => router.push(path))
+  
+  if (!isAuthenticated && searchParams.get('auth_required') === '1') {
+    openLogin()
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
@@ -36,18 +42,29 @@ export default function Home() {
                 <Globe className="h-4 w-4" />
                 <span className="text-sm font-medium">{language === 'zh' ? 'EN' : '中文'}</span>
               </button>
-              <button onClick={openLogin} className="text-gray-300 hover:text-white transition-colors">{t('nav.login')}</button>
-              <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
-                {t('nav.startTrial')}
-              </button>
+              {isAuthenticated ? (
+                <button onClick={logout} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">
+                  {t('nav.logout')}
+                </button>
+              ) : (
+                <>
+                  <button onClick={openLogin} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">
+                    {t('nav.login')}
+                  </button>
+                  <button onClick={() => router.push('/generator')} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
+                    {t('nav.startTrial')}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
+        <DotGridBackground />
+        <div className="max-w-7xl mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
             {t('home.title')}
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -205,9 +222,11 @@ export default function Home() {
             {t('home.cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button onClick={() => go('/generator')} className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
-              {t('home.cta.freeTrial')}
-            </button>
+            {!isAuthenticated && (
+              <button onClick={() => router.push('/generator')} className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
+                {t('home.cta.freeTrial')}
+              </button>
+            )}
             <button onClick={() => go('/pricing')} className="border border-white text-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
               {t('home.cta.viewPricing')}
             </button>

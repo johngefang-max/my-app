@@ -2,9 +2,11 @@
 
 import { Check, Star, Zap, Shield, Users, Clock, Download, Headphones, CheckCircle, Globe } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Pricing() {
   const { language, setLanguage, t } = useLanguage()
+  const { isAuthenticated, logout, openLogin } = useAuth()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -33,10 +35,16 @@ export default function Pricing() {
                 <Globe className="h-4 w-4" />
                 <span className="text-sm font-medium">{language === 'zh' ? 'EN' : '中文'}</span>
               </button>
-              <button className="text-gray-300 hover:text-white transition-colors">{t('nav.login')}</button>
-              <a href="/generator" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
-                {t('nav.startTrial')}
-              </a>
+              {isAuthenticated ? (
+                <button onClick={logout} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">{t('nav.logout')}</button>
+              ) : (
+                <>
+                  <button onClick={openLogin} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">{t('nav.login')}</button>
+                  <a href="/generator" className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
+                    {t('nav.startTrial')}
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>

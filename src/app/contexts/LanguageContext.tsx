@@ -57,6 +57,7 @@ const translations = {
     'nav.api': 'API',
     'nav.help': '帮助',
     'nav.login': '登录',
+    'nav.logout': '登出',
     'nav.startTrial': '免费开始',
     'nav.browseWorks': '浏览作品',
     'nav.createModel': '创建模型',
@@ -308,7 +309,7 @@ const translations = {
     ,
     'comments.title': '用户评论',
     'comments.addPlaceholder': '写下你的看法...',
-    'comments.submit': '发布',
+    'comments.submit': '发送',
     'comments.empty': '暂无评论'
   },
   en: {
@@ -318,6 +319,7 @@ const translations = {
     'nav.api': 'API',
     'nav.help': 'Help',
     'nav.login': 'Login',
+    'nav.logout': 'Logout',
     'nav.startTrial': 'Start for free',
     'nav.browseWorks': 'Browse Works',
     'nav.createModel': 'Create Model',
@@ -567,7 +569,7 @@ const translations = {
     ,
     'comments.title': 'Comments',
     'comments.addPlaceholder': 'Write a comment...',
-    'comments.submit': 'Post',
+    'comments.submit': 'Send',
     'comments.empty': 'No comments yet'
   }
 }

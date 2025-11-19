@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 type AuthContextType = {
   isAuthenticated: boolean
   isLoginOpen: boolean
-  login: () => void
+  login: (username: string, password: string) => boolean
   logout: () => void
   openLogin: () => void
   closeLogin: () => void
@@ -20,23 +20,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('auth')
-      setIsAuthenticated(saved === 'true')
+      const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('auth='))
+        ?.split('=')[1]
+      setIsAuthenticated(cookieValue === 'true')
     } catch {}
   }, [])
 
-  const login = () => {
-    setIsAuthenticated(true)
-    try {
-      localStorage.setItem('auth', 'true')
-    } catch {}
-    setIsLoginOpen(false)
+  const login = (username: string, password: string) => {
+    const ok = username === 'johnfang' && password === 'fang682668'
+    if (ok) {
+      setIsAuthenticated(true)
+      try {
+        const expires = new Date()
+        expires.setDate(expires.getDate() + 30)
+        document.cookie = `auth=true; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
+      } catch {}
+      setIsLoginOpen(false)
+      return true
+    }
+    return false
   }
 
   const logout = () => {
     setIsAuthenticated(false)
     try {
-      localStorage.removeItem('auth')
+      document.cookie = `auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`
     } catch {}
   }
 

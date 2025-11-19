@@ -8,14 +8,16 @@ import { useState } from 'react'
 export default function LoginModal() {
   const { isLoginOpen, closeLogin, login } = useAuth()
   const { language } = useLanguage()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   const title = language === 'zh' ? '登录账户' : 'Sign In'
-  const emailLabel = language === 'zh' ? '邮箱' : 'Email'
+  const usernameLabel = language === 'zh' ? '用户名' : 'Username'
   const passwordLabel = language === 'zh' ? '密码' : 'Password'
   const loginText = language === 'zh' ? '登录' : 'Login'
   const cancelText = language === 'zh' ? '取消' : 'Cancel'
+  const errorText = language === 'zh' ? '用户名或密码错误' : 'Invalid username or password'
 
   if (!isLoginOpen) return null
 
@@ -32,11 +34,11 @@ export default function LoginModal() {
           </div>
           <div className="p-6 space-y-4">
             <div>
-              <label className="block text-sm text-gray-300 mb-2">{emailLabel}</label>
+              <label className="block text-sm text-gray-300 mb-2">{usernameLabel}</label>
               <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                type="email"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                type="text"
                 className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -49,8 +51,12 @@ export default function LoginModal() {
                 className="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-white outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
+            {error && <div className="text-red-400 text-sm">{error}</div>}
             <div className="flex gap-3 pt-2">
-              <button onClick={login} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+              <button onClick={() => {
+                const ok = login(username.trim(), password.trim())
+                if (!ok) setError(errorText)
+              }} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
                 {loginText}
               </button>
               <button onClick={closeLogin} className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg">
