@@ -38,7 +38,7 @@ export default function Generator() {
                 <span className="text-sm font-medium">{language === 'zh' ? 'EN' : '中文'}</span>
               </button>
               <a href="/gallery" className="text-gray-300 hover:text-white transition-colors">
-                {t('gallery.title')}
+                {t('nav.browseWorks')}
               </a>
               <button className="text-gray-300 hover:text-white transition-colors">
                 <Settings className="h-5 w-5" />

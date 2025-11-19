@@ -18,6 +18,7 @@ export default function Pricing() {
             </a>
             <nav className="hidden md:flex space-x-8">
               <a href="/generator" className="text-gray-300 hover:text-white transition-colors">{t('nav.product')}</a>
+              <a href="/gallery" className="text-gray-300 hover:text-white transition-colors">{t('nav.browseWorks')}</a>
               <a href="/pricing" className="text-gray-300 hover:text-white transition-colors">{t('nav.pricing')}</a>
               <a href="#" className="text-gray-300 hover:text-white transition-colors">{t('nav.api')}</a>
               <a href="#" className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</a>
