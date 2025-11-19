@@ -497,16 +497,17 @@ const translations = {
   }
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // 使用一致的初始状态避免SSR/客户端不匹配
-  const [language, setLanguage] = useState<Language>('zh')
-  const [isLoading, setIsLoading] = useState(true)
+export function LanguageProvider({ children, initialLanguage = 'en' }: { children: ReactNode, initialLanguage?: Language }) {
+  const [language, setLanguage] = useState<Language>(initialLanguage)
+  const [isLoading, setIsLoading] = useState(false)
 
-  // 客户端挂载后加载保存的语言偏好
   useEffect(() => {
     const savedLanguage = getSavedLanguage()
-    setLanguage(savedLanguage)
-    setIsLoading(false)
+    if (savedLanguage !== language) {
+      setIsLoading(true)
+      setLanguage(savedLanguage)
+      setIsLoading(false)
+    }
   }, [])
 
   // 保存语言偏好到cookie和localStorage
