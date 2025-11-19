@@ -194,7 +194,7 @@ export default function Gallery() {
           
           <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
             {/* Model Card 1 */}
-            <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group">
+            <a href="/gallery/model-1" className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group block">
               <div className="aspect-square bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center">
                 <div className="bg-blue-600 w-16 h-16 rounded-lg"></div>
               </div>
@@ -217,10 +217,10 @@ export default function Gallery() {
                   </button>
                 </div>
               </div>
-            </div>
+            </a>
             
             {/* Model Card 2 */}
-            <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group">
+            <a href="/gallery/model-2" className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group block">
               <div className="aspect-square bg-gradient-to-br from-green-900/50 to-teal-900/50 flex items-center justify-center">
                 <div className="bg-green-600 w-16 h-16 rounded-full"></div>
               </div>
@@ -243,10 +243,10 @@ export default function Gallery() {
                   </button>
                 </div>
               </div>
-            </div>
+            </a>
             
             {/* Model Card 3 */}
-            <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group">
+            <a href="/gallery/model-3" className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group block">
               <div className="aspect-square bg-gradient-to-br from-red-900/50 to-orange-900/50 flex items-center justify-center">
                 <div className="bg-red-600 w-16 h-16 rounded-lg transform rotate-45"></div>
               </div>
@@ -269,10 +269,10 @@ export default function Gallery() {
                   </button>
                 </div>
               </div>
-            </div>
+            </a>
             
             {/* Model Card 4 */}
-            <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group">
+            <a href="/gallery/robot" className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group block">
               <div className="aspect-square bg-gradient-to-br from-purple-900/50 to-pink-900/50 flex items-center justify-center">
                 <div className="bg-purple-600 w-16 h-20 rounded-full"></div>
               </div>
@@ -295,10 +295,10 @@ export default function Gallery() {
                   </button>
                 </div>
               </div>
-            </div>
+            </a>
             
             {/* Model Card 5 */}
-            <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group">
+            <a href="/gallery/guitar" className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group block">
               <div className="aspect-square bg-gradient-to-br from-yellow-900/50 to-amber-900/50 flex items-center justify-center">
                 <div className="bg-yellow-600 w-20 h-12 rounded-lg"></div>
               </div>
@@ -321,10 +321,10 @@ export default function Gallery() {
                   </button>
                 </div>
               </div>
-            </div>
+            </a>
             
             {/* Model Card 6 */}
-            <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group">
+            <a href="/gallery/spaceship" className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group block">
               <div className="aspect-square bg-gradient-to-br from-indigo-900/50 to-blue-900/50 flex items-center justify-center">
                 <div className="bg-indigo-600 w-16 h-16 rounded-full"></div>
               </div>
@@ -347,10 +347,10 @@ export default function Gallery() {
                   </button>
                 </div>
               </div>
-            </div>
+            </a>
             
             {/* Model Card 7 */}
-            <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group">
+            <a href="/gallery/rose-garden" className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group block">
               <div className="aspect-square bg-gradient-to-br from-emerald-900/50 to-teal-900/50 flex items-center justify-center">
                 <div className="bg-emerald-600 w-16 h-16 rounded-lg transform rotate-12"></div>
               </div>
@@ -373,7 +373,7 @@ export default function Gallery() {
                   </button>
                 </div>
               </div>
-            </div>
+            </a>
             
             {/* Model Card 8 */}
             <div className="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all group">

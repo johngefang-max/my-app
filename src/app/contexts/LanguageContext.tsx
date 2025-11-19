@@ -233,6 +233,8 @@ const translations = {
     'gallery.search': '搜索',
     'gallery.featured.title': '本周精选',
     'gallery.featured.subtitle': '社区最受欢迎的3D模型',
+    'gallery.preview.title': '模型预览',
+    'gallery.preview.controls': '拖拽旋转，滚轮缩放',
     'gallery.model.by': '由',
     'gallery.model.created': '创建',
     'gallery.model.polygons': '多边形数',
@@ -248,6 +250,21 @@ const translations = {
     'gallery.favorites': '收藏',
     'gallery.createModel': '创建模型',
     'gallery.loadMore': '加载更多模型',
+    'gallery.grid.loadMore': '加载更多',
+    'gallery.footer.description': '发现、分享、下载由AI生成的3D模型作品',
+    'gallery.footer.browse': '浏览',
+    'gallery.footer.latest': '最新',
+    'gallery.footer.popular': '热门',
+    'gallery.footer.editorPicks': '编辑精选',
+    'gallery.footer.community': '社区',
+    'gallery.footer.creators': '创作者',
+    'gallery.footer.challenges': '挑战赛',
+    'gallery.footer.tutorials': '教程',
+    'gallery.footer.support': '支持',
+    'gallery.footer.helpCenter': '帮助中心',
+    'gallery.footer.apiDocs': 'API 文档',
+    'gallery.footer.contact': '联系我们',
+    'gallery.footer.rights': '保留所有权利。',
     
     // 通用
     'common.and': '和',
@@ -288,6 +305,11 @@ const translations = {
     'common.privacy': '隐私政策',
     'common.terms': '服务条款',
     'common.copyright': '版权所有'
+    ,
+    'comments.title': '用户评论',
+    'comments.addPlaceholder': '写下你的看法...',
+    'comments.submit': '发布',
+    'comments.empty': '暂无评论'
   },
   en: {
     // Navigation
@@ -470,6 +492,8 @@ const translations = {
     'gallery.search': 'Search',
     'gallery.featured.title': 'Featured This Week',
     'gallery.featured.subtitle': 'Most popular 3D models in the community',
+    'gallery.preview.title': 'Preview',
+    'gallery.preview.controls': 'Drag to rotate, scroll to zoom',
     'gallery.model.by': 'by',
     'gallery.model.created': 'created',
     'gallery.model.polygons': 'Polygons',
@@ -485,6 +509,21 @@ const translations = {
     'gallery.favorites': 'Favorites',
     'gallery.createModel': 'Create Model',
     'gallery.loadMore': 'Load More Models',
+    'gallery.grid.loadMore': 'Load More',
+    'gallery.footer.description': 'Discover, share, and download AI‑generated 3D models',
+    'gallery.footer.browse': 'Browse',
+    'gallery.footer.latest': 'Latest',
+    'gallery.footer.popular': 'Popular',
+    'gallery.footer.editorPicks': 'Editor’s Picks',
+    'gallery.footer.community': 'Community',
+    'gallery.footer.creators': 'Creators',
+    'gallery.footer.challenges': 'Challenges',
+    'gallery.footer.tutorials': 'Tutorials',
+    'gallery.footer.support': 'Support',
+    'gallery.footer.helpCenter': 'Help Center',
+    'gallery.footer.apiDocs': 'API Docs',
+    'gallery.footer.contact': 'Contact',
+    'gallery.footer.rights': 'All rights reserved.',
     
     // Common
     'common.and': 'and',
@@ -525,6 +564,11 @@ const translations = {
     'common.privacy': 'Privacy Policy',
     'common.terms': 'Terms of Service',
     'common.copyright': 'Copyright'
+    ,
+    'comments.title': 'Comments',
+    'comments.addPlaceholder': 'Write a comment...',
+    'comments.submit': 'Post',
+    'comments.empty': 'No comments yet'
   }
 }
 
