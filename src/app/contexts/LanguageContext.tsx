@@ -506,6 +506,9 @@ export function LanguageProvider({ children, initialLanguage = 'en' }: { childre
     if (savedLanguage !== language) {
       setIsLoading(true)
       setLanguage(savedLanguage)
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = savedLanguage
+      }
       setIsLoading(false)
     }
   }, [])
@@ -525,6 +528,11 @@ export function LanguageProvider({ children, initialLanguage = 'en' }: { childre
     } catch (error) {
       console.warn('Failed to save language preference:', error)
     }
+    try {
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = lang
+      }
+    } catch {}
   }
 
   const t = (key: string): string => {

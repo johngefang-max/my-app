@@ -29,7 +29,7 @@ export default async function RootLayout({
   const langCookie = cookieStore.get("language")?.value;
   const initialLanguage = langCookie === "zh" ? "zh" : "en";
   return (
-    <html lang="en">
+    <html lang={initialLanguage}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
