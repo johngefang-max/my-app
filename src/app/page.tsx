@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, Play, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
+import { ArrowRight, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
 import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
 import { useRouter } from 'next/navigation'
@@ -60,10 +60,6 @@ export default function Home() {
             <button onClick={() => go('/generator')} className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all transform hover:scale-105 flex items-center justify-center space-x-2">
               <span>{t('home.startCreating')}</span>
               <ArrowRight className="h-5 w-5" />
-            </button>
-            <button onClick={() => go('/gallery')} className="border border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2">
-              <Play className="h-5 w-5" />
-              <span>{t('home.watchDemo')}</span>
             </button>
           </div>
           
@@ -140,32 +136,61 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Demo Section */}
+      {/* Showcase Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">{t('home.demo.title')}</h2>
-            <p className="text-xl text-gray-300">{t('home.demo.subtitle')}</p>
+            <h2 className="text-4xl font-bold text-white mb-4">{t('home.showcase.title')}</h2>
+            <p className="text-xl text-gray-300">{t('home.showcase.subtitle')}</p>
           </div>
-          
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <h4 className="text-lg font-semibold text-white mb-3">{t('home.demo.title')}</h4>
-                <p className="text-gray-300">{t('home.demo.subtitle')}</p>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                <Box className="h-6 w-6 text-white" />
               </div>
-              <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-                <h4 className="text-lg font-semibold text-white mb-3">{t('home.demo.title')}</h4>
-                <p className="text-gray-300">{t('home.demo.subtitle')}</p>
-              </div>
+              <h4 className="text-white font-semibold mb-2">Stylized character</h4>
+              <p className="text-gray-300">Prompt → rig‑ready stylized avatar with clean topology.</p>
             </div>
-            
-            <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 rounded-2xl p-8 border border-purple-500/20 text-center">
-              <div className="bg-gray-700 rounded-lg h-64 mb-6 flex items-center justify-center">
-                <Box className="h-24 w-24 text-purple-400" />
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <div className="bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                <Box className="h-6 w-6 text-white" />
               </div>
-              <h4 className="text-xl font-semibold text-white mb-2">{t('home.demo.title')}</h4>
-              <p className="text-gray-300">{t('home.demo.subtitle')}</p>
+              <h4 className="text-white font-semibold mb-2">Modern furniture set</h4>
+              <p className="text-gray-300">Reference image → PBR‑ready models for interior scenes.</p>
+            </div>
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <div className="bg-green-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+                <Box className="h-6 w-6 text-white" />
+              </div>
+              <h4 className="text-white font-semibold mb-2">Sci‑fi drone</h4>
+              <p className="text-gray-300">Text brief → game‑ready asset with GLTF export.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-white mb-4">{t('home.testimonials.title')}</h2>
+            <p className="text-xl text-gray-300">{t('home.testimonials.subtitle')}</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <p className="text-gray-300 mb-4">“{t('home.testimonials.quote1')}”</p>
+              <div className="text-white font-semibold">{t('home.testimonials.name1')}</div>
+              <div className="text-gray-400 text-sm">{t('home.testimonials.role1')}</div>
+            </div>
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <p className="text-gray-300 mb-4">“{t('home.testimonials.quote2')}”</p>
+              <div className="text-white font-semibold">{t('home.testimonials.name2')}</div>
+              <div className="text-gray-400 text-sm">{t('home.testimonials.role2')}</div>
+            </div>
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <p className="text-gray-300 mb-4">“{t('home.testimonials.quote3')}”</p>
+              <div className="text-white font-semibold">{t('home.testimonials.name3')}</div>
+              <div className="text-gray-400 text-sm">{t('home.testimonials.role3')}</div>
             </div>
           </div>
         </div>
