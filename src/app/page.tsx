@@ -148,22 +148,22 @@ export default function Home() {
               <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                 <Box className="h-6 w-6 text-white" />
               </div>
-              <h4 className="text-white font-semibold mb-2">Stylized character</h4>
-              <p className="text-gray-300">Prompt → rig‑ready stylized avatar with clean topology.</p>
+              <h4 className="text-white font-semibold mb-2">{t('home.showcase.card1.title')}</h4>
+              <p className="text-gray-300">{t('home.showcase.card1.desc')}</p>
             </div>
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                 <Box className="h-6 w-6 text-white" />
               </div>
-              <h4 className="text-white font-semibold mb-2">Modern furniture set</h4>
-              <p className="text-gray-300">Reference image → PBR‑ready models for interior scenes.</p>
+              <h4 className="text-white font-semibold mb-2">{t('home.showcase.card2.title')}</h4>
+              <p className="text-gray-300">{t('home.showcase.card2.desc')}</p>
             </div>
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="bg-green-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                 <Box className="h-6 w-6 text-white" />
               </div>
-              <h4 className="text-white font-semibold mb-2">Sci‑fi drone</h4>
-              <p className="text-gray-300">Text brief → game‑ready asset with GLTF export.</p>
+              <h4 className="text-white font-semibold mb-2">{t('home.showcase.card3.title')}</h4>
+              <p className="text-gray-300">{t('home.showcase.card3.desc')}</p>
             </div>
           </div>
         </div>
