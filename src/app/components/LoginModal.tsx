@@ -4,10 +4,13 @@ import { X } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { signIn } from 'next-auth/react'
 
 export default function LoginModal() {
   const { isLoginOpen, closeLogin, login } = useAuth()
   const { language } = useLanguage()
+  const searchParams = useSearchParams()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -16,8 +19,10 @@ export default function LoginModal() {
   const usernameLabel = language === 'zh' ? '用户名' : 'Username'
   const passwordLabel = language === 'zh' ? '密码' : 'Password'
   const loginText = language === 'zh' ? '登录' : 'Login'
+  const googleText = language === 'zh' ? '使用 Google 登录' : 'Sign in with Google'
   const cancelText = language === 'zh' ? '取消' : 'Cancel'
   const errorText = language === 'zh' ? '用户名或密码错误' : 'Invalid username or password'
+  const redirect = searchParams.get('redirect') || '/'
 
   if (!isLoginOpen) return null
 
@@ -61,6 +66,11 @@ export default function LoginModal() {
               </button>
               <button onClick={closeLogin} className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg">
                 {cancelText}
+              </button>
+            </div>
+            <div>
+              <button onClick={() => signIn('google', { callbackUrl: redirect })} className="w-full bg-white text-slate-900 hover:bg-gray-100 px-4 py-2 rounded-lg">
+                {googleText}
               </button>
             </div>
           </div>

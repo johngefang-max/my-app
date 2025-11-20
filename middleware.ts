@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const isStatic = pathname.startsWith('/_next') || pathname.startsWith('/favicon') || pathname.startsWith('/static')
   if (isStatic) return NextResponse.next()
@@ -14,6 +14,8 @@ export function middleware(req: NextRequest) {
   const url = req.nextUrl.clone()
   url.pathname = '/'
   url.searchParams.set('auth_required', '1')
+  const original = req.nextUrl.pathname + (req.nextUrl.search || '')
+  url.searchParams.set('redirect', original)
   return NextResponse.redirect(url)
 }
 

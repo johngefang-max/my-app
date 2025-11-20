@@ -5,6 +5,7 @@ import DotGridBackground from './components/DotGridBackground'
 import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
 import LoginModal from './components/LoginModal'
 
 export default function Home() {
@@ -12,11 +13,28 @@ export default function Home() {
   const { openLogin, requireAuth, isAuthenticated, logout } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const go = (path: string) => requireAuth(() => router.push(path))
-  
-  if (!isAuthenticated && searchParams.get('auth_required') === '1') {
-    openLogin()
+  const go = (path: string) => {
+    if (isAuthenticated) {
+      router.push(path)
+    } else {
+      const url = new URL(window.location.href)
+      url.searchParams.set('auth_required', '1')
+      url.searchParams.set('redirect', path)
+      router.replace(url.pathname + '?' + url.searchParams.toString())
+      openLogin()
+    }
   }
+  
+  useEffect(() => {
+    if (!isAuthenticated && searchParams.get('auth_required') === '1') {
+      openLogin()
+      try {
+        const url = new URL(window.location.href)
+        url.searchParams.delete('auth_required')
+        window.history.replaceState(null, '', url.toString())
+      } catch {}
+    }
+  }, [isAuthenticated, searchParams, openLogin])
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}

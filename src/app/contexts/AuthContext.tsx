@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { SessionProvider, useSession, signOut as nextAuthSignOut } from 'next-auth/react'
 
 type AuthContextType = {
   isAuthenticated: boolean
@@ -15,6 +16,15 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  return (
+    <SessionProvider>
+      <InnerAuthProvider>{children}</InnerAuthProvider>
+    </SessionProvider>
+  )
+}
+
+function InnerAuthProvider({ children }: { children: ReactNode }) {
+  const { status } = useSession()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoginOpen, setIsLoginOpen] = useState(false)
 
@@ -24,9 +34,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .split('; ')
         .find(row => row.startsWith('auth='))
         ?.split('=')[1]
-      setIsAuthenticated(cookieValue === 'true')
+      const localAuthed = cookieValue === 'true'
+      const sessionAuthed = status === 'authenticated'
+      setIsAuthenticated(localAuthed || sessionAuthed)
     } catch {}
-  }, [])
+  }, [status])
 
   const login = (username: string, password: string) => {
     const ok = username === 'johnfang' && password === 'fang682668'
@@ -48,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       document.cookie = `auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`
     } catch {}
+    nextAuthSignOut()
   }
 
   const openLogin = () => setIsLoginOpen(true)
