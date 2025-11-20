@@ -5,6 +5,7 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const isStatic = pathname.startsWith('/_next') || pathname.startsWith('/favicon') || pathname.startsWith('/static')
   if (isStatic) return NextResponse.next()
+  if (pathname.startsWith('/api')) return NextResponse.next()
 
   const isHome = pathname === '/'
   const authed = req.cookies.get('auth')?.value === 'true'
@@ -20,5 +21,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 }
