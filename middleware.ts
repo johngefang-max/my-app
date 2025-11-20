@@ -8,7 +8,8 @@ export async function middleware(req: NextRequest) {
   if (pathname.startsWith('/api')) return NextResponse.next()
 
   const isHome = pathname === '/'
-  const authed = req.cookies.get('auth')?.value === 'true'
+  const nextAuthToken = req.cookies.get('next-auth.session-token')?.value || req.cookies.get('__Secure-next-auth.session-token')?.value
+  const authed = !!nextAuthToken || req.cookies.get('auth')?.value === 'true'
 
   if (isHome || authed) return NextResponse.next()
 
