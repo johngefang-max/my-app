@@ -11,8 +11,8 @@ export default function GalleryDetail({ params }: { params: Promise<{ id: string
   const { t, language } = useLanguage()
   const router = useRouter()
   const [comments, setComments] = useState<Array<{ name: string, content: string, date: string }>>([
-    { name: 'Maya', content: language === 'zh' ? '细节很不错，拓扑很干净。' : 'Great detail and clean topology.', date: '2024-11-18' },
-    { name: 'Alex', content: language === 'zh' ? '导出直接能用，赞。' : 'Exports work out of the box.', date: '2024-11-19' },
+    { name: 'AXX_6688', content: language === 'zh' ? '细节很不错，拓扑很干净。' : 'Great detail and clean topology.', date: '2024-11-18' },
+    { name: 'wwu Wendy', content: language === 'zh' ? '导出直接能用，赞。' : 'Exports work out of the box.', date: '2024-11-19' },
   ])
   const [input, setInput] = useState('')
   const avatarFiles = [
