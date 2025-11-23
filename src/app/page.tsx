@@ -101,12 +101,12 @@ export default function Home() {
               <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                 <ArrowRight className="h-4 w-4 text-white/80" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">输入</h3>
-              <p className="text-gray-300 mb-6">上传清晰图片或输入短文本提示，快速进入3D建模流程。</p>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('home.features.step1.title')}</h3>
+              <p className="text-gray-300 mb-6">{t('home.features.step1.desc')}</p>
               <div className="mt-4 relative rounded-xl bg-black/40 border border-white/10 p-4">
                 <div className="flex items-center gap-2 text-white/90">
                   <div className="w-7 h-7 rounded-lg bg-lime-500/90 flex items-center justify-center">+</div>
-                  <div className="text-sm">Click / Drag & Drop / Paste Image</div>
+                  <div className="text-sm">{t('home.features.step1.helper')}</div>
                 </div>
               </div>
             </div>
@@ -116,10 +116,10 @@ export default function Home() {
               <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                 <ArrowRight className="h-4 w-4 text-white/80" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">生成</h3>
-              <p className="text-gray-300 mb-6">观感逼真，秒级完成高质量3D模型生成。</p>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('home.features.step2.title')}</h3>
+              <p className="text-gray-300 mb-6">{t('home.features.step2.desc')}</p>
               <div className="mt-2">
-                <button className="bg-lime-500 text-black font-semibold px-4 py-2 rounded-lg">Generate</button>
+                <button className="bg-lime-500 text-black font-semibold px-4 py-2 rounded-lg">{t('home.features.step2.button')}</button>
               </div>
             </div>
 
@@ -128,10 +128,10 @@ export default function Home() {
               <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                 <ArrowRight className="h-4 w-4 text-white/80" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">下载</h3>
-              <p className="text-gray-300 mb-6">浏览器内预览模型，一键下载继续你的工作流程。</p>
+              <h3 className="text-2xl font-bold text-white mb-4">{t('home.features.step3.title')}</h3>
+              <p className="text-gray-300 mb-6">{t('home.features.step3.desc')}</p>
               <div className="mt-2">
-                <button className="bg-teal-500 text-black font-semibold px-4 py-2 rounded-lg">Download</button>
+                <button className="bg-teal-500 text-black font-semibold px-4 py-2 rounded-lg">{t('home.features.step3.button')}</button>
               </div>
             </div>
 
@@ -139,11 +139,11 @@ export default function Home() {
               <div>
                 <div className="flex items-center gap-2 text-lime-400 mb-3">
                   <Zap className="h-5 w-5" />
-                  <span className="text-sm">创建速度</span>
+                  <span className="text-sm">{t('home.features.speed.label')}</span>
                 </div>
-                <div className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">瞬时3D模型创建，秒级完成</div>
-                <p className="text-gray-300 mb-6">使用我们自研的高效3D重建工具，轻松将您的2D图像、电商图或插画转换为高拟真3D模型。</p>
-                <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-pink-900/40 border border-pink-500/20 text-pink-200">图像转3D模型</div>
+                <div className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">{t('home.features.speed.title')}</div>
+                <p className="text-gray-300 mb-6">{t('home.features.speed.desc')}</p>
+                <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-pink-900/40 border border-pink-500/20 text-pink-200">{t('home.features.speed.tag')}</div>
               </div>
               <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-indigo-900/40 via-purple-900/40 to-fuchsia-800/30">
                 <div className="relative h-[24rem] md:h-[30rem]">
