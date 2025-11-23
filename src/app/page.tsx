@@ -145,20 +145,12 @@ export default function Home() {
                 <p className="text-gray-300 mb-6">使用我们自研的高效3D重建工具，轻松将您的2D图像、电商图或插画转换为高拟真3D模型。</p>
                 <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-pink-900/40 border border-pink-500/20 text-pink-200">图像转3D模型</div>
               </div>
-              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-orange-900/40 via-orange-800/30 to-amber-700/20">
-                <div className="relative h-[22rem]">
+              <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-indigo-900/40 via-purple-900/40 to-fuchsia-800/30">
+                <div className="absolute -inset-10 bg-gradient-to-tr from-purple-500/25 via-fuchsia-500/10 to-transparent blur-3xl" />
+                <div className="relative h-[22rem] flex items-center justify-center">
                   {!imgError && (
-                    <Image src={heroSrc} alt="showcase" fill sizes="(min-width:768px) 50vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" onError={() => setImgError(true)} />
+                    <Image src={heroSrc} alt="showcase" fill sizes="(min-width:768px) 50vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)] mix-blend-lighten" onError={() => setImgError(true)} style={{ maskImage: 'radial-gradient(closest-side, rgba(0,0,0,1) 76%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'radial-gradient(closest-side, rgba(0,0,0,1) 76%, rgba(0,0,0,0) 100%)' }} />
                   )}
-                  <div className="absolute left-4 top-4 w-60 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl shadow-xl p-4">
-                    <div className="flex items-center gap-2 text-white/90">
-                      <div className="w-7 h-7 rounded-lg bg-lime-500/90 flex items-center justify-center">+</div>
-                      <div className="text-sm">Click / Drag & Drop / Paste Image</div>
-                    </div>
-                    <div className="mt-3">
-                      <button className="w-full bg-lime-500 text-black font-semibold py-2 rounded-lg">Generate</button>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
