@@ -146,10 +146,9 @@ export default function Home() {
                 <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-pink-900/40 border border-pink-500/20 text-pink-200">图像转3D模型</div>
               </div>
               <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-indigo-900/40 via-purple-900/40 to-fuchsia-800/30">
-                <div className="absolute -inset-10 bg-gradient-to-tr from-purple-500/25 via-fuchsia-500/10 to-transparent blur-3xl" />
-                <div className="relative h-[22rem] flex items-center justify-center">
+                <div className="relative h-[22rem]">
                   {!imgError && (
-                    <Image src={heroSrc} alt="showcase" fill sizes="(min-width:768px) 50vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)] mix-blend-lighten" onError={() => setImgError(true)} style={{ maskImage: 'radial-gradient(closest-side, rgba(0,0,0,1) 76%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'radial-gradient(closest-side, rgba(0,0,0,1) 76%, rgba(0,0,0,0) 100%)' }} />
+                    <Image src={heroSrc} alt="showcase" fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" onError={() => setImgError(true)} style={{ objectPosition: '70% center' }} />
                   )}
                 </div>
               </div>
