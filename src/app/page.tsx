@@ -135,18 +135,11 @@ export default function Home() {
               </ul>
             </div>
 
-            <div className="md:col-span-3 relative overflow-hidden rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-900/40 to-fuchsia-900/40 p-6">
-              <div className="relative h-80 md:h-[28rem]">
+            <div className="md:col-span-3 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-purple-900/40 to-fuchsia-900/40">
+              <div className="relative h-80 md:h-[28rem] flex items-center justify-center">
                 {!imgError && (
                   <Image src={heroSrc} alt="AI generated fantasy sword" fill priority sizes="(min-width:768px) 100vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" onError={() => setImgError(true)} />
                 )}
-                <div className="absolute left-6 bottom-6 w-64 rounded-2xl bg-black/45 border border-white/10 backdrop-blur-xl shadow-2xl p-4 pointer-events-auto" onClick={() => go('/generator')}>
-                  <div className="flex items-center gap-2 text-white/90 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-green-500/90 flex items-center justify-center">+</div>
-                    <div className="text-sm">拖拽/粘贴图片</div>
-                  </div>
-                  <button className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold py-2 rounded-lg">生成</button>
-                </div>
               </div>
             </div>
           </div>
