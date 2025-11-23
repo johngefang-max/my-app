@@ -16,7 +16,7 @@ export default function Home() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [imgError, setImgError] = useState(false)
-  const heroSrc = (process.env.NEXT_PUBLIC_HERO_IMAGE_URL as string) || '/hero-sword.png'
+  const heroSrc = (process.env.NEXT_PUBLIC_HERO_IMAGE_URL as string) || '/alis.png'
   const go = (path: string) => {
     if (isAuthenticated) {
       router.push(path)
