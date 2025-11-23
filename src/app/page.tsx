@@ -7,7 +7,7 @@ import Header from './components/Header'
 import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import LoginModal from './components/LoginModal'
 
 export default function Home() {
@@ -15,6 +15,7 @@ export default function Home() {
   const { openLogin, requireAuth, isAuthenticated, logout } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [imgError, setImgError] = useState(false)
   const go = (path: string) => {
     if (isAuthenticated) {
       router.push(path)
@@ -61,21 +62,7 @@ export default function Home() {
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>
-          <div className="relative">
-            <div className="hidden lg:block absolute right-0 -top-8 w-[680px] h-[460px] select-none">
-              <div className="relative w-full h-full">
-                <div className="absolute inset-0 rounded-[36px] bg-gradient-to-br from-purple-700/30 via-fuchsia-700/20 to-transparent" />
-                <Image src="/hero-sword.png" alt="AI generated fantasy sword" width={1024} height={682} priority sizes="(min-width:1024px) 680px, 100vw" className="w-full h-full object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" />
-                <div className="absolute left-6 bottom-6 w-64 rounded-2xl bg-black/45 border border-white/10 backdrop-blur-xl shadow-2xl p-4 pointer-events-auto" onClick={() => go('/generator')}>
-                  <div className="flex items-center gap-2 text-white/90 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-green-500/90 flex items-center justify-center">+</div>
-                    <div className="text-sm">拖拽/粘贴图片</div>
-                  </div>
-                  <button className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold py-2 rounded-lg">生成</button>
-                </div>
-              </div>
-            </div>
-          </div>
+          
           
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
@@ -145,6 +132,21 @@ export default function Home() {
                 <li>• {t('home.feature3.bullet2')}</li>
                 <li>• {t('home.feature3.bullet3')}</li>
               </ul>
+            </div>
+
+            <div className="md:col-span-3 relative overflow-hidden rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-900/40 to-fuchsia-900/40 p-6">
+              <div className="relative h-80 md:h-[28rem]">
+                {!imgError && (
+                  <Image src="/hero-sword.png" alt="AI generated fantasy sword" fill priority sizes="(min-width:768px) 100vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" onError={() => setImgError(true)} />
+                )}
+                <div className="absolute left-6 bottom-6 w-64 rounded-2xl bg-black/45 border border-white/10 backdrop-blur-xl shadow-2xl p-4 pointer-events-auto" onClick={() => go('/generator')}>
+                  <div className="flex items-center gap-2 text-white/90 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-green-500/90 flex items-center justify-center">+</div>
+                    <div className="text-sm">拖拽/粘贴图片</div>
+                  </div>
+                  <button className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold py-2 rounded-lg">生成</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
