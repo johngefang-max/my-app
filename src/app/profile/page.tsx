@@ -3,11 +3,13 @@
 import Header from '../components/Header'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
+import { useState } from 'react'
 
 export default function ProfilePage() {
   const { data: session } = useSession()
   const name = session?.user?.name ?? '未登录用户'
-  const avatar = session?.user?.image ?? '/avatars/avatar-01.jpeg'
+  const [avatarError, setAvatarError] = useState(false)
+  const avatar = avatarError ? '/avatars/avatar-01.jpeg' : (session?.user?.image ?? '/avatars/avatar-01.jpeg')
 
   const balance = 128.5
   const transactions = [
@@ -32,7 +34,7 @@ export default function ProfilePage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-16 h-16 rounded-full overflow-hidden border border-white/10">
-              <Image src={avatar} alt="avatar" width={64} height={64} className="w-full h-full" />
+              <Image src={avatar} alt="avatar" width={64} height={64} className="w-full h-full" onError={() => setAvatarError(true)} />
             </div>
             <div>
               <div className="text-white text-2xl font-bold">{name}</div>

@@ -25,6 +25,7 @@ export default function Header({
   const { language, setLanguage, t } = useLanguage()
   const { isAuthenticated, authLoading, logout, openLogin } = useAuth()
   const { data: session } = useSession()
+  const [avatarError, setAvatarError] = (typeof window !== 'undefined') ? (require('react').useState(false)) : [false, () => {}]
   const router = useRouter()
 
   const go = (path: string) => {
@@ -82,7 +83,7 @@ export default function Header({
                 <div className="flex items-center gap-3">
                   <a href="/profile" className="flex items-center gap-3 text-white">
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10">
-                      <Image src={session?.user?.image ?? '/avatars/avatar-01.jpeg'} alt="avatar" width={32} height={32} className="w-full h-full" />
+                      <Image src={(avatarError ? '/avatars/avatar-01.jpeg' : (session?.user?.image ?? '/avatars/avatar-01.jpeg'))} alt="avatar" width={32} height={32} className="w-full h-full" onError={() => setAvatarError(true)} />
                     </div>
                     <span className="text-sm font-medium">{session?.user?.name ?? 'User'}</span>
                   </a>
