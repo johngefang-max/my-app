@@ -1,7 +1,9 @@
 'use client'
 
 import { ArrowRight, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
+import Image from 'next/image'
 import DotGridBackground from './components/DotGridBackground'
+import Header from './components/Header'
 import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -38,46 +40,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <header className="fixed top-0 w-full bg-black/20 backdrop-blur-md z-50 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <Box className="h-8 w-8 text-purple-400" />
-              <span className="text-2xl font-bold text-white">AI3D Pro</span>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <button onClick={() => go('/generator')} className="text-gray-300 hover:text-white transition-colors">{t('nav.product')}</button>
-              <a href="/gallery" className="text-gray-300 hover:text-white transition-colors">{t('nav.browseWorks')}</a>
-              <button onClick={() => go('/pricing')} className="text-gray-300 hover:text-white transition-colors">{t('nav.pricing')}</button>
-              <button onClick={() => openLogin()} className="text-gray-300 hover:text-white transition-colors">{t('nav.api')}</button>
-              <button onClick={() => openLogin()} className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</button>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')}
-                className="flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700 text-white px-3 py-2 rounded-lg transition-colors"
-              >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm font-medium">{language === 'zh' ? 'EN' : '中文'}</span>
-              </button>
-              {isAuthenticated ? (
-                <button onClick={logout} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">
-                  {t('nav.logout')}
-                </button>
-              ) : (
-                <>
-                  <button onClick={openLogin} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">
-                    {t('nav.login')}
-                  </button>
-                  <button onClick={() => router.push('/generator')} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
-                    {t('nav.startTrial')}
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
@@ -98,8 +61,22 @@ export default function Home() {
               <ArrowRight className="h-5 w-5" />
             </button>
           </div>
+          <div className="relative">
+            <div className="hidden lg:block absolute right-0 -top-6 w-[640px] h-[420px] pointer-events-none select-none">
+              <div className="relative w-full h-full mix-blend-screen">
+                <Image src="/hero-sword.png" alt="3D sword" width={1024} height={682} className="w-full h-full object-contain drop-shadow-[0_40px_40px_rgba(0,0,0,0.5)]" style={{ maskImage: 'radial-gradient(closest-side, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'radial-gradient(closest-side, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)' }} />
+                <div className="absolute left-4 bottom-4 w-60 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl shadow-2xl p-4">
+                  <div className="flex items-center gap-2 text-white/90 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-green-500/90 flex items-center justify-center">+</div>
+                    <div className="text-sm">Click Drag & Drop, Paste Image</div>
+                  </div>
+                  <button className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold py-2 rounded-lg">Generate</button>
+                </div>
+              </div>
+            </div>
+          </div>
           
-          {/* Stats */}
+          
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
             <div className="text-center">
               <div className="text-3xl font-bold text-white">50K+</div>
@@ -172,62 +149,363 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Showcase Section */}
+      {/* Portfolio Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">{t('home.showcase.title')}</h2>
-            <p className="text-xl text-gray-300">{t('home.showcase.subtitle')}</p>
+            <h2 className="text-4xl font-bold text-white mb-4">{t('home.portfolio.title')}</h2>
+            <p className="text-xl text-gray-300 mb-8">{t('home.portfolio.subtitle')}</p>
+
+            {/* Category Filter */}
+            <div className="flex flex-wrap justify-center gap-4 mb-12">
+              <button className="bg-purple-600 text-white px-6 py-2 rounded-lg transition-colors">
+                {t('home.portfolio.category.all')}
+              </button>
+              <button className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors">
+                {t('home.portfolio.category.character')}
+              </button>
+              <button className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors">
+                {t('home.portfolio.category.architecture')}
+              </button>
+              <button className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors">
+                {t('home.portfolio.category.product')}
+              </button>
+              <button className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors">
+                {t('home.portfolio.category.art')}
+              </button>
+            </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <Box className="h-6 w-6 text-white" />
+
+          {/* Portfolio Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Portfolio Case 1 */}
+            <div className="group bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all">
+              <div className="aspect-square bg-gradient-to-br from-purple-900/50 to-pink-900/50 relative overflow-hidden">
+                {/* Image placeholder - you can add actual images here */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-purple-600 w-24 h-24 rounded-2xl transform rotate-12 flex items-center justify-center">
+                    <div className="text-white text-4xl">👤</div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    {t('home.portfolio.viewProject')}
+                  </button>
+                </div>
               </div>
-              <h4 className="text-white font-semibold mb-2">{t('home.showcase.card1.title')}</h4>
-              <p className="text-gray-300">{t('home.showcase.card1.desc')}</p>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="bg-purple-600/20 text-purple-400 px-3 py-1 rounded-lg text-sm">
+                    {t('home.portfolio.case1.category')}
+                  </span>
+                  <span className="text-gray-400 text-sm">{t('home.portfolio.case1.time')}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.portfolio.case1.title')}</h3>
+                <p className="text-gray-300 text-sm">{t('home.portfolio.case1.desc')}</p>
+              </div>
             </div>
-            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-              <div className="bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <Box className="h-6 w-6 text-white" />
+
+            {/* Portfolio Case 2 */}
+            <div className="group bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all">
+              <div className="aspect-square bg-gradient-to-br from-blue-900/50 to-cyan-900/50 relative overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-blue-600 w-24 h-24 rounded-lg flex items-center justify-center">
+                    <div className="text-white text-4xl">🏢</div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    {t('home.portfolio.viewProject')}
+                  </button>
+                </div>
               </div>
-              <h4 className="text-white font-semibold mb-2">{t('home.showcase.card2.title')}</h4>
-              <p className="text-gray-300">{t('home.showcase.card2.desc')}</p>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-lg text-sm">
+                    {t('home.portfolio.case2.category')}
+                  </span>
+                  <span className="text-gray-400 text-sm">{t('home.portfolio.case2.time')}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.portfolio.case2.title')}</h3>
+                <p className="text-gray-300 text-sm">{t('home.portfolio.case2.desc')}</p>
+              </div>
             </div>
-            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-              <div className="bg-green-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                <Box className="h-6 w-6 text-white" />
+
+            {/* Portfolio Case 3 */}
+            <div className="group bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all">
+              <div className="aspect-square bg-gradient-to-br from-green-900/50 to-emerald-900/50 relative overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-green-600 w-24 h-24 rounded-full flex items-center justify-center">
+                    <div className="text-white text-4xl">🎧</div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    {t('home.portfolio.viewProject')}
+                  </button>
+                </div>
               </div>
-              <h4 className="text-white font-semibold mb-2">{t('home.showcase.card3.title')}</h4>
-              <p className="text-gray-300">{t('home.showcase.card3.desc')}</p>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="bg-green-600/20 text-green-400 px-3 py-1 rounded-lg text-sm">
+                    {t('home.portfolio.case3.category')}
+                  </span>
+                  <span className="text-gray-400 text-sm">{t('home.portfolio.case3.time')}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.portfolio.case3.title')}</h3>
+                <p className="text-gray-300 text-sm">{t('home.portfolio.case3.desc')}</p>
+              </div>
+            </div>
+
+            {/* Portfolio Case 4 */}
+            <div className="group bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all">
+              <div className="aspect-square bg-gradient-to-br from-orange-900/50 to-red-900/50 relative overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-orange-600 w-24 h-24 transform rotate-45 flex items-center justify-center">
+                    <div className="text-white text-4xl">🎨</div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    {t('home.portfolio.viewProject')}
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="bg-orange-600/20 text-orange-400 px-3 py-1 rounded-lg text-sm">
+                    {t('home.portfolio.case4.category')}
+                  </span>
+                  <span className="text-gray-400 text-sm">{t('home.portfolio.case4.time')}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.portfolio.case4.title')}</h3>
+                <p className="text-gray-300 text-sm">{t('home.portfolio.case4.desc')}</p>
+              </div>
+            </div>
+
+            {/* Portfolio Case 5 */}
+            <div className="group bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all">
+              <div className="aspect-square bg-gradient-to-br from-indigo-900/50 to-purple-900/50 relative overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-indigo-600 w-24 h-24 rounded-lg flex items-center justify-center">
+                    <div className="text-white text-4xl">🤖</div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    {t('home.portfolio.viewProject')}
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="bg-indigo-600/20 text-indigo-400 px-3 py-1 rounded-lg text-sm">
+                    {t('home.portfolio.case5.category')}
+                  </span>
+                  <span className="text-gray-400 text-sm">{t('home.portfolio.case5.time')}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.portfolio.case5.title')}</h3>
+                <p className="text-gray-300 text-sm">{t('home.portfolio.case5.desc')}</p>
+              </div>
+            </div>
+
+            {/* Portfolio Case 6 */}
+            <div className="group bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all">
+              <div className="aspect-square bg-gradient-to-br from-teal-900/50 to-cyan-900/50 relative overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-teal-600 w-24 h-16 rounded-lg flex items-center justify-center">
+                    <div className="text-white text-4xl">🪑</div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    {t('home.portfolio.viewProject')}
+                  </button>
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="bg-teal-600/20 text-teal-400 px-3 py-1 rounded-lg text-sm">
+                    {t('home.portfolio.case6.category')}
+                  </span>
+                  <span className="text-gray-400 text-sm">{t('home.portfolio.case6.time')}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{t('home.portfolio.case6.title')}</h3>
+                <p className="text-gray-300 text-sm">{t('home.portfolio.case6.desc')}</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* User Reviews Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">{t('home.testimonials.title')}</h2>
-            <p className="text-xl text-gray-300">{t('home.testimonials.subtitle')}</p>
+            <h2 className="text-4xl font-bold text-white mb-4">{t('home.reviews.title')}</h2>
+            <p className="text-xl text-gray-300 mb-8">{t('home.reviews.subtitle')}</p>
+
+            {/* Trust Badge */}
+            <div className="flex items-center justify-center space-x-8 mb-12">
+              <div className="flex items-center space-x-2">
+                <div className="flex">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <span className="text-white font-semibold">{t('home.reviews.averageRating')}</span>
+              </div>
+              <div className="text-gray-400">|</div>
+              <div className="text-white font-semibold">{t('home.reviews.totalUsers')} {t('home.reviews.trustBadge')}</div>
+            </div>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+
+          {/* Reviews Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Review 1 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-              <p className="text-gray-300 mb-4">“{t('home.testimonials.quote1')}”</p>
-              <div className="text-white font-semibold">{t('home.testimonials.name1')}</div>
-              <div className="text-gray-400 text-sm">{t('home.testimonials.role1')}</div>
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
+                  {t('home.reviews.user1.name').charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white font-semibold">{t('home.reviews.user1.name')}</h4>
+                    <span className="text-yellow-400 font-semibold">{t('home.reviews.user1.rating')}</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">{t('home.reviews.user1.role')}</p>
+                </div>
+              </div>
+              <div className="flex mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-300 mb-4 leading-relaxed">{t('home.reviews.user1.comment')}</p>
+              <p className="text-gray-500 text-sm">{t('home.reviews.user1.date')}</p>
             </div>
+
+            {/* Review 2 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-              <p className="text-gray-300 mb-4">“{t('home.testimonials.quote2')}”</p>
-              <div className="text-white font-semibold">{t('home.testimonials.name2')}</div>
-              <div className="text-gray-400 text-sm">{t('home.testimonials.role2')}</div>
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
+                  {t('home.reviews.user2.name').charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white font-semibold">{t('home.reviews.user2.name')}</h4>
+                    <span className="text-yellow-400 font-semibold">{t('home.reviews.user2.rating')}</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">{t('home.reviews.user2.role')}</p>
+                </div>
+              </div>
+              <div className="flex mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                ))}
+              </div>
+              <p className="text-gray-300 mb-4 leading-relaxed">{t('home.reviews.user2.comment')}</p>
+              <p className="text-gray-500 text-sm">{t('home.reviews.user2.date')}</p>
             </div>
+
+            {/* Review 3 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-              <p className="text-gray-300 mb-4">“{t('home.testimonials.quote3')}”</p>
-              <div className="text-white font-semibold">{t('home.testimonials.name3')}</div>
-              <div className="text-gray-400 text-sm">{t('home.testimonials.role3')}</div>
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
+                  {t('home.reviews.user3.name').charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white font-semibold">{t('home.reviews.user3.name')}</h4>
+                    <span className="text-yellow-400 font-semibold">{t('home.reviews.user3.rating')}</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">{t('home.reviews.user3.role')}</p>
+                </div>
+              </div>
+              <div className="flex mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                ))}
+              </div>
+              <p className="text-gray-300 mb-4 leading-relaxed">{t('home.reviews.user3.comment')}</p>
+              <p className="text-gray-500 text-sm">{t('home.reviews.user3.date')}</p>
             </div>
+
+            {/* Review 4 */}
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
+                  {t('home.reviews.user4.name').charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white font-semibold">{t('home.reviews.user4.name')}</h4>
+                    <span className="text-yellow-400 font-semibold">{t('home.reviews.user4.rating')}</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">{t('home.reviews.user4.role')}</p>
+                </div>
+              </div>
+              <div className="flex mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              <p className="text-gray-300 mb-4 leading-relaxed">{t('home.reviews.user4.comment')}</p>
+              <p className="text-gray-500 text-sm">{t('home.reviews.user4.date')}</p>
+            </div>
+
+            {/* Review 5 */}
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
+                  {t('home.reviews.user5.name').charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white font-semibold">{t('home.reviews.user5.name')}</h4>
+                    <span className="text-yellow-400 font-semibold">{t('home.reviews.user5.rating')}</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">{t('home.reviews.user5.role')}</p>
+                </div>
+              </div>
+              <div className="flex mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                ))}
+              </div>
+              <p className="text-gray-300 mb-4 leading-relaxed">{t('home.reviews.user5.comment')}</p>
+              <p className="text-gray-500 text-sm">{t('home.reviews.user5.date')}</p>
+            </div>
+
+            {/* Review 6 */}
+            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
+                  {t('home.reviews.user6.name').charAt(0)}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-white font-semibold">{t('home.reviews.user6.name')}</h4>
+                    <span className="text-yellow-400 font-semibold">{t('home.reviews.user6.rating')}</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">{t('home.reviews.user6.role')}</p>
+                </div>
+              </div>
+              <div className="flex mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`h-4 w-4 ${i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                ))}
+              </div>
+              <p className="text-gray-300 mb-4 leading-relaxed">{t('home.reviews.user6.comment')}</p>
+              <p className="text-gray-500 text-sm">{t('home.reviews.user6.date')}</p>
+            </div>
+          </div>
+
+          {/* Load More Button */}
+          <div className="text-center mt-12">
+            <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg transition-colors">
+              {t('home.reviews.loadMore')}
+            </button>
           </div>
         </div>
       </section>
