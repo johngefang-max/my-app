@@ -16,6 +16,7 @@ export default function Home() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [imgError, setImgError] = useState(false)
+  const heroSrc = (process.env.NEXT_PUBLIC_HERO_IMAGE_URL as string) || '/hero-sword.png'
   const go = (path: string) => {
     if (isAuthenticated) {
       router.push(path)
@@ -137,7 +138,7 @@ export default function Home() {
             <div className="md:col-span-3 relative overflow-hidden rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-900/40 to-fuchsia-900/40 p-6">
               <div className="relative h-80 md:h-[28rem]">
                 {!imgError && (
-                  <Image src="/hero-sword.png" alt="AI generated fantasy sword" fill priority sizes="(min-width:768px) 100vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" onError={() => setImgError(true)} />
+                  <Image src={heroSrc} alt="AI generated fantasy sword" fill priority sizes="(min-width:768px) 100vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" onError={() => setImgError(true)} />
                 )}
                 <div className="absolute left-6 bottom-6 w-64 rounded-2xl bg-black/45 border border-white/10 backdrop-blur-xl shadow-2xl p-4 pointer-events-auto" onClick={() => go('/generator')}>
                   <div className="flex items-center gap-2 text-white/90 mb-3">
