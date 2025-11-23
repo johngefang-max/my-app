@@ -146,9 +146,9 @@ export default function Home() {
                 <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-pink-900/40 border border-pink-500/20 text-pink-200">图像转3D模型</div>
               </div>
               <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-indigo-900/40 via-purple-900/40 to-fuchsia-800/30">
-                <div className="relative h-[22rem]">
+                <div className="relative h-[24rem] md:h-[30rem]">
                   {!imgError && (
-                    <Image src={heroSrc} alt="showcase" fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" onError={() => setImgError(true)} style={{ objectPosition: '70% center' }} />
+                    <Image src={heroSrc} alt="showcase" fill sizes="(min-width:768px) 50vw, 100vw" className="object-cover" onError={() => setImgError(true)} style={{ objectPosition: '60% 20%' }} />
                   )}
                 </div>
               </div>
