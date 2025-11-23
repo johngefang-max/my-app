@@ -62,15 +62,16 @@ export default function Home() {
             </button>
           </div>
           <div className="relative">
-            <div className="hidden lg:block absolute right-0 -top-6 w-[640px] h-[420px] pointer-events-none select-none">
-              <div className="relative w-full h-full mix-blend-screen">
-                <Image src="/hero-sword.png" alt="3D sword" width={1024} height={682} className="w-full h-full object-contain drop-shadow-[0_40px_40px_rgba(0,0,0,0.5)]" style={{ maskImage: 'radial-gradient(closest-side, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)', WebkitMaskImage: 'radial-gradient(closest-side, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)' }} />
-                <div className="absolute left-4 bottom-4 w-60 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl shadow-2xl p-4">
+            <div className="hidden lg:block absolute right-0 -top-8 w-[680px] h-[460px] select-none">
+              <div className="relative w-full h-full">
+                <div className="absolute inset-0 rounded-[36px] bg-gradient-to-br from-purple-700/30 via-fuchsia-700/20 to-transparent" />
+                <Image src="/hero-sword.png" alt="AI generated fantasy sword" width={1024} height={682} priority sizes="(min-width:1024px) 680px, 100vw" className="w-full h-full object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" />
+                <div className="absolute left-6 bottom-6 w-64 rounded-2xl bg-black/45 border border-white/10 backdrop-blur-xl shadow-2xl p-4 pointer-events-auto" onClick={() => go('/generator')}>
                   <div className="flex items-center gap-2 text-white/90 mb-3">
                     <div className="w-8 h-8 rounded-lg bg-green-500/90 flex items-center justify-center">+</div>
-                    <div className="text-sm">Click Drag & Drop, Paste Image</div>
+                    <div className="text-sm">拖拽/粘贴图片</div>
                   </div>
-                  <button className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold py-2 rounded-lg">Generate</button>
+                  <button className="w-full bg-lime-500 hover:bg-lime-600 text-black font-semibold py-2 rounded-lg">生成</button>
                 </div>
               </div>
             </div>
