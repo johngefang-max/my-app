@@ -8,37 +8,27 @@ import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import LoginModal from './components/LoginModal'
+ 
 
 export default function Home() {
   const { language, setLanguage, t } = useLanguage()
-  const { openLogin, requireAuth, isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, authLoading, openLogin } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [imgError, setImgError] = useState(false)
   const heroSrc = (process.env.NEXT_PUBLIC_HERO_IMAGE_URL as string) || '/alis.png'
   const go = (path: string) => {
+    if (authLoading) return
     if (isAuthenticated) {
       router.push(path)
     } else {
-      const url = new URL(window.location.href)
-      url.searchParams.set('auth_required', '1')
-      url.searchParams.set('redirect', path)
-      router.replace(url.pathname + '?' + url.searchParams.toString())
       openLogin()
     }
   }
   
   useEffect(() => {
-    if (!isAuthenticated && searchParams.get('auth_required') === '1') {
-      openLogin()
-      try {
-        const url = new URL(window.location.href)
-        url.searchParams.delete('auth_required')
-        window.history.replaceState(null, '', url.toString())
-      } catch {}
-    }
-  }, [isAuthenticated, searchParams, openLogin])
+    // no modal login; use /admin route for authentication
+  }, [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
@@ -558,7 +548,7 @@ export default function Home() {
               <ul className="space-y-2 text-gray-400">
                 <li><button onClick={() => go('/generator')} className="hover:text-white">{t('home.feature2.title')}</button></li>
                 <li><button onClick={() => go('/generator')} className="hover:text-white">{t('home.feature1.title')}</button></li>
-                <li><button onClick={openLogin} className="hover:text-white">{t('nav.api')}</button></li>
+                
               </ul>
             </div>
             <div>
@@ -583,7 +573,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
-      <LoginModal />
+      
     </div>
   )
 }

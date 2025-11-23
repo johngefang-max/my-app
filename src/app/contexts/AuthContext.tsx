@@ -5,6 +5,7 @@ import { SessionProvider, useSession, signOut as nextAuthSignOut } from 'next-au
 
 type AuthContextType = {
   isAuthenticated: boolean
+  authLoading: boolean
   isLoginOpen: boolean
   login: (username: string, password: string) => boolean
   logout: () => void
@@ -75,7 +76,7 @@ function InnerAuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoginOpen, login, logout, openLogin, closeLogin, requireAuth }}>
+    <AuthContext.Provider value={{ isAuthenticated, authLoading: status === 'loading', isLoginOpen, login, logout, openLogin, closeLogin, requireAuth }}>
       {children}
     </AuthContext.Provider>
   )

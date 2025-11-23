@@ -1,6 +1,8 @@
 'use client'
 
 import { Box, Globe, ArrowLeft } from 'lucide-react'
+import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useRouter } from 'next/navigation'
@@ -21,17 +23,14 @@ export default function Header({
   onBackClick
 }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage()
-  const { isAuthenticated, logout, openLogin } = useAuth()
+  const { isAuthenticated, authLoading, logout, openLogin } = useAuth()
+  const { data: session } = useSession()
   const router = useRouter()
 
   const go = (path: string) => {
     if (isAuthenticated) {
       router.push(path)
     } else {
-      const url = new URL(window.location.href)
-      url.searchParams.set('auth_required', '1')
-      url.searchParams.set('redirect', path)
-      router.replace(url.pathname + '?' + url.searchParams.toString())
       openLogin()
     }
   }
@@ -67,8 +66,7 @@ export default function Header({
             <button onClick={() => go('/generator')} className="text-gray-300 hover:text-white transition-colors">{t('nav.product')}</button>
             <a href="/gallery" className="text-gray-300 hover:text-white transition-colors">{t('nav.browseWorks')}</a>
             <button onClick={() => go('/pricing')} className="text-gray-300 hover:text-white transition-colors">{t('nav.pricing')}</button>
-            <button onClick={() => openLogin()} className="text-gray-300 hover:text-white transition-colors">{t('nav.api')}</button>
-            <button onClick={() => openLogin()} className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</button>
+            <a href="#" className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</a>
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -79,19 +77,29 @@ export default function Header({
               <Globe className="h-4 w-4" />
               <span className="text-sm font-medium">{language === 'zh' ? 'EN' : '中文'}</span>
             </button>
-            {isAuthenticated ? (
-              <button onClick={logout} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">
-                {t('nav.logout')}
-              </button>
-            ) : (
-              <>
-                <button onClick={openLogin} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">
-                  {t('nav.login')}
-                </button>
-                <button onClick={() => router.push('/generator')} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
-                  {t('nav.startTrial')}
-                </button>
-              </>
+            {authLoading ? null : (
+              isAuthenticated ? (
+                <div className="flex items-center gap-3">
+                  <a href="/profile" className="flex items-center gap-3 text-white">
+                    <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10">
+                      <Image src={session?.user?.image ?? '/avatars/avatar-01.jpeg'} alt="avatar" width={32} height={32} className="w-full h-full" />
+                    </div>
+                    <span className="text-sm font-medium">{session?.user?.name ?? 'User'}</span>
+                  </a>
+                  <button onClick={logout} className="px-3 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors text-sm">
+                    {t('nav.logout')}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button onClick={openLogin} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">
+                    {t('nav.login')}
+                  </button>
+                  <button onClick={() => router.push('/generator')} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
+                    {t('nav.startTrial')}
+                  </button>
+                </>
+              )
             )}
           </div>
         </div>
