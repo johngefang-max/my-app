@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, use as usePromise } from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { ArrowLeft, Download, Share2, Heart, Eye, Box } from 'lucide-react'
+import Header from '../../components/Header'
 
 export default function GalleryDetail({ params }: { params: Promise<{ id: string }> }) {
   const { t, language } = useLanguage()
@@ -26,22 +28,12 @@ export default function GalleryDetail({ params }: { params: Promise<{ id: string
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <header className="fixed top-0 w-full bg-black/20 backdrop-blur-md z-50 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <button onClick={() => router.back()} className="flex items-center space-x-2 text-white">
-              <ArrowLeft className="h-5 w-5" />
-              <span>{t('common.back')}</span>
-            </button>
-            <div className="flex items-center space-x-2">
-              <Box className="h-6 w-6 text-purple-400" />
-              <span className="text-xl font-bold text-white">AI3D Pro</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header
+        showBackButton={true}
+        onBackClick={() => router.back()}
+      />
 
-      <section className="pt-28 pb-12 px-4 sm:px-6 lg:px-8">
+      <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-white mb-6 capitalize">{title}</h1>
           <div className="grid md:grid-cols-2 gap-10">
@@ -120,7 +112,12 @@ export default function GalleryDetail({ params }: { params: Promise<{ id: string
               {comments.map((c, i) => (
                 <li key={i} className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="text-white font-semibold">{c.name}</div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10">
+                        <Image src={`/avatars/avatar${(i % 6) + 1}.svg`} alt="avatar" width={40} height={40} className="w-full h-full" />
+                      </div>
+                      <div className="text-white font-semibold">{c.name}</div>
+                    </div>
                     <div className="text-gray-500 text-sm">{c.date}</div>
                   </div>
                   <div className="text-gray-300">{c.content}</div>
