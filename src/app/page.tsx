@@ -96,50 +96,70 @@ export default function Home() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-8 rounded-2xl border border-purple-500/20">
-              <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
-                <ImageIcon className="h-6 w-6 text-white" />
+            <div className="relative p-8 rounded-3xl bg-gradient-to-br from-amber-800/50 via-amber-700/40 to-rose-700/40 border border-white/10">
+              <span className="absolute -top-6 -left-4 text-6xl font-black text-amber-400">1</span>
+              <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <ArrowRight className="h-4 w-4 text-white/80" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">{t('home.feature1.title')}</h3>
-              <p className="text-gray-300 mb-6">{t('home.feature1.desc')}</p>
-              <ul className="text-gray-400 space-y-2">
-                <li>• {t('home.feature1.bullet1')}</li>
-                <li>• {t('home.feature1.bullet2')}</li>
-                <li>• {t('home.feature1.bullet3')}</li>
-              </ul>
-            </div>
-            
-            <div className="bg-gradient-to-br from-blue-900/50 to-cyan-900/50 p-8 rounded-2xl border border-blue-500/20">
-              <div className="bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
-                <Zap className="h-6 w-6 text-white" />
+              <h3 className="text-2xl font-bold text-white mb-4">输入</h3>
+              <p className="text-gray-300 mb-6">上传清晰图片或输入短文本提示，快速进入3D建模流程。</p>
+              <div className="mt-4 relative rounded-xl bg-black/40 border border-white/10 p-4">
+                <div className="flex items-center gap-2 text-white/90">
+                  <div className="w-7 h-7 rounded-lg bg-lime-500/90 flex items-center justify-center">+</div>
+                  <div className="text-sm">Click / Drag & Drop / Paste Image</div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">{t('home.feature2.title')}</h3>
-              <p className="text-gray-300 mb-6">{t('home.feature2.desc')}</p>
-              <ul className="text-gray-400 space-y-2">
-                <li>• {t('home.feature2.bullet1')}</li>
-                <li>• {t('home.feature2.bullet2')}</li>
-                <li>• {t('home.feature2.bullet3')}</li>
-              </ul>
-            </div>
-            
-            <div className="bg-gradient-to-br from-green-900/50 to-emerald-900/50 p-8 rounded-2xl border border-green-500/20">
-              <div className="bg-green-600 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
-                <Shield className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-4">{t('home.feature3.title')}</h3>
-              <p className="text-gray-300 mb-6">{t('home.feature3.desc')}</p>
-              <ul className="text-gray-400 space-y-2">
-                <li>• {t('home.feature3.bullet1')}</li>
-                <li>• {t('home.feature3.bullet2')}</li>
-                <li>• {t('home.feature3.bullet3')}</li>
-              </ul>
             </div>
 
-            <div className="md:col-span-3 relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-purple-900/40 to-fuchsia-900/40">
-              <div className="relative h-80 md:h-[28rem] flex items-center justify-center">
-                {!imgError && (
-                  <Image src={heroSrc} alt="AI generated fantasy sword" fill priority sizes="(min-width:768px) 100vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" onError={() => setImgError(true)} />
-                )}
+            <div className="relative p-8 rounded-3xl bg-gradient-to-br from-lime-800/50 via-lime-700/40 to-emerald-700/40 border border-white/10">
+              <span className="absolute -top-6 -left-4 text-6xl font-black text-lime-400">2</span>
+              <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <ArrowRight className="h-4 w-4 text-white/80" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">生成</h3>
+              <p className="text-gray-300 mb-6">观感逼真，秒级完成高质量3D模型生成。</p>
+              <div className="mt-2">
+                <button className="bg-lime-500 text-black font-semibold px-4 py-2 rounded-lg">Generate</button>
+              </div>
+            </div>
+
+            <div className="relative p-8 rounded-3xl bg-gradient-to-br from-cyan-800/50 via-teal-700/40 to-sky-700/40 border border-white/10">
+              <span className="absolute -top-6 -left-4 text-6xl font-black text-cyan-400">3</span>
+              <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                <ArrowRight className="h-4 w-4 text-white/80" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-4">下载</h3>
+              <p className="text-gray-300 mb-6">浏览器内预览模型，一键下载继续你的工作流程。</p>
+              <div className="mt-2">
+                <button className="bg-teal-500 text-black font-semibold px-4 py-2 rounded-lg">Download</button>
+              </div>
+            </div>
+
+            <div className="md:col-span-3 grid md:grid-cols-2 gap-8 mt-4 items-center">
+              <div>
+                <div className="flex items-center gap-2 text-lime-400 mb-3">
+                  <Zap className="h-5 w-5" />
+                  <span className="text-sm">创建速度</span>
+                </div>
+                <div className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">瞬时3D模型创建，秒级完成</div>
+                <p className="text-gray-300 mb-6">使用我们自研的高效3D重建工具，轻松将您的2D图像、电商图或插画转换为高拟真3D模型。</p>
+                <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-pink-900/40 border border-pink-500/20 text-pink-200">图像转3D模型</div>
+              </div>
+              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-orange-900/40 via-orange-800/30 to-amber-700/20">
+                <div className="relative h-[22rem]">
+                  {!imgError && (
+                    <Image src={heroSrc} alt="showcase" fill sizes="(min-width:768px) 50vw, 100vw" className="object-contain drop-shadow-[0_50px_60px_rgba(0,0,0,0.55)]" onError={() => setImgError(true)} />
+                  )}
+                  <div className="absolute left-4 top-4 w-60 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl shadow-xl p-4">
+                    <div className="flex items-center gap-2 text-white/90">
+                      <div className="w-7 h-7 rounded-lg bg-lime-500/90 flex items-center justify-center">+</div>
+                      <div className="text-sm">Click / Drag & Drop / Paste Image</div>
+                    </div>
+                    <div className="mt-3">
+                      <button className="w-full bg-lime-500 text-black font-semibold py-2 rounded-lg">Generate</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
