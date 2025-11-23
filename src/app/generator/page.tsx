@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Upload, Type, Image as ImageIcon, Send, Download, Settings, Sparkles, RotateCcw, Play, Pause, Globe } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
+import Header from '../components/Header'
 
 export default function Generator() {
   const { language, setLanguage, t } = useLanguage()
@@ -22,34 +23,10 @@ export default function Generator() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <header className="fixed top-0 w-full bg-black/20 backdrop-blur-md z-50 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <a href="/" className="flex items-center space-x-2">
-              <Sparkles className="h-8 w-8 text-purple-400" />
-              <span className="text-2xl font-bold text-white">AI 3D Generator</span>
-            </a>
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')}
-                className="flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700 text-white px-3 py-2 rounded-lg transition-colors"
-              >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm font-medium">{language === 'zh' ? 'EN' : '中文'}</span>
-              </button>
-              <a href="/gallery" className="text-gray-300 hover:text-white transition-colors">
-                {t('nav.browseWorks')}
-              </a>
-              <button className="text-gray-300 hover:text-white transition-colors">
-                <Settings className="h-5 w-5" />
-              </button>
-              <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
-                {t('nav.myWorks')}
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header
+        logoText="AI 3D Generator"
+        logoIcon={<Sparkles className="h-8 w-8 text-purple-400" />}
+      />
 
       {/* Main Content */}
       <div className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">

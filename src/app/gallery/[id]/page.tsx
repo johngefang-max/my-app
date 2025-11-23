@@ -15,6 +15,16 @@ export default function GalleryDetail({ params }: { params: Promise<{ id: string
     { name: 'Alex', content: language === 'zh' ? '导出直接能用，赞。' : 'Exports work out of the box.', date: '2024-11-19' },
   ])
   const [input, setInput] = useState('')
+  const avatarFiles = [
+    '/avatars/avatar-01.jpeg',
+    '/avatars/avatar-02.jpg',
+    '/avatars/avatar-03.jpeg',
+    '/avatars/avatar-04.jpg',
+    '/avatars/avatar-05.png',
+    '/avatars/avatar-06.webp',
+    '/avatars/avatar-07.png',
+    '/avatars/avatar-08.webp',
+  ]
 
   const addComment = () => {
     const content = input.trim()
@@ -114,7 +124,7 @@ export default function GalleryDetail({ params }: { params: Promise<{ id: string
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10">
-                        <Image src={`/avatars/avatar${(i % 6) + 1}.svg`} alt="avatar" width={40} height={40} className="w-full h-full" />
+                        <Image src={avatarFiles[i % avatarFiles.length]} alt="avatar" width={40} height={40} className="w-full h-full" />
                       </div>
                       <div className="text-white font-semibold">{c.name}</div>
                     </div>
