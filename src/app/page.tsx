@@ -373,8 +373,8 @@ export default function Home() {
             {/* Review 1 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
-                  {t('home.reviews.user1.name').charAt(0)}
+                <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
+                  <Image src="/avatars/avatar1.svg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -396,8 +396,8 @@ export default function Home() {
             {/* Review 2 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
-                  {t('home.reviews.user2.name').charAt(0)}
+                <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
+                  <Image src="/avatars/avatar2.svg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -419,8 +419,8 @@ export default function Home() {
             {/* Review 3 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
-                  {t('home.reviews.user3.name').charAt(0)}
+                <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
+                  <Image src="/avatars/avatar3.svg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -442,8 +442,8 @@ export default function Home() {
             {/* Review 4 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
-                  {t('home.reviews.user4.name').charAt(0)}
+                <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
+                  <Image src="/avatars/avatar4.svg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -465,8 +465,8 @@ export default function Home() {
             {/* Review 5 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
-                  {t('home.reviews.user5.name').charAt(0)}
+                <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
+                  <Image src="/avatars/avatar5.svg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -488,8 +488,8 @@ export default function Home() {
             {/* Review 6 */}
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-semibold text-lg mr-4">
-                  {t('home.reviews.user6.name').charAt(0)}
+                <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
+                  <Image src="/avatars/avatar6.svg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
