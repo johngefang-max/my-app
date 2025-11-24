@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Upload, Type, Image as ImageIcon, Send, Download, Sparkles, RotateCcw, Play, Pause } from 'lucide-react'
+import Image from 'next/image'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
 
@@ -145,7 +146,7 @@ export default function Generator() {
               {/* Input Type Selector */}
               <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
                 <h2 className="text-2xl font-bold text-white mb-6">{t('generator.input.title')}</h2>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={() => setActiveTab('text')}
                     className={`p-4 rounded-xl border-2 transition-all ${
@@ -172,20 +173,7 @@ export default function Generator() {
                     <div className="text-sm opacity-75">{t('generator.input.image.desc')}</div>
                   </button>
                   
-                  <button
-                    onClick={() => setActiveTab('sketch')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      activeTab === 'sketch'
-                        ? 'border-purple-500 bg-purple-500/20 text-white'
-                        : 'border-gray-600 bg-gray-800/50 text-gray-300 hover:border-gray-500'
-                    }`}
-                  >
-                    <div className="h-8 w-8 mx-auto mb-2 bg-current rounded-lg flex items-center justify-center">
-                      <div className="w-6 h-6 border-2 border-white rounded-full"></div>
-                    </div>
-                    <div className="font-semibold">{t('generator.input.sketch')}</div>
-                    <div className="text-sm opacity-75">{t('generator.input.sketch.desc')}</div>
-                  </button>
+                  
                 </div>
               </div>
 
@@ -200,16 +188,8 @@ export default function Generator() {
                       placeholder={t('generator.text.placeholder')}
                       className="w-full h-32 bg-gray-800/50 border border-gray-600 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none"
                     />
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-start items-center">
                       <span className="text-gray-400 text-sm">{textInput.length}/500 {t('generator.text.characters')}</span>
-                      <div className="flex space-x-2">
-                        <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors text-sm">
-                          {t('generator.text.random')}
-                        </button>
-                        <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors text-sm">
-                          {t('generator.text.optimize')}
-                        </button>
-                      </div>
                     </div>
                   </div>
                 )}
@@ -230,8 +210,8 @@ export default function Generator() {
                         </div>
                       ) : (
                         imageUrls.slice(0, 3).map((u, i) => (
-                          <div key={i} className="bg-gray-800/50 rounded-lg h-20 overflow-hidden border border-gray-700">
-                            <img src={u} alt="upload" className="w-full h-full object-cover" />
+                          <div key={i} className="bg-gray-800/50 rounded-lg h-20 overflow-hidden border border-gray-700 relative">
+                            <Image src={u} alt="upload" fill sizes="(min-width: 1024px) 33vw, 50vw" className="object-cover" />
                           </div>
                         ))
                       )}
@@ -239,34 +219,7 @@ export default function Generator() {
                   </div>
                 )}
                 
-                {activeTab === 'sketch' && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-semibold text-white">{t('generator.input.sketch')}</h3>
-                    <div className="bg-gray-800/50 rounded-lg h-64 flex items-center justify-center border border-gray-600">
-                      <div className="text-center">
-                        <div className="bg-purple-600 w-16 h-16 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                          <div className="w-8 h-8 border-2 border-white rounded-full"></div>
-                        </div>
-                        <p className="text-white mb-2">{t('generator.sketch.draw')}</p>
-                        <p className="text-gray-400 text-sm">{t('generator.sketch.support')}</p>
-                      </div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <button className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded transition-colors text-sm">
-                        {t('common.clear')}
-                      </button>
-                      <button className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded transition-colors text-sm">
-                        {t('common.back')}
-                      </button>
-                      <button className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded transition-colors text-sm">
-                        {t('common.edit')}
-                      </button>
-                      <button className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded transition-colors text-sm">
-                        {t('common.settings')}
-                      </button>
-                    </div>
-                  </div>
-                )}
+                
               </div>
 
               {/* Generation Settings */}
@@ -400,8 +353,8 @@ export default function Generator() {
                 ) : imageResults.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {imageResults.map((u, i) => (
-                      <div key={i} className="bg-gray-800/50 rounded-lg overflow-hidden border border-gray-700">
-                        <img src={u} alt="result" className="w-full h-40 object-cover" />
+                      <div key={i} className="bg-gray-800/50 rounded-lg overflow-hidden border border-gray-700 relative h-40">
+                        <Image src={u} alt="result" fill sizes="(min-width: 1024px) 33vw, 50vw" className="object-cover" />
                       </div>
                     ))}
                   </div>
@@ -521,7 +474,7 @@ export default function Generator() {
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white">{t('generator.footer.textGeneration')}</a></li>
                 <li><a href="#" className="hover:text-white">{t('generator.footer.imageTo3d')}</a></li>
-                <li><a href="#" className="hover:text-white">{t('generator.footer.sketchGeneration')}</a></li>
+                
               </ul>
             </div>
             <div>
