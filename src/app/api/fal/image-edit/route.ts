@@ -4,6 +4,8 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { fal } from '@fal-ai/client'
 
+type ImageItem = { url?: string; data?: string; image?: { url?: string } }
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}))
@@ -19,7 +21,7 @@ export async function POST(req: NextRequest) {
     const ar: '1:1' | '21:9' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '3:4' | '16:9' | '9:16' | undefined =
       aspect_ratio &&
       ['1:1','21:9','4:3','3:2','2:3','5:4','4:5','3:4','16:9','9:16'].includes(aspect_ratio)
-        ? (aspect_ratio as any)
+        ? (aspect_ratio as '1:1' | '21:9' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '3:4' | '16:9' | '9:16')
         : undefined
     const result = await fal.subscribe('fal-ai/nano-banana/edit', {
       input: {
@@ -33,7 +35,7 @@ export async function POST(req: NextRequest) {
     })
     const images = Array.isArray(result?.data?.images)
       ? result.data.images
-          .map((i: { url?: string; data?: string; image?: { url?: string } }) => i?.url || i?.data || i?.image?.url)
+          .map((i: ImageItem) => i?.url || i?.data || i?.image?.url)
           .filter((u: string | undefined): u is string => typeof u === 'string')
       : []
     const desc = typeof result?.data?.description === 'string' ? result.data.description : ''

@@ -13,6 +13,20 @@ export default function Generator() {
   const [generatedModel, setGeneratedModel] = useState(false)
   const [savePending, setSavePending] = useState(false)
   const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [imageNum, setImageNum] = useState<number>(1)
+  const allowedAR = ['1:1','21:9','4:3','3:2','2:3','5:4','4:5','3:4','16:9','9:16'] as const
+  type AR = typeof allowedAR[number]
+  const [imageAR, setImageAR] = useState<AR>('1:1')
+  const allowedOF = ['png','jpeg','webp'] as const
+  type OF = typeof allowedOF[number]
+  const [imageOF, setImageOF] = useState<OF>('png')
+  const allowedTex = ['512','1024','2048'] as const
+  type Tex = typeof allowedTex[number]
+  const [texSize, setTexSize] = useState<Tex>('1024')
+  const [simplify, setSimplify] = useState<number>(0.95)
+  const allowedAlgo = ['stochastic','multidiffusion'] as const
+  type Algo = typeof allowedAlgo[number]
+  const [algo, setAlgo] = useState<Algo>('stochastic')
   const [imageGenPending, setImageGenPending] = useState(false)
   const [imageResults, setImageResults] = useState<string[]>([])
   const [threePending, setThreePending] = useState(false)
@@ -33,7 +47,9 @@ export default function Generator() {
       setImageResults([])
       const isEdit = activeTab === 'image' && imageUrls.length > 0
       const endpoint = isEdit ? '/api/fal/image-edit' : '/api/fal/image'
-      const body: { prompt: string; image_urls?: string[] } = isEdit ? { prompt: textInput || 'edit', image_urls: imageUrls } : { prompt: textInput || 'a 3d model concept' }
+      const body = isEdit
+        ? { prompt: textInput || 'edit', image_urls: imageUrls, num_images: imageNum, aspect_ratio: imageAR, output_format: imageOF }
+        : { prompt: textInput || 'a 3d model concept', num_images: imageNum, aspect_ratio: imageAR, output_format: imageOF }
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       const data = await res.json().catch(() => ({}))
       const imgs: string[] = Array.isArray(data?.images) ? data.images : []
@@ -52,7 +68,7 @@ export default function Generator() {
         setThreePending(false)
         return
       }
-      const res = await fetch(`/api/fal/3d?provider=${provider}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image_urls: imgs }) })
+      const res = await fetch(`/api/fal/3d?provider=${provider}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image_urls: imgs, texture_size: texSize, mesh_simplify: simplify, ...(provider === 'free' ? { multiimage_algo: algo } : {}) }) })
       const data = await res.json().catch(() => ({}))
       const url = typeof data?.model_url === 'string' ? data.model_url : null
       setMeshUrl(url)
@@ -255,32 +271,68 @@ export default function Generator() {
 
               {/* Generation Settings */}
               <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
-                <h3 className="text-xl font-semibold text-white mb-4">{t('generator.settings.title')}</h3>
-                <div className="space-y-4">
+                <h3 className="text-xl font-semibold text-white mb-4">生成设置</h3>
+                <div className="space-y-6">
                   <div>
-                    <label className="block text-white text-sm font-medium mb-2">{t('generator.settings.style')}</label>
-                    <select className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500">
-                      <option>{t('generator.settings.style.realistic')}</option>
-                      <option>{t('generator.settings.style.cartoon')}</option>
-                      <option>{t('generator.settings.style.lowpoly')}</option>
-                      <option>{t('generator.settings.style.cyberpunk')}</option>
-                      <option>{t('generator.settings.style.retro')}</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">{t('generator.settings.quality')}</label>
-                    <div className="flex space-x-2">
-                      <button className="flex-1 bg-purple-600 text-white py-2 px-3 rounded-lg text-sm">{t('generator.settings.quality.low')}</button>
-                      <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-3 rounded-lg text-sm">{t('generator.settings.quality.medium')}</button>
-                      <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-3 rounded-lg text-sm">{t('generator.settings.quality.high')}</button>
+                    <h4 className="text-white font-semibold mb-2">图片生成</h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-white text-sm mb-1">数量</label>
+                        <select value={imageNum} onChange={(e)=> setImageNum(Number(e.target.value))} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                          <option value={1}>1</option>
+                          <option value={2}>2</option>
+                          <option value={3}>3</option>
+                          <option value={4}>4</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-white text-sm mb-1">比例</label>
+                        <select value={imageAR} onChange={(e)=> { const val = e.target.value as string; setImageAR(allowedAR.includes(val as AR) ? (val as AR) : '1:1') }} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                          <option value="1:1">1:1</option>
+                          <option value="16:9">16:9</option>
+                          <option value="9:16">9:16</option>
+                          <option value="4:3">4:3</option>
+                          <option value="3:2">3:2</option>
+                          <option value="2:3">2:3</option>
+                          <option value="5:4">5:4</option>
+                          <option value="4:5">4:5</option>
+                          <option value="3:4">3:4</option>
+                          <option value="21:9">21:9</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-white text-sm mb-1">格式</label>
+                        <select value={imageOF} onChange={(e)=> { const val = e.target.value as string; setImageOF(allowedOF.includes(val as OF) ? (val as OF) : 'png') }} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                          <option value="png">PNG</option>
+                          <option value="jpeg">JPEG</option>
+                          <option value="webp">WEBP</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-white text-sm font-medium mb-2">{t('generator.settings.format')}</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-3 rounded-lg text-sm">OBJ</button>
-                      <button className="bg-purple-600 text-white py-2 px-3 rounded-lg text-sm">FBX</button>
-                      <button className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-3 rounded-lg text-sm">GLTF</button>
+                    <h4 className="text-white font-semibold mb-2">3D生成</h4>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-white text-sm mb-1">纹理分辨率</label>
+                        <select value={texSize} onChange={(e)=> { const val = e.target.value as string; setTexSize(allowedTex.includes(val as Tex) ? (val as Tex) : '1024') }} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                          <option value="512">512</option>
+                          <option value="1024">1024</option>
+                          <option value="2048">2048</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-white text-sm mb-1">网格简化</label>
+                        <input type="range" min={0} max={1} step={0.01} value={simplify} onChange={(e)=> setSimplify(parseFloat(e.target.value))} className="w-full" />
+                        <div className="text-gray-400 text-xs mt-1">{simplify.toFixed(2)}</div>
+                      </div>
+                      <div>
+                        <label className="block text-white text-sm mb-1">多图算法（免费）</label>
+                        <select value={algo} onChange={(e)=> { const val = e.target.value as string; setAlgo(allowedAlgo.includes(val as Algo) ? (val as Algo) : 'stochastic') }} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                          <option value="stochastic">stochastic</option>
+                          <option value="multidiffusion">multidiffusion</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>

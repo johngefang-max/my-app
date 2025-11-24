@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 import { fal } from '@fal-ai/client'
 
 type TextureSize = '512' | '1024' | '2048'
-type TrellisMultiInputShape = { image_urls: string[]; texture_size?: TextureSize; mesh_simplify?: number }
+type TrellisMultiInputShape = { image_urls: string[]; texture_size?: TextureSize; mesh_simplify?: number; multiimage_algo?: 'stochastic' | 'multidiffusion' }
 type Hunyuan3dV21InputShape = { image_urls: string[]; texture_size?: TextureSize; mesh_simplify?: number }
 
 export async function POST(req: NextRequest) {
@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
     const image_urls = Array.isArray(body?.image_urls) ? body.image_urls as string[] : []
     const texture_size = body?.texture_size as number | string | undefined
     const mesh_simplify = body?.mesh_simplify as number | undefined
+    const multiimage_algo_raw = body?.multiimage_algo as string | undefined
     if (!process.env.FAL_KEY) return NextResponse.json({ error: 'config' }, { status: 500 })
     if (image_urls.length === 0) return NextResponse.json({ error: 'input' }, { status: 400 })
     fal.config({ credentials: process.env.FAL_KEY })
@@ -24,6 +25,11 @@ export async function POST(req: NextRequest) {
     const tsStr = texture_size ? String(texture_size) : undefined
     if (tsStr === '512' || tsStr === '1024' || tsStr === '2048') input.texture_size = tsStr
     if (typeof mesh_simplify === 'number') input.mesh_simplify = mesh_simplify
+    const algo: 'stochastic' | 'multidiffusion' | undefined =
+      provider === 'free' && multiimage_algo_raw && ['stochastic', 'multidiffusion'].includes(multiimage_algo_raw)
+        ? (multiimage_algo_raw as 'stochastic' | 'multidiffusion')
+        : undefined
+    if (provider === 'free' && algo) (input as TrellisMultiInputShape).multiimage_algo = algo
     const submit = await fal.queue.submit(modelId, { input })
     const result = await fal.queue.result(modelId, { requestId: submit.request_id as string })
     const mesh = result?.data?.model_mesh
