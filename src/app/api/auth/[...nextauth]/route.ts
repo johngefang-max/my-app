@@ -19,22 +19,42 @@ const handler = NextAuth({
         const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY) as string
         if (!baseUrl || !serviceKey || !anonKey || !user?.email) return
         const providerSub = account?.providerAccountId || ''
-        const body = [{
+        const upsertBody = [{
           email: user.email ?? undefined,
           name: user.name ?? undefined,
           avatar_url: user.image ?? undefined,
           provider_sub: providerSub,
         }]
-        await fetch(`${baseUrl}/rest/v1/users`, {
+        const upsertRes = await fetch(`${baseUrl}/rest/v1/users?on_conflict=email`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${serviceKey}`,
             'apikey': anonKey,
-            'Prefer': 'resolution=merge-duplicates',
+            'Prefer': 'resolution=merge-duplicates,return=representation',
           },
-          body: JSON.stringify(body)
+          body: JSON.stringify(upsertBody)
         })
+        const rep = await upsertRes.json().catch(() => null)
+        const userId = Array.isArray(rep) && rep[0]?.id ? rep[0].id : undefined
+        if (userId) {
+          const wCheck = await fetch(`${baseUrl}/rest/v1/works?user_id=eq.${encodeURIComponent(userId)}&select=id&limit=1`, {
+            headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': anonKey }
+          })
+          const w = await wCheck.json().catch(() => [])
+          if (!Array.isArray(w) || w.length === 0) {
+            const slug = `welcome-${Date.now().toString(36)}`
+            await fetch(`${baseUrl}/rest/v1/works`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${serviceKey}`,
+                'apikey': anonKey,
+              },
+              body: JSON.stringify([{ user_id: userId, title: '我的第一个作品', slug }])
+            })
+          }
+        }
       } catch {}
     }
   }

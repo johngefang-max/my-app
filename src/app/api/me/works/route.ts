@@ -6,13 +6,13 @@ import { getToken } from 'next-auth/jwt'
 
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET })
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
     const email = token?.email as string | undefined
     if (!email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
-    const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) as string
-    const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY) as string
-    const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY) as string
+    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+    const serviceKey = process.env.my_app_SUPABASE_SERVICE_ROLE_KEY as string
+    const anonKey = process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY as string
     if (!baseUrl || !serviceKey || !anonKey) return NextResponse.json({ error: 'config' }, { status: 500 })
 
     const userRes = await fetch(`${baseUrl}/rest/v1/users?select=id&email=eq.${encodeURIComponent(email)}`, {
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET })
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
     const email = token?.email as string | undefined
     if (!email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
@@ -52,9 +52,9 @@ export async function POST(req: NextRequest) {
     let slugBase = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-')
     if (!slugBase) slugBase = 'work'
 
-    const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL) as string
-    const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY) as string
-    const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY) as string
+    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
+    const serviceKey = process.env.my_app_SUPABASE_SERVICE_ROLE_KEY as string
+    const anonKey = process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY as string
     if (!baseUrl || !serviceKey || !anonKey) return NextResponse.json({ error: 'config' }, { status: 500 })
 
     const userRes = await fetch(`${baseUrl}/rest/v1/users?select=id&email=eq.${encodeURIComponent(email)}`, {
