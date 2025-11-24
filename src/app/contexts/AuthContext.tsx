@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from 'react'
 import { SessionProvider, useSession, signOut as nextAuthSignOut } from 'next-auth/react'
 
 type AuthContextType = {
@@ -27,19 +27,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 function InnerAuthProvider({ children }: { children: ReactNode }) {
   const { status } = useSession()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const cookieValue = (typeof document !== 'undefined')
+    ? document.cookie.split('; ').find(row => row.startsWith('auth='))?.split('=')[1]
+    : undefined
+  const localAuthed = cookieValue === 'true'
+  const sessionAuthed = status === 'authenticated'
+  const authedComputed = localAuthed || sessionAuthed
 
-  useEffect(() => {
+  const [isLoginOpen, setIsLoginOpen] = useState(() => {
     try {
-      const cookieValue = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('auth='))
-        ?.split('=')[1]
-      const localAuthed = cookieValue === 'true'
-      const sessionAuthed = status === 'authenticated'
-      setIsAuthenticated(localAuthed || sessionAuthed)
-    } catch {}
-  }, [status])
+      const sp = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+      const needLogin = sp.get('login') === '1'
+      return needLogin && !(authedComputed || false)
+    } catch {
+      return false
+    }
+  })
 
   const login = (username: string, password: string) => {
     const ok = username === 'johnfang' && password === 'fang682668'
@@ -68,7 +71,7 @@ function InnerAuthProvider({ children }: { children: ReactNode }) {
   const closeLogin = () => setIsLoginOpen(false)
 
   const requireAuth = (onAuthed: () => void) => {
-    if (isAuthenticated) {
+    if (isAuthenticated || authedComputed) {
       onAuthed()
     } else {
       setIsLoginOpen(true)
@@ -76,7 +79,7 @@ function InnerAuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, authLoading: status === 'loading', isLoginOpen, login, logout, openLogin, closeLogin, requireAuth }}>
+    <AuthContext.Provider value={{ isAuthenticated: isAuthenticated || authedComputed, authLoading: status === 'loading', isLoginOpen, login, logout, openLogin, closeLogin, requireAuth }}>
       {children}
     </AuthContext.Provider>
   )

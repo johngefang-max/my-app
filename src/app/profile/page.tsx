@@ -3,7 +3,7 @@
 import Header from '../components/Header'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function ProfilePage() {
   const { data: session } = useSession()
@@ -11,21 +11,21 @@ export default function ProfilePage() {
   const [avatarError, setAvatarError] = useState(false)
   const avatar = avatarError ? '/avatars/avatar-01.jpeg' : (session?.user?.image ?? '/avatars/avatar-01.jpeg')
 
-  const balance = 128.5
-  const transactions = [
-    { date: '2025-01-10', item: '生成模型（文本转3D）', amount: -2.0 },
-    { date: '2025-01-08', item: '生成模型（图片转3D）', amount: -5.0 },
-    { date: '2025-01-05', item: '账户充值', amount: 50.0 },
-  ]
+  const [works, setWorks] = useState<{ id: string; title: string; href: string }[]>([])
+  const [transactions, setTransactions] = useState<{ id: string; date: string; item: string; amount: number }[]>([])
+  const balance = transactions.reduce((sum, t) => sum + t.amount, 0)
 
-  const works = [
-    { id: 'stylized-character', title: '风格化角色', href: '/gallery/stylized-character' },
-    { id: 'modern-furniture-set', title: '现代家具套件', href: '/gallery/modern-furniture-set' },
-    { id: 'sci-fi-drone', title: '科幻无人机', href: '/gallery/sci-fi-drone' },
-    { id: 'jade-sculpture', title: '翡翠雕像', href: '/gallery/jade-sculpture' },
-    { id: 'mech-armor', title: '机械战甲', href: '/gallery/mech-armor' },
-    { id: 'furniture-set', title: '室内家具套装', href: '/gallery/furniture-set' },
-  ]
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const w = await fetch('/api/me/works').then(r => r.json())
+        const t = await fetch('/api/me/transactions').then(r => r.json())
+        if (Array.isArray(w.items)) setWorks(w.items)
+        if (Array.isArray(t.items)) setTransactions(t.items)
+      } catch {}
+    }
+    load()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">

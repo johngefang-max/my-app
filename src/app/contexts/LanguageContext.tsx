@@ -44,7 +44,7 @@ const getSavedLanguage = (): Language => {
     
     // 最后使用浏览器语言检测
     return detectBrowserLanguage()
-  } catch (error) {
+  } catch {
     return detectBrowserLanguage()
   }
 }
@@ -723,20 +723,16 @@ const translations = {
 }
 
 export function LanguageProvider({ children, initialLanguage = 'en' }: { children: ReactNode, initialLanguage?: Language }) {
-  const [language, setLanguage] = useState<Language>(initialLanguage)
-  const [isLoading, setIsLoading] = useState(false)
+  const [language, setLanguage] = useState<Language>(typeof window === 'undefined' ? initialLanguage : getSavedLanguage())
+  const [isLoading] = useState(false)
 
   useEffect(() => {
-    const savedLanguage = getSavedLanguage()
-    if (savedLanguage !== language) {
-      setIsLoading(true)
-      setLanguage(savedLanguage)
+    try {
       if (typeof document !== 'undefined') {
-        document.documentElement.lang = savedLanguage
+        document.documentElement.lang = language
       }
-      setIsLoading(false)
-    }
-  }, [])
+    } catch {}
+  }, [language])
 
   // 保存语言偏好到cookie和localStorage
   const handleSetLanguage = (lang: Language) => {

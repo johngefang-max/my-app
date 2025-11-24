@@ -1,7 +1,9 @@
 'use client'
 
 import { Box, Globe, ArrowLeft } from 'lucide-react'
+import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
@@ -25,7 +27,7 @@ export default function Header({
   const { language, setLanguage, t } = useLanguage()
   const { isAuthenticated, authLoading, logout, openLogin } = useAuth()
   const { data: session } = useSession()
-  const [avatarError, setAvatarError] = (typeof window !== 'undefined') ? (require('react').useState(false)) : [false, () => {}]
+  const [avatarError, setAvatarError] = useState(false)
   const router = useRouter()
 
   const go = (path: string) => {
@@ -56,16 +58,16 @@ export default function Header({
               </button>
             )}
             {showLogo && (
-              <a href="/" className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center space-x-2">
                 {logoIcon}
                 <span className="text-2xl font-bold text-white">{logoText}</span>
-              </a>
+              </Link>
             )}
           </div>
 
           <nav className="hidden md:flex space-x-8">
             <button onClick={() => go('/generator')} className="text-gray-300 hover:text-white transition-colors">{t('nav.product')}</button>
-            <a href="/gallery" className="text-gray-300 hover:text-white transition-colors">{t('nav.browseWorks')}</a>
+            <Link href="/gallery" className="text-gray-300 hover:text-white transition-colors">{t('nav.browseWorks')}</Link>
             <button onClick={() => go('/pricing')} className="text-gray-300 hover:text-white transition-colors">{t('nav.pricing')}</button>
             <a href="#" className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</a>
           </nav>
@@ -81,12 +83,12 @@ export default function Header({
             {authLoading ? null : (
               isAuthenticated ? (
                 <div className="flex items-center gap-3">
-                  <a href="/profile" className="flex items-center gap-3 text-white">
+                  <Link href="/profile" className="flex items-center gap-3 text-white">
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10">
                       <Image src={(avatarError ? '/avatars/avatar-01.jpeg' : (session?.user?.image ?? '/avatars/avatar-01.jpeg'))} alt="avatar" width={32} height={32} className="w-full h-full" onError={() => setAvatarError(true)} />
                     </div>
                     <span className="text-sm font-medium">{session?.user?.name ?? 'User'}</span>
-                  </a>
+                  </Link>
                   <button onClick={logout} className="px-3 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors text-sm">
                     {t('nav.logout')}
                   </button>

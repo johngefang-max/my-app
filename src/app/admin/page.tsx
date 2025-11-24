@@ -4,6 +4,7 @@ import Header from '../components/Header'
 import { useAuth } from '../contexts/AuthContext'
 import { useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AdminLogin() {
   const { login } = useAuth()
@@ -41,7 +42,7 @@ export default function AdminLogin() {
             {error && <div className="text-red-400 text-sm">{error}</div>}
             <div className="flex gap-3 pt-2">
               <button onClick={submit} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">登录</button>
-              <a href="/" className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg">返回主页</a>
+              <Link href="/" className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg">返回主页</Link>
             </div>
             <div className="text-gray-400 text-sm">登录成功后将跳转至：{redirect}</div>
           </div>

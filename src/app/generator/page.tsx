@@ -1,16 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { Upload, Type, Image as ImageIcon, Send, Download, Settings, Sparkles, RotateCcw, Play, Pause, Globe } from 'lucide-react'
+import { Upload, Type, Image as ImageIcon, Send, Download, Sparkles, RotateCcw, Play, Pause } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
 
 export default function Generator() {
-  const { language, setLanguage, t } = useLanguage()
+  const { t } = useLanguage()
   const [activeTab, setActiveTab] = useState('text')
   const [textInput, setTextInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedModel, setGeneratedModel] = useState(false)
+  const [savePending, setSavePending] = useState(false)
 
   const handleGenerate = () => {
     setIsGenerating(true)
@@ -18,6 +19,28 @@ export default function Generator() {
       setIsGenerating(false)
       setGeneratedModel(true)
     }, 3000)
+  }
+
+  const handleSave = async () => {
+    try {
+      setSavePending(true)
+      const title = textInput?.trim() || '未命名作品'
+      const res = await fetch('/api/me/works', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title })
+      })
+      if (res.status === 401) {
+        window.location.href = '/?redirect=/generator&login=1'
+        return
+      }
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data?.href) {
+        window.location.href = data.href
+      }
+    } finally {
+      setSavePending(false)
+    }
   }
 
   return (
@@ -311,6 +334,9 @@ export default function Generator() {
                     <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
                       <Download className="h-5 w-5" />
                       <span>{t('generator.actions.download')}</span>
+                    </button>
+                    <button onClick={handleSave} disabled={savePending} className="w-full bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 text-white py-3 px-4 rounded-lg transition-colors">
+                      {savePending ? '保存中...' : '保存到作品'}
                     </button>
                     <div className="grid grid-cols-2 gap-3">
                       <button className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors text-sm">
