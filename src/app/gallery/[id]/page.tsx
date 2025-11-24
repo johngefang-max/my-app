@@ -16,14 +16,12 @@ export default function GalleryDetail({ params }: { params: Promise<{ id: string
   ])
   const [input, setInput] = useState('')
   const avatarFiles = [
-    '/avatars/avatar-01.jpeg',
-    '/avatars/avatar-02.jpg',
-    '/avatars/avatar-03.jpeg',
-    '/avatars/avatar-04.jpg',
-    '/avatars/avatar-05.png',
-    '/avatars/avatar-06.webp',
-    '/avatars/avatar-07.png',
-    '/avatars/avatar-08.webp',
+    '/avatars/avatar-1.jpg',
+    '/avatars/avatar-2.jpg',
+    '/avatars/avatar-3.jpg',
+    '/avatars/avatar-4.jpg',
+    '/avatars/avatar-5.jpg',
+    '/avatars/avatar-6.jpg',
   ]
 
   const addComment = () => {

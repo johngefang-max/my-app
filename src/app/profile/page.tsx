@@ -9,7 +9,7 @@ export default function ProfilePage() {
   const { data: session } = useSession()
   const name = session?.user?.name ?? '未登录用户'
   const [avatarError, setAvatarError] = useState(false)
-  const avatar = avatarError ? '/avatars/avatar-01.jpeg' : (session?.user?.image ?? '/avatars/avatar-01.jpeg')
+  const avatar = avatarError ? '/avatars/avatar-1.jpg' : (session?.user?.image ?? '/avatars/avatar-1.jpg')
 
   const [works, setWorks] = useState<{ id: string; title: string; href: string }[]>([])
   const [transactions, setTransactions] = useState<{ id: string; date: string; item: string; amount: number }[]>([])

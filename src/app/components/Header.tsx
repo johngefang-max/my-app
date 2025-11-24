@@ -85,7 +85,7 @@ export default function Header({
                 <div className="flex items-center gap-3">
                   <Link href="/profile" className="flex items-center gap-3 text-white">
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10">
-                      <Image src={(avatarError ? '/avatars/avatar-01.jpeg' : (session?.user?.image ?? '/avatars/avatar-01.jpeg'))} alt="avatar" width={32} height={32} className="w-full h-full" onError={() => setAvatarError(true)} />
+                      <Image src={(avatarError ? '/avatars/avatar-1.jpg' : (session?.user?.image ?? '/avatars/avatar-1.jpg'))} alt="avatar" width={32} height={32} className="w-full h-full" onError={() => setAvatarError(true)} />
                     </div>
                     <span className="text-sm font-medium">{session?.user?.name ?? 'User'}</span>
                   </Link>

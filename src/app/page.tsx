@@ -364,7 +364,7 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
-                  <Image src="/avatars/avatar-01.jpeg" alt="avatar" width={48} height={48} className="w-full h-full" />
+                  <Image src="/avatars/avatar-1.jpg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -387,7 +387,7 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
-                  <Image src="/avatars/avatar-02.jpg" alt="avatar" width={48} height={48} className="w-full h-full" />
+                  <Image src="/avatars/avatar-2.jpg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -410,7 +410,7 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
-                  <Image src="/avatars/avatar-03.jpeg" alt="avatar" width={48} height={48} className="w-full h-full" />
+                  <Image src="/avatars/avatar-3.jpg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -433,7 +433,7 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
-                  <Image src="/avatars/avatar-04.jpg" alt="avatar" width={48} height={48} className="w-full h-full" />
+                  <Image src="/avatars/avatar-4.jpg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -456,7 +456,7 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
-                  <Image src="/avatars/avatar-05.png" alt="avatar" width={48} height={48} className="w-full h-full" />
+                  <Image src="/avatars/avatar-5.jpg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -479,7 +479,7 @@ export default function Home() {
             <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 mr-4 overflow-hidden rounded-full border border-white/10">
-                  <Image src="/avatars/avatar-06.webp" alt="avatar" width={48} height={48} className="w-full h-full" />
+                  <Image src="/avatars/avatar-6.jpg" alt="avatar" width={48} height={48} className="w-full h-full" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
