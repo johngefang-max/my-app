@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest) {
   if (protectedPaths.some(p => pathname.startsWith(p))) {
     let authed = false
     try {
-      const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+      const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET })
       authed = !!token
     } catch {}
 
@@ -34,4 +34,3 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: ['/generator']
 }
-
