@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Upload, Type, Image as ImageIcon, Send, Download, Sparkles, RotateCcw, Play, Pause } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import Header from '../components/Header'
@@ -12,6 +12,12 @@ export default function Generator() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedModel, setGeneratedModel] = useState(false)
   const [savePending, setSavePending] = useState(false)
+  const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [imageGenPending, setImageGenPending] = useState(false)
+  const [imageResults, setImageResults] = useState<string[]>([])
+  const [threePending, setThreePending] = useState(false)
+  const [meshUrl, setMeshUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleGenerate = () => {
     setIsGenerating(true)
@@ -19,6 +25,57 @@ export default function Generator() {
       setIsGenerating(false)
       setGeneratedModel(true)
     }, 3000)
+  }
+
+  const handleImageGenerate = async () => {
+    try {
+      setImageGenPending(true)
+      setImageResults([])
+      const isEdit = activeTab === 'image' && imageUrls.length > 0
+      const endpoint = isEdit ? '/api/fal/image-edit' : '/api/fal/image'
+      const body: { prompt: string; image_urls?: string[] } = isEdit ? { prompt: textInput || 'edit', image_urls: imageUrls } : { prompt: textInput || 'a 3d model concept' }
+      const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      const data = await res.json().catch(() => ({}))
+      const imgs: string[] = Array.isArray(data?.images) ? data.images : []
+      setImageResults(imgs)
+    } finally {
+      setImageGenPending(false)
+    }
+  }
+
+  const handle3dGenerate = async (provider: 'free' | 'pro') => {
+    try {
+      setThreePending(true)
+      setMeshUrl(null)
+      const imgs = imageUrls.length > 0 ? imageUrls : (imageResults.length > 0 ? imageResults.slice(0, 3) : [])
+      if (imgs.length === 0) {
+        setThreePending(false)
+        return
+      }
+      const res = await fetch(`/api/fal/3d?provider=${provider}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image_urls: imgs }) })
+      const data = await res.json().catch(() => ({}))
+      const url = typeof data?.model_url === 'string' ? data.model_url : null
+      setMeshUrl(url)
+      if (url) setGeneratedModel(true)
+    } finally {
+      setThreePending(false)
+    }
+  }
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFilesSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    const readers = files.map(f => new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(String(reader.result))
+      reader.onerror = reject
+      reader.readAsDataURL(f)
+    }))
+    const urls = await Promise.all(readers).catch(() => [])
+    setImageUrls(urls.filter(Boolean))
   }
 
   const handleSave = async () => {
@@ -144,21 +201,24 @@ export default function Generator() {
                 {activeTab === 'image' && (
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-white">{t('generator.input.image')}</h3>
-                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-purple-500 transition-colors cursor-pointer">
+                    <div onClick={triggerFileInput} className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-purple-500 transition-colors cursor-pointer">
                       <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                       <p className="text-white mb-2">{t('generator.image.upload')}</p>
                       <p className="text-gray-400 text-sm">{t('generator.image.support')}</p>
                     </div>
+                    <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden" onChange={handleFilesSelected} />
                     <div className="grid grid-cols-3 gap-2">
-                      <div className="bg-gray-800/50 rounded-lg h-20 flex items-center justify-center text-gray-400 text-xs">
-                        {t('common.loading')}
-                      </div>
-                      <div className="bg-gray-800/50 rounded-lg h-20 flex items-center justify-center text-gray-400 text-xs">
-                        {t('common.loading')}
-                      </div>
-                      <div className="bg-gray-800/50 rounded-lg h-20 flex items-center justify-center text-gray-400 text-xs">
-                        {t('common.loading')}
-                      </div>
+                      {imageUrls.length === 0 ? (
+                        <div className="bg-gray-800/50 rounded-lg h-20 flex items-center justify-center text-gray-400 text-xs col-span-3">
+                          {t('common.loading')}
+                        </div>
+                      ) : (
+                        imageUrls.slice(0, 3).map((u, i) => (
+                          <div key={i} className="bg-gray-800/50 rounded-lg h-20 overflow-hidden border border-gray-700">
+                            <img src={u} alt="upload" className="w-full h-full object-cover" />
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                 )}
@@ -244,6 +304,18 @@ export default function Generator() {
                   </>
                 )}
               </button>
+
+              <div className="grid grid-cols-3 gap-3 mt-4">
+                <button onClick={handleImageGenerate} disabled={imageGenPending} className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors">
+                  {imageGenPending ? '生成图片中...' : '生成图片'}
+                </button>
+                <button onClick={() => handle3dGenerate('free')} disabled={threePending} className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 text-white py-3 px-4 rounded-lg transition-colors">
+                  {threePending ? '生成3D中...' : '生成3D（免费）'}
+                </button>
+                <button onClick={() => handle3dGenerate('pro')} disabled={threePending} className="bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 text-white py-3 px-4 rounded-lg transition-colors">
+                  {threePending ? '生成3D中...' : '生成3D（付费）'}
+                </button>
+              </div>
             </div>
 
             {/* Preview Section */}
@@ -261,7 +333,27 @@ export default function Generator() {
                   </div>
                 </div>
                 
-                {generatedModel ? (
+                {meshUrl ? (
+                  <div className="relative">
+                    <div className="bg-gray-800/50 rounded-xl h-96 flex items-center justify-center border border-gray-700">
+                      <div className="text-center">
+                        <div className="bg-gradient-to-br from-purple-600 to-pink-600 w-32 h-32 rounded-2xl mx-auto mb-4 flex items-center justify-center transform rotate-12">
+                          <div className="bg-white w-16 h-16 rounded-lg"></div>
+                        </div>
+                        <p className="text-white font-semibold">3D 模型已生成</p>
+                        <p className="text-gray-400 text-sm">可下载模型文件</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : imageResults.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {imageResults.map((u, i) => (
+                      <div key={i} className="bg-gray-800/50 rounded-lg overflow-hidden border border-gray-700">
+                        <img src={u} alt="result" className="w-full h-40 object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                ) : generatedModel ? (
                   <div className="relative">
                     <div className="bg-gray-800/50 rounded-xl h-96 flex items-center justify-center border border-gray-700">
                       <div className="text-center">
@@ -331,10 +423,17 @@ export default function Generator() {
                   </div>
                   
                   <div className="space-y-3">
-                    <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
-                      <Download className="h-5 w-5" />
-                      <span>{t('generator.actions.download')}</span>
-                    </button>
+                    {meshUrl ? (
+                      <a href={meshUrl} target="_blank" rel="noopener noreferrer" className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                        <Download className="h-5 w-5" />
+                        <span>{t('generator.actions.download')}</span>
+                      </a>
+                    ) : (
+                      <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                        <Download className="h-5 w-5" />
+                        <span>{t('generator.actions.download')}</span>
+                      </button>
+                    )}
                     <button onClick={handleSave} disabled={savePending} className="w-full bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 text-white py-3 px-4 rounded-lg transition-colors">
                       {savePending ? '保存中...' : '保存到作品'}
                     </button>
