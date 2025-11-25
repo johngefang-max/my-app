@@ -1,7 +1,9 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
-import { SessionProvider, useSession, signOut as nextAuthSignOut } from 'next-auth/react'
+import { createContext, useContext, ReactNode, useState, useCallback } from 'react'
+
+// This context is now deprecated in favor of the Zustand store
+// but kept for compatibility with existing components
 
 type AuthContextType = {
   isAuthenticated: boolean
@@ -17,69 +19,24 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  return (
-    <SessionProvider>
-      <InnerAuthProvider>{children}</InnerAuthProvider>
-    </SessionProvider>
-  )
-}
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
 
-function InnerAuthProvider({ children }: { children: ReactNode }) {
-  const { status } = useSession()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const cookieValue = (typeof document !== 'undefined')
-    ? document.cookie.split('; ').find(row => row.startsWith('auth='))?.split('=')[1]
-    : undefined
-  const localAuthed = cookieValue === 'true'
-  const sessionAuthed = status === 'authenticated'
-  const authedComputed = localAuthed || sessionAuthed
+  const openLogin = useCallback(() => setIsLoginOpen(true), [])
+  const closeLogin = useCallback(() => setIsLoginOpen(false), [])
 
-  const [isLoginOpen, setIsLoginOpen] = useState(() => {
-    try {
-      const sp = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
-      const needLogin = sp.get('login') === '1'
-      return needLogin && !(authedComputed || false)
-    } catch {
-      return false
-    }
-  })
-
-  const login = (username: string, password: string) => {
-    const ok = username === 'johnfang' && password === 'fang682668'
-    if (ok) {
-      setIsAuthenticated(true)
-      try {
-        const expires = new Date()
-        expires.setDate(expires.getDate() + 30)
-        document.cookie = `auth=true; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
-      } catch {}
-      setIsLoginOpen(false)
-      return true
-    }
-    return false
-  }
-
-  const logout = () => {
-    setIsAuthenticated(false)
-    try {
-      document.cookie = `auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`
-    } catch {}
-    nextAuthSignOut()
-  }
-
-  const openLogin = () => setIsLoginOpen(true)
-  const closeLogin = () => setIsLoginOpen(false)
-
-  const requireAuth = (onAuthed: () => void) => {
-    if (isAuthenticated || authedComputed) {
-      onAuthed()
-    } else {
-      setIsLoginOpen(true)
-    }
+  const contextValue: AuthContextType = {
+    isAuthenticated: false,
+    authLoading: false,
+    isLoginOpen,
+    login: () => false,
+    logout: () => {},
+    openLogin,
+    closeLogin,
+    requireAuth: () => {},
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated: isAuthenticated || authedComputed, authLoading: status === 'loading', isLoginOpen, login, logout, openLogin, closeLogin, requireAuth }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   )

@@ -5,29 +5,28 @@ import Image from 'next/image'
 import DotGridBackground from './components/DotGridBackground'
 import Header from './components/Header'
 import { useLanguage } from './contexts/LanguageContext'
-import { useAuth } from './contexts/AuthContext'
+import { useStore } from '@/store/useStore'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
  
 
 export default function Home() {
   const { language, setLanguage, t } = useLanguage()
-  const { isAuthenticated, authLoading, openLogin } = useAuth()
+  const { isAuthenticated } = useStore()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [imgError, setImgError] = useState(false)
   const heroSrc = (process.env.NEXT_PUBLIC_HERO_IMAGE_URL as string) || '/alis.png'
   const go = (path: string) => {
-    if (authLoading) return
     if (isAuthenticated) {
       router.push(path)
     } else {
-      openLogin()
+      router.push('/auth')
     }
   }
   
   useEffect(() => {
-    // no modal login; use /admin route for authentication
+    // no modal login; use /auth route for authentication
   }, [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -38,13 +37,13 @@ export default function Home() {
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
         <DotGridBackground />
         <div className="max-w-7xl mx-auto text-center relative z-10">
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white mb-4 sm:mb-6">
             {t('home.title')}
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               {t('home.title.highlight')}
             </span>
           </h1>
-          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-gray-300 mb-6 sm:mb-8 max-w-3xl mx-auto">
             {t('home.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -56,22 +55,22 @@ export default function Home() {
           
           
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 mb-8 sm:mb-16">
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">50K+</div>
-              <div className="text-gray-400">{t('home.activeUsers')}</div>
+              <div className="text-2xl sm:text-3xl font-bold text-white">50K+</div>
+              <div className="text-gray-400 text-sm sm:text-base">{t('home.activeUsers')}</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">1M+</div>
-              <div className="text-gray-400">{t('home.generatedModels')}</div>
+              <div className="text-2xl sm:text-3xl font-bold text-white">1M+</div>
+              <div className="text-gray-400 text-sm sm:text-base">{t('home.generatedModels')}</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">95%</div>
-              <div className="text-gray-400">{t('home.accuracy')}</div>
+              <div className="text-2xl sm:text-3xl font-bold text-white">95%</div>
+              <div className="text-gray-400 text-sm sm:text-base">{t('home.accuracy')}</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white">&lt;30s</div>
-              <div className="text-gray-400">{t('home.generationTime')}</div>
+              <div className="text-2xl sm:text-3xl font-bold text-white">&lt;30s</div>
+              <div className="text-gray-400 text-sm sm:text-base">{t('home.generationTime')}</div>
             </div>
           </div>
         </div>
@@ -85,7 +84,7 @@ export default function Home() {
             <p className="text-xl text-gray-300">{t('home.features.subtitle')}</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             <div className="relative p-8 rounded-3xl bg-gradient-to-br from-amber-800/50 via-amber-700/40 to-rose-700/40 border border-white/10">
               <span className="absolute -top-6 -left-4 text-6xl font-black text-amber-400">1</span>
               <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">

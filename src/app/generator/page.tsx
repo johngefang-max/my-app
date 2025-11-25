@@ -8,8 +8,7 @@ import React from 'react'
 
 type ModelViewerProps = React.HTMLAttributes<HTMLElement> & {
   src?: string
-  ['camera-controls']?: boolean
-  ['auto-rotate']?: boolean
+  [key: string]: unknown
 }
 
 const ModelViewer: React.FC<ModelViewerProps> = (props) => React.createElement('model-viewer', props)
@@ -35,17 +34,34 @@ export default function Generator() {
   type Tex = typeof allowedTex[number]
   const [texSize, setTexSize] = useState<Tex>('1024')
   const [simplify, setSimplify] = useState<number>(0.95)
-  const allowedAlgo = ['stochastic','multidiffusion'] as const
-  type Algo = typeof allowedAlgo[number]
-  const [algo, setAlgo] = useState<Algo>('stochastic')
+  const [ssGuide, setSsGuide] = useState<number>(7.5)
+  const [ssSteps, setSsSteps] = useState<number>(12)
+  const [slatGuide, setSlatGuide] = useState<number>(3)
+  const [slatSteps, setSlatSteps] = useState<number>(12)
+  const [seed, setSeed] = useState<number | null>(null)
   const [imageGenPending, setImageGenPending] = useState(false)
   const [imageResults, setImageResults] = useState<string[]>([])
   const [threePending, setThreePending] = useState(false)
   const [meshUrl, setMeshUrl] = useState<string | null>(null)
+  const [meshName, setMeshName] = useState<string | null>(null)
   const proxify = (u: string) => (u.startsWith('http') ? `/api/proxy?url=${encodeURIComponent(u)}` : u)
   const [imageError, setImageError] = useState<string | null>(null)
   const [threeError, setThreeError] = useState<string | null>(null)
   const [modelAssets, setModelAssets] = useState<{ format: string; url: string }[]>([])
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const viewerRef = useRef<HTMLElement | null>(null)
+  const [autoRotate, setAutoRotate] = useState<boolean>(true)
+  const [rotSpeed, setRotSpeed] = useState<number>(20)
+  const [shadowIntensity, setShadowIntensity] = useState<number>(1)
+  const [shadowSoftness, setShadowSoftness] = useState<number>(0.6)
+  const [fov, setFov] = useState<number>(45)
+  const [bgColor, setBgColor] = useState<string>('#0f172a')
+  const [bgMode, setBgMode] = useState<'solid'|'gradient'|'transparent'>('gradient')
+  const [envPreset, setEnvPreset] = useState<'none'|'studio'|'sunrise'|'city'>('studio')
+  const envUrl = (p: typeof envPreset) => p === 'studio' ? 'https://modelviewer.dev/shared-assets/environments/studio.hdr'
+    : p === 'sunrise' ? 'https://modelviewer.dev/shared-assets/environments/spruit_sunrise_2k.hdr'
+    : p === 'city' ? 'https://modelviewer.dev/shared-assets/environments/urban_street_2k.hdr'
+    : undefined
   const extFromUrl = (u: string) => {
     try {
       const pathname = new URL(u, 'http://x').pathname
@@ -124,12 +140,14 @@ export default function Generator() {
       setThreePending(true)
       setMeshUrl(null)
       setThreeError(null)
-      const imgs = imageUrls.length > 0 ? imageUrls : (imageResults.length > 0 ? imageResults.slice(0, 3) : [])
+      const imgs = provider === 'free'
+        ? (imageUrls.length > 0 ? [imageUrls[0]] : (imageResults.length > 0 ? [imageResults[0]] : []))
+        : (imageUrls.length > 0 ? imageUrls : (imageResults.length > 0 ? imageResults.slice(0, 3) : []))
       if (imgs.length === 0) {
         setThreePending(false)
         return
       }
-      const res = await fetch(`/api/fal/3d?provider=${provider}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image_urls: imgs, texture_size: texSize, mesh_simplify: simplify, ...(provider === 'free' ? { multiimage_algo: algo } : {}) }) })
+      const res = await fetch(`/api/fal/3d?provider=${provider}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image_urls: imgs, texture_size: Number(texSize), mesh_simplify: Math.max(0.9, Math.min(1, simplify)), ...(provider === 'free' ? { ss_guidance_strength: ssGuide, ss_sampling_steps: ssSteps, slat_guidance_strength: slatGuide, slat_sampling_steps: slatSteps, ...(seed !== null ? { seed } : {}) } : {}) }) })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
         const err = typeof data?.error === 'string' ? data.error : 'unknown'
@@ -137,14 +155,17 @@ export default function Generator() {
         return
       }
       const url = typeof data?.model_url === 'string' ? data.model_url : null
-      setMeshUrl(url)
       const assets = collectAssets(data?.raw)
+      const preferred = assets.find(a => a.format === 'glb' || a.format === 'gltf')?.url || url
+      setMeshUrl(preferred || null)
+      const fname = (data?.raw?.model_mesh?.file_name as string | undefined) || (preferred || url ? `model.${extFromUrl(preferred || url) || 'glb'}` : null)
+      setMeshName(fname || null)
       if (url) {
         const fmt = extFromUrl(url)
         if (['glb','gltf','obj','fbx'].includes(fmt)) assets.unshift({ format: fmt, url })
       }
       setModelAssets(assets)
-      if (url) setGeneratedModel(true)
+      if (preferred || url) setGeneratedModel(true)
     } finally {
       setThreePending(false)
     }
@@ -174,6 +195,25 @@ export default function Generator() {
     setImageUrls([])
   }
 
+  const handleDragStart = (idx: number) => {
+    setDragIndex(idx)
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = (idx: number) => {
+    if (dragIndex === null || dragIndex === idx) return
+    setImageUrls(prev => {
+      const next = [...prev]
+      const [m] = next.splice(dragIndex, 1)
+      next.splice(idx, 0, m)
+      return next
+    })
+    setDragIndex(null)
+  }
+
   const handleSave = async () => {
     try {
       setSavePending(true)
@@ -181,7 +221,7 @@ export default function Generator() {
       const res = await fetch('/api/me/works', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title })
+        body: JSON.stringify({ title, model_url: meshUrl ?? undefined, model_file_name: meshName ?? undefined })
       })
       if (res.status === 401) {
         window.location.href = '/?redirect=/generator&login=1'
@@ -286,14 +326,22 @@ export default function Generator() {
                       <p className="text-gray-400 text-sm">{t('generator.image.support')}</p>
                     </div>
                     <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden" onChange={handleFilesSelected} />
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="max-h-64 overflow-y-auto pr-2">
+                      <div className="grid grid-cols-3 gap-2">
                       {imageUrls.length === 0 ? (
                         <div className="bg-gray-800/50 rounded-lg h-20 flex items-center justify-center text-gray-400 text-xs col-span-3">
                           {t('common.loading')}
                         </div>
                       ) : (
-                        imageUrls.slice(0, 3).map((u, i) => (
-                          <div key={i} className="bg-gray-900 rounded-lg h-32 md:h-40 overflow-hidden border border-gray-700 relative flex items-center justify-center">
+                        imageUrls.map((u, i) => (
+                          <div
+                            key={i}
+                            className="bg-gray-900 rounded-lg h-32 md:h-40 overflow-hidden border border-gray-700 relative flex items-center justify-center"
+                            draggable
+                            onDragStart={() => handleDragStart(i)}
+                            onDragOver={handleDragOver}
+                            onDrop={() => handleDrop(i)}
+                          >
                             <Image src={u} alt="upload" fill sizes="(min-width: 1024px) 33vw, 50vw" className="object-contain" unoptimized />
                             <button aria-label="删除图片" onClick={() => removeImage(i)} className="absolute top-2 right-2 bg-black/60 hover:bg-black text-white p-1 rounded">
                               <X className="h-4 w-4" />
@@ -301,6 +349,7 @@ export default function Generator() {
                           </div>
                         ))
                       )}
+                      </div>
                     </div>
                     {imageUrls.length > 0 && (
                       <div className="flex justify-end mt-2">
@@ -369,16 +418,31 @@ export default function Generator() {
                       </div>
                       <div>
                         <label className="block text-white text-sm mb-1">网格简化</label>
-                        <input type="range" min={0} max={1} step={0.01} value={simplify} onChange={(e)=> setSimplify(parseFloat(e.target.value))} className="w-full" />
+                        <input type="range" min={0.9} max={1} step={0.01} value={simplify} onChange={(e)=> setSimplify(parseFloat(e.target.value))} className="w-full" />
                         <div className="text-gray-400 text-xs mt-1">{simplify.toFixed(2)}</div>
                       </div>
-                      <div>
-                        <label className="block text-white text-sm mb-1">多图算法（免费）</label>
-                        <select value={algo} onChange={(e)=> { const val = e.target.value as string; setAlgo(allowedAlgo.includes(val as Algo) ? (val as Algo) : 'stochastic') }} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white">
-                          <option value="stochastic">stochastic</option>
-                          <option value="multidiffusion">multidiffusion</option>
-                        </select>
-                      </div>
+                  <div>
+                    <label className="block text-white text-sm mb-1">稀疏结构强度</label>
+                    <input type="range" min={0} max={10} step={0.1} value={ssGuide} onChange={(e)=> setSsGuide(parseFloat(e.target.value))} className="w-full" />
+                    <div className="text-gray-400 text-xs mt-1">{ssGuide.toFixed(1)}</div>
+                  </div>
+                  <div>
+                    <label className="block text-white text-sm mb-1">稀疏采样步数</label>
+                    <input type="number" min={1} max={50} value={ssSteps} onChange={(e)=> setSsSteps(parseInt(e.target.value || '0', 10))} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-white text-sm mb-1">结构潜导强度</label>
+                    <input type="range" min={0} max={10} step={0.1} value={slatGuide} onChange={(e)=> setSlatGuide(parseFloat(e.target.value))} className="w-full" />
+                    <div className="text-gray-400 text-xs mt-1">{slatGuide.toFixed(1)}</div>
+                  </div>
+                  <div>
+                    <label className="block text-white text-sm mb-1">结构潜采样步数</label>
+                    <input type="number" min={1} max={50} value={slatSteps} onChange={(e)=> setSlatSteps(parseInt(e.target.value || '0', 10))} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-white text-sm mb-1">随机种子</label>
+                    <input type="number" value={seed ?? ''} onChange={(e)=> { const v = e.target.value; setSeed(v === '' ? null : parseInt(v, 10)) }} className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white" />
+                  </div>
                     </div>
                   </div>
                 </div>
@@ -436,7 +500,67 @@ export default function Generator() {
                 
                 {meshUrl ? (
                   <div className="relative">
-                    <ModelViewer src={meshUrl ? proxify(meshUrl) : ''} camera-controls auto-rotate style={{ width: '100%', height: '24rem', background: '#0f172a', borderRadius: '0.75rem' }} />
+                    <ModelViewer
+                      ref={viewerRef as unknown as React.Ref<HTMLElement>}
+                      src={meshUrl ? proxify(meshUrl) : ''}
+                      camera-controls
+                      auto-rotate={autoRotate}
+                      rotation-per-second={`${rotSpeed}deg`}
+                      shadow-intensity={shadowIntensity}
+                      shadow-softness={shadowSoftness}
+                      field-of-view={`${fov}deg`}
+                      environment-image={envUrl(envPreset)}
+                      style={{ width: '100%', height: '24rem', background: bgMode === 'solid' ? bgColor : bgMode === 'gradient' ? 'linear-gradient(135deg,#0f172a,#1e114f)' : 'transparent', borderRadius: '0.75rem' }}
+                    />
+                    <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-md rounded-lg p-3 text-white space-y-2 w-64 border border-white/10">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">自动旋转</span>
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input type="checkbox" checked={autoRotate} onChange={(e)=> setAutoRotate(e.target.checked)} className="mr-2" />
+                        </label>
+                      </div>
+                      <div>
+                        <div className="text-xs text-gray-300 mb-1">旋转速度</div>
+                        <input type="range" min={-60} max={60} step={1} value={rotSpeed} onChange={(e)=> setRotSpeed(parseInt(e.target.value,10))} className="w-full" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="text-xs text-gray-300 mb-1">阴影强度</div>
+                          <input type="range" min={0} max={2} step={0.05} value={shadowIntensity} onChange={(e)=> setShadowIntensity(parseFloat(e.target.value))} className="w-full" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-300 mb-1">阴影柔和</div>
+                          <input type="range" min={0} max={1} step={0.05} value={shadowSoftness} onChange={(e)=> setShadowSoftness(parseFloat(e.target.value))} className="w-full" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="text-xs text-gray-300 mb-1">视场 FOV</div>
+                          <input type="range" min={20} max={80} step={1} value={fov} onChange={(e)=> setFov(parseInt(e.target.value,10))} className="w-full" />
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-300 mb-1">环境光</div>
+                          <select value={envPreset} onChange={(e)=> setEnvPreset(e.target.value as 'none'|'studio'|'sunrise'|'city')} className="w-full bg-gray-800/50 border border-gray-700 rounded px-2 py-1 text-white">
+                            <option value="studio">Studio</option>
+                            <option value="sunrise">Sunrise</option>
+                            <option value="city">City</option>
+                            <option value="none">None</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button onClick={()=> { setBgMode('gradient'); setBgColor('#0f172a') }} className="bg-gradient-to-br from-purple-900 to-slate-900 text-white py-1 rounded">渐变</button>
+                        <button onClick={()=> setBgMode('solid')} className="bg-gray-700 text-white py-1 rounded">纯色</button>
+                        <button onClick={()=> setBgMode('transparent')} className="bg-black text-white py-1 rounded">透明</button>
+                      </div>
+                      {bgMode === 'solid' && (
+                        <input type="color" value={bgColor} onChange={(e)=> setBgColor(e.target.value)} className="w-full h-8" />
+                      )}
+                      <div className="flex justify-between">
+                        <button onClick={()=> { setAutoRotate(true); setRotSpeed(20); setShadowIntensity(1); setShadowSoftness(0.6); setFov(45); setEnvPreset('studio'); setBgMode('gradient'); setBgColor('#0f172a') }} className="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs">重置视图</button>
+                        <button onClick={()=> viewerRef.current && viewerRef.current.reset?.()} className="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs">重置相机</button>
+                      </div>
+                    </div>
                   </div>
                 ) : imageResults.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -520,7 +644,7 @@ export default function Generator() {
                   
                   <div className="space-y-3">
                     {meshUrl ? (
-                      <a href={meshUrl ? `/api/proxy?url=${encodeURIComponent(meshUrl)}` : '#'} target="_blank" rel="noopener noreferrer" className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                      <a href={meshUrl ? `/api/proxy?url=${encodeURIComponent(meshUrl)}${meshName ? `&filename=${encodeURIComponent(meshName)}` : ''}` : '#'} download={meshName || undefined} className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
                         <Download className="h-5 w-5" />
                         <span>{t('generator.actions.download')}</span>
                       </a>
@@ -535,7 +659,7 @@ export default function Generator() {
                         <h4 className="text-lg font-semibold text-white mb-4">{t('generator.export.title')}</h4>
                         <div className="grid grid-cols-3 gap-3">
                           {modelAssets.map((a, idx) => (
-                            <a key={idx} href={proxify(a.url)} download={`model.${a.format}`} className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors text-sm">
+                            <a key={idx} href={`/api/proxy?url=${encodeURIComponent(a.url)}&filename=${encodeURIComponent(`model.${a.format}`)}`} download={`model.${a.format}`} className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors text-sm">
                               {a.format.toUpperCase()}
                             </a>
                           ))}

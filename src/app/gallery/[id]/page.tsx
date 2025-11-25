@@ -1,140 +1,254 @@
 'use client'
 
-import { useState, use as usePromise } from 'react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { useLanguage } from '../../contexts/LanguageContext'
-import { ArrowLeft, Download, Share2, Heart, Eye, Box } from 'lucide-react'
-import Header from '../../components/Header'
+import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { Model3DViewer } from '@/components/Model3DViewer'
+import { ModelControls } from '@/components/ModelControls'
+import { ModelInfo } from '@/components/ModelInfo'
+import { Button } from '@/components/ui/Button'
+import { Download, Share2, Heart, Edit3D } from 'lucide-react'
+import { useStore } from '@/store/useStore'
+import { supabase } from '@/lib/supabase'
+import { Model, ModelFile } from '@/lib/supabase'
 
-export default function GalleryDetail({ params }: { params: Promise<{ id: string }> }) {
-  const { t, language } = useLanguage()
+export default function ModelPreviewPage() {
+  const params = useParams()
   const router = useRouter()
-  const [comments, setComments] = useState<Array<{ name: string, content: string, date: string }>>([
-    { name: 'AXX_6688', content: language === 'zh' ? '细节很不错，拓扑很干净。' : 'Great detail and clean topology.', date: '2024-11-18' },
-    { name: 'wwu Wendy', content: language === 'zh' ? '导出直接能用，赞。' : 'Exports work out of the box.', date: '2024-11-19' },
-  ])
-  const [input, setInput] = useState('')
-  const avatarFiles = [
-    '/avatars/avatar-1.jpg',
-    '/avatars/avatar-2.jpg',
-    '/avatars/avatar-3.jpg',
-    '/avatars/avatar-4.jpg',
-    '/avatars/avatar-5.jpg',
-    '/avatars/avatar-6.jpg',
-  ]
+  const { setCurrentModel, setCurrentModelFile } = useStore()
+  const [model, setModel] = useState<Model | null>(null)
+  const [modelFile, setModelFile] = useState<ModelFile | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const addComment = () => {
-    const content = input.trim()
-    if (!content) return
-    setComments([{ name: 'You', content, date: new Date().toISOString().slice(0, 10) }, ...comments])
-    setInput('')
+  useEffect(() => {
+    fetchModelData()
+  }, [params.id])
+
+  const fetchModelData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      // Fetch model data
+      const { data: modelData, error: modelError } = await supabase
+        .from('models')
+        .select(`
+          *,
+          model_files (
+            *,
+            users!inner (
+              username,
+              avatar_url
+            )
+          )
+        `)
+        .eq('id', params.id as string)
+        .single()
+
+      if (modelError) throw modelError
+      if (!modelData) throw new Error('Model not found')
+
+      setModel(modelData)
+      setCurrentModel(modelData)
+
+      // Get primary model file or first available file
+      const primaryFile = modelData.model_files?.find((file: ModelFile) => file.is_primary) || 
+                         modelData.model_files?.[0]
+      
+      if (primaryFile) {
+        setModelFile(primaryFile)
+        setCurrentModelFile(primaryFile)
+      }
+
+      // Track view
+      await trackModelView(params.id as string)
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load model')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const { id } = usePromise(params)
-  const title = id.replace(/-/g, ' ')
+  const trackModelView = async (modelId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      await supabase.from('model_views').insert({
+        model_id: modelId,
+        user_id: user?.id || null,
+        ip_address: null, // Will be handled by RLS/triggers
+        metadata: {
+          user_agent: navigator.userAgent,
+          timestamp: new Date().toISOString()
+        }
+      })
+
+      // Increment view count
+      await supabase
+        .from('models')
+        .update({ view_count: (model?.view_count || 0) + 1 })
+        .eq('id', modelId)
+    } catch (err) {
+      console.error('Failed to track view:', err)
+    }
+  }
+
+  const handleDownload = async () => {
+    if (!modelFile) return
+
+    try {
+      const link = document.createElement('a')
+      link.href = modelFile.file_url
+      link.download = `${model?.title || 'model'}.${modelFile.format}`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // Track download
+      if (model) {
+        await supabase
+          .from('models')
+          .update({ download_count: (model.download_count || 0) + 1 })
+          .eq('id', model.id)
+      }
+    } catch (err) {
+      console.error('Download failed:', err)
+    }
+  }
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: model?.title || '3D Model',
+          text: model?.description || 'Check out this 3D model',
+          url: window.location.href,
+        })
+      } catch (err) {
+        console.error('Share failed:', err)
+      }
+    } else {
+      // Fallback to copy link
+      navigator.clipboard.writeText(window.location.href)
+      alert('Link copied to clipboard!')
+    }
+  }
+
+  const handleLike = async () => {
+    if (!model) return
+
+    try {
+      await supabase
+        .from('models')
+        .update({ like_count: (model.like_count || 0) + 1 })
+        .eq('id', model.id)
+      
+      setModel({ ...model, like_count: (model.like_count || 0) + 1 })
+    } catch (err) {
+      console.error('Like failed:', err)
+    }
+  }
+
+  const handleEdit = () => {
+    if (model) {
+      router.push(`/editor/${model.id}`)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading model...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-400 mb-2">Error</h2>
+          <p className="text-gray-400 mb-4">{error}</p>
+          <Button onClick={() => router.push('/gallery')}>
+            Back to Gallery
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!model || !modelFile) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-400 mb-2">Model not found</h2>
+          <Button onClick={() => router.push('/gallery')}>
+            Back to Gallery
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Header
-        showBackButton={true}
-        onBackClick={() => router.back()}
-      />
-
-      <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-6 capitalize">{title}</h1>
-          <div className="grid md:grid-cols-2 gap-10">
-            <div>
-              <div className="bg-gray-800/50 rounded-2xl h-96 flex items-center justify-center border border-gray-700">
-                <Box className="h-24 w-24 text-purple-400" />
-              </div>
-              <div className="flex items-center space-x-4 mt-4 text-gray-300">
-                <div className="flex items-center space-x-1">
-                  <Heart className="h-5 w-5 text-red-400" />
-                  <span>2.3k</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Eye className="h-5 w-5 text-blue-400" />
-                  <span>15.6k</span>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-gray-800/50 rounded-lg p-4">
-                  <div className="text-gray-400 text-sm">{t('gallery.model.polygons')}</div>
-                  <div className="text-white font-semibold">42,130</div>
-                </div>
-                <div className="bg-gray-800/50 rounded-lg p-4">
-                  <div className="text-gray-400 text-sm">{t('gallery.model.texture')}</div>
-                  <div className="text-white font-semibold">4K</div>
-                </div>
-                <div className="bg-gray-800/50 rounded-lg p-4">
-                  <div className="text-gray-400 text-sm">{t('gallery.model.format')}</div>
-                  <div className="text-white font-semibold">FBX, GLTF</div>
-                </div>
-                <div className="bg-gray-800/50 rounded-lg p-4">
-                  <div className="text-gray-400 text-sm">{t('gallery.model.generationTime')}</div>
-                  <div className="text-white font-semibold">31s</div>
-                </div>
-              </div>
-              <div className="flex space-x-4">
-                <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2">
-                  <Download className="h-5 w-5" />
-                  <span>{t('gallery.model.download')}</span>
-                </button>
-                <button className="bg-gray-700 hover:bg-gray-600 text-white py-3 px-6 rounded-lg transition-colors">
-                  <Share2 className="h-5 w-5" />
-                </button>
-                <button className="bg-gray-700 hover:bg-gray-600 text-white py-3 px-6 rounded-lg transition-colors">
-                  <Heart className="h-5 w-5" />
-                </button>
-              </div>
-            </div>
-          </div>
+    <div className="flex flex-col lg:flex-row h-full">
+      {/* 3D Viewer */}
+      <div className="flex-1 relative min-h-[50vh] lg:min-h-0">
+        <Model3DViewer modelUrl={modelFile.file_url} />
+        
+        {/* Action Buttons - Mobile optimized */}
+        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex flex-wrap gap-1 sm:gap-2">
+          <Button
+            onClick={handleDownload}
+            variant="secondary"
+            size="sm"
+            className="bg-gray-800/80 backdrop-blur-sm px-2 sm:px-3 py-1 text-xs sm:text-sm"
+          >
+            <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Download</span>
+          </Button>
+          <Button
+            onClick={handleShare}
+            variant="secondary"
+            size="sm"
+            className="bg-gray-800/80 backdrop-blur-sm px-2 sm:px-3 py-1 text-xs sm:text-sm"
+          >
+            <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Share</span>
+          </Button>
+          <Button
+            onClick={handleLike}
+            variant="secondary"
+            size="sm"
+            className="bg-gray-800/80 backdrop-blur-sm px-2 sm:px-3 py-1 text-xs sm:text-sm"
+          >
+            <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">{model.like_count || 0}</span>
+            <span className="sm:hidden">{model.like_count || 0}</span>
+          </Button>
+          <Button
+            onClick={handleEdit}
+            variant="primary"
+            size="sm"
+            className="bg-cyan-600/80 backdrop-blur-sm px-2 sm:px-3 py-1 text-xs sm:text-sm"
+          >
+            <Edit3D className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Edit</span>
+          </Button>
         </div>
-      </section>
+      </div>
 
-      <section className="pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-white mb-6">{t('comments.title')}</h2>
-          <div className="bg-gray-900/50 border border-gray-700 rounded-xl p-6 mb-6">
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={t('comments.addPlaceholder')}
-              className="w-full bg-gray-800/60 border border-gray-700 rounded-lg text-white p-4 mb-4 focus:outline-none focus:border-purple-500"
-              rows={3}
-            />
-            <div className="flex justify-end">
-              <button onClick={addComment} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
-                {t('comments.submit')}
-              </button>
-            </div>
-          </div>
-          {comments.length === 0 ? (
-            <div className="text-gray-400">{t('comments.empty')}</div>
-          ) : (
-            <ul className="space-y-4">
-              {comments.map((c, i) => (
-                <li key={i} className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10">
-                        <Image src={avatarFiles[i % avatarFiles.length]} alt="avatar" width={40} height={40} className="w-full h-full" />
-                      </div>
-                      <div className="text-white font-semibold">{c.name}</div>
-                    </div>
-                    <div className="text-gray-500 text-sm">{c.date}</div>
-                  </div>
-                  <div className="text-gray-300">{c.content}</div>
-                </li>
-              ))}
-            </ul>
-          )}
+      {/* Right Panel - Responsive */}
+      <div className="w-full lg:w-80 bg-gray-800 border-l-0 lg:border-l border-gray-700 overflow-y-auto">
+        <div className="p-4 sm:p-6">
+          <ModelInfo model={model} />
+          <ModelControls />
         </div>
-      </section>
+      </div>
     </div>
   )
 }
