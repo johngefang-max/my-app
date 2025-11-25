@@ -78,7 +78,7 @@ export function ModelInfo({ model }: ModelInfoProps) {
             {model.tags.map((tag, index) => (
               <span
                 key={index}
-                className="px-2 py-1 bg-cyan-600/20 text-cyan-400 text-xs rounded-full"
+                className="px-2 py-1 bg-purple-600/20 text-purple-400 text-xs rounded-full"
               >
                 {tag}
               </span>

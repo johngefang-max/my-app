@@ -112,8 +112,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="relative p-8 rounded-3xl bg-gradient-to-br from-cyan-800/50 via-teal-700/40 to-sky-700/40 border border-white/10">
-              <span className="absolute -top-6 -left-4 text-6xl font-black text-cyan-400">3</span>
+            <div className="relative p-8 rounded-3xl bg-gradient-to-br from-purple-800/50 via-fuchsia-700/40 to-indigo-700/40 border border-white/10">
+              <span className="absolute -top-6 -left-4 text-6xl font-black text-purple-400">3</span>
               <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                 <ArrowRight className="h-4 w-4 text-white/80" />
               </div>
@@ -204,7 +204,7 @@ export default function Home() {
 
             {/* Portfolio Case 2 */}
             <div className="group bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all">
-              <div className="aspect-square bg-gradient-to-br from-blue-900/50 to-cyan-900/50 relative overflow-hidden">
+              <div className="aspect-square bg-gradient-to-br from-indigo-900/50 to-purple-900/50 relative overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-blue-600 w-24 h-24 rounded-lg flex items-center justify-center">
                     <div className="text-white text-4xl">🏢</div>
@@ -308,7 +308,7 @@ export default function Home() {
 
             {/* Portfolio Case 6 */}
             <div className="group bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700 hover:border-purple-500 transition-all">
-              <div className="aspect-square bg-gradient-to-br from-teal-900/50 to-cyan-900/50 relative overflow-hidden">
+              <div className="aspect-square bg-gradient-to-br from-fuchsia-900/50 to-purple-900/50 relative overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-teal-600 w-24 h-16 rounded-lg flex items-center justify-center">
                     <div className="text-white text-4xl">🪑</div>

@@ -121,7 +121,7 @@ export default function ModelEditorPage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading model...</p>
         </div>
       </div>
@@ -168,7 +168,7 @@ export default function ModelEditorPage() {
               onClick={handleSave}
               variant="primary"
               size="sm"
-              className="bg-cyan-600/80 backdrop-blur-sm px-2 sm:px-3 py-1 text-xs sm:text-sm"
+              className="bg-purple-600/80 backdrop-blur-sm px-2 sm:px-3 py-1 text-xs sm:text-sm"
             >
               <Save className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Save</span>

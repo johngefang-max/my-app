@@ -51,7 +51,7 @@ export function ModelControls() {
             <button
               onClick={() => setViewerSettings({ wireframe: !viewerSettings.wireframe })}
               className={`w-10 h-6 rounded-full transition-colors ${
-                viewerSettings.wireframe ? 'bg-cyan-600' : 'bg-gray-600'
+                viewerSettings.wireframe ? 'bg-purple-600' : 'bg-gray-600'
               }`}
             >
               <div
@@ -70,7 +70,7 @@ export function ModelControls() {
             <button
               onClick={() => setViewerSettings({ showGrid: !viewerSettings.showGrid })}
               className={`w-10 h-6 rounded-full transition-colors ${
-                viewerSettings.showGrid ? 'bg-cyan-600' : 'bg-gray-600'
+                viewerSettings.showGrid ? 'bg-purple-600' : 'bg-gray-600'
               }`}
             >
               <div
@@ -89,7 +89,7 @@ export function ModelControls() {
             <button
               onClick={() => setViewerSettings({ showAxes: !viewerSettings.showAxes })}
               className={`w-10 h-6 rounded-full transition-colors ${
-                viewerSettings.showAxes ? 'bg-cyan-600' : 'bg-gray-600'
+                viewerSettings.showAxes ? 'bg-purple-600' : 'bg-gray-600'
               }`}
             >
               <div

@@ -111,7 +111,7 @@ export function LightingEditor() {
               key={light.id}
               className={`p-3 rounded-lg border cursor-pointer ${
                 selectedLight === index
-                  ? 'border-cyan-500 bg-cyan-600/10'
+                  ? 'border-purple-500 bg-purple-600/10'
                   : 'border-gray-600 bg-gray-700 hover:bg-gray-600'
               }`}
               onClick={() => setSelectedLight(index)}
@@ -131,7 +131,7 @@ export function LightingEditor() {
                     updateLight('enabled', !light.enabled)
                   }}
                   className={`w-8 h-4 rounded-full transition-colors ${
-                    light.enabled ? 'bg-cyan-600' : 'bg-gray-600'
+                    light.enabled ? 'bg-purple-600' : 'bg-gray-600'
                   }`}
                 >
                   <div
@@ -268,7 +268,7 @@ export function LightingEditor() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-300">Enable Shadows</span>
-            <button className="w-10 h-6 rounded-full bg-cyan-600">
+            <button className="w-10 h-6 rounded-full bg-purple-600">
               <div className="w-4 h-4 bg-white rounded-full translate-x-5" />
             </button>
           </div>

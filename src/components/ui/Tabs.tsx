@@ -65,9 +65,9 @@ const TabsTrigger = forwardRef<ElementRef<'button'>, TabsTriggerProps>(
       <button
         ref={ref}
         className={cn(
-          'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+          'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-gray-900 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
           isSelected
-            ? 'bg-cyan-600 text-white shadow-sm'
+            ? 'bg-purple-600 text-white shadow-sm'
             : 'text-gray-300 hover:bg-gray-600 hover:text-white',
           className
         )}
@@ -95,7 +95,7 @@ const TabsContent = forwardRef<ElementRef<'div'>, TabsContentProps>(
     return (
       <div
         ref={ref}
-        className={cn('mt-6 ring-offset-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2', className)}
+        className={cn('mt-6 ring-offset-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2', className)}
         {...props}
       >
         {children}

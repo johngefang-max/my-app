@@ -27,7 +27,7 @@ export function Sidebar() {
   return (
     <aside className="w-64 bg-gray-800 border-r border-gray-700">
       <div className="p-4">
-        <h2 className="text-lg font-semibold text-cyan-400 mb-4">3D Model Preview</h2>
+        <h2 className="text-lg font-semibold text-purple-400 mb-4">3D Model Preview</h2>
         <nav className="space-y-2">
           {sidebarItems.map((item) => {
             const Icon = item.icon

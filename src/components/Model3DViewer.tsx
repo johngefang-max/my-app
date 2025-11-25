@@ -38,7 +38,7 @@ function LoadingFallback() {
   return (
     <div className="flex items-center justify-center h-full">
       <div className="text-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-cyan-400 mx-auto mb-2 sm:mb-4"></div>
+        <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-purple-400 mx-auto mb-2 sm:mb-4"></div>
         <p className="text-gray-400 text-sm sm:text-base">Loading 3D model...</p>
       </div>
     </div>

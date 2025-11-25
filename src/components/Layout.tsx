@@ -110,7 +110,7 @@ export function Layout({ children }: LayoutProps) {
                   onClick={() => router.push('/')}
                   className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
                 >
-                  <Logo className="h-8 w-8 text-cyan-400" />
+                  <Logo className="h-8 w-8 text-purple-400" />
                   <span className="text-xl font-bold text-white">3D Platform</span>
                 </button>
               </div>

@@ -20,11 +20,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
     
     const variantClasses = {
-      primary: 'bg-cyan-600 text-white hover:bg-cyan-700 focus:ring-cyan-500',
+      primary: 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500',
       secondary: 'bg-gray-700 text-white hover:bg-gray-600 focus:ring-gray-500',
       outline: 'border border-gray-300 text-gray-300 hover:bg-gray-700 hover:text-white focus:ring-gray-500',
       ghost: 'text-gray-300 hover:bg-gray-700 hover:text-white focus:ring-gray-500',
-      link: 'text-cyan-400 hover:text-cyan-300 underline-offset-4 hover:underline focus:ring-cyan-500'
+      link: 'text-purple-400 hover:text-purple-300 underline-offset-4 hover:underline focus:ring-purple-500'
     }
     
     const sizeClasses = {

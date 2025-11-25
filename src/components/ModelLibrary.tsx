@@ -193,7 +193,7 @@ export function ModelLibrary({
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading models...</p>
         </div>
       </div>
@@ -247,13 +247,13 @@ export function ModelLibrary({
             <div className="flex bg-gray-700 rounded-lg p-1">
               <button
                 onClick={() => setViewLayout('grid')}
-                className={`p-2 rounded ${viewLayout === 'grid' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
+                className={`p-2 rounded ${viewLayout === 'grid' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'}`}
               >
                 <Grid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewLayout('list')}
-                className={`p-2 rounded ${viewLayout === 'list' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
+                className={`p-2 rounded ${viewLayout === 'list' ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'}`}
               >
                 <List className="w-4 h-4" />
               </button>
@@ -321,13 +321,13 @@ export function ModelLibrary({
               return (
                 <div
                   key={model.id}
-                  className={`bg-gray-800 rounded-lg border ${isSelected ? 'border-cyan-500' : 'border-gray-700'} hover:border-cyan-400 transition-all group`}
+                  className={`bg-gray-800 rounded-lg border ${isSelected ? 'border-purple-500' : 'border-gray-700'} hover:border-purple-400 transition-all group`}
                 >
                   {/* Model Preview */}
                   <div className="aspect-square bg-gray-700 rounded-t-lg overflow-hidden relative">
                     {primaryFileUrl ? (
                       <div className="w-full h-full flex items-center justify-center">
-                        <div className="bg-cyan-600 w-16 h-16 rounded-lg flex items-center justify-center">
+                        <div className="bg-purple-600 w-16 h-16 rounded-lg flex items-center justify-center">
                           <div className="bg-white w-8 h-8 rounded"></div>
                         </div>
                       </div>
@@ -346,7 +346,7 @@ export function ModelLibrary({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleModelSelection(model.id)}
-                          className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-cyan-600 focus:ring-cyan-500"
+                          className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-purple-600 focus:ring-purple-500"
                         />
                       </div>
                     )}
@@ -450,7 +450,7 @@ export function ModelLibrary({
               return (
                 <div
                   key={model.id}
-                  className={`bg-gray-800 rounded-lg border ${isSelected ? 'border-cyan-500' : 'border-gray-700'} p-4 hover:border-cyan-400 transition-all`}
+                  className={`bg-gray-800 rounded-lg border ${isSelected ? 'border-purple-500' : 'border-gray-700'} p-4 hover:border-purple-400 transition-all`}
                 >
                   <div className="flex items-center space-x-4">
                     {/* Selection Checkbox */}
@@ -459,14 +459,14 @@ export function ModelLibrary({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleModelSelection(model.id)}
-                        className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-cyan-600 focus:ring-cyan-500"
+                        className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-purple-600 focus:ring-purple-500"
                       />
                     )}
                     
                     {/* Thumbnail */}
                     <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
                       {primaryFileUrl ? (
-                        <div className="bg-cyan-600 w-10 h-10 rounded flex items-center justify-center">
+                        <div className="bg-purple-600 w-10 h-10 rounded flex items-center justify_center">
                           <div className="bg-white w-5 h-5 rounded"></div>
                         </div>
                       ) : (

@@ -180,7 +180,7 @@ export function ModelCard({ model, viewMode, onClick, onEdit, onDownload }: Mode
         {/* Category Badge - Responsive */}
         {model.category && (
           <div className="absolute top-1 left-1 sm:top-2 sm:left-2">
-            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-cyan-600 text-white text-xs rounded-full">
+            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-purple-600 text_white text-xs rounded-full">
               {model.category}
             </span>
           </div>

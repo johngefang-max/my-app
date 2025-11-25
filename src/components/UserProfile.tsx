@@ -30,7 +30,7 @@ export function UserProfile() {
 
   const subscriptionTiers = {
     free: { label: 'Free', color: 'text-gray-400' },
-    pro: { label: 'Pro', color: 'text-cyan-400' },
+    pro: { label: 'Pro', color: 'text-purple-400' },
     enterprise: { label: 'Enterprise', color: 'text-purple-400' }
   }
 
@@ -42,7 +42,7 @@ export function UserProfile() {
         onClick={handleProfileClick}
         className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700/50 transition-colors"
       >
-        <div className="w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center">
+        <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
           <User className="w-4 h-4 text-white" />
         </div>
         <div className="hidden md:block text-left">
@@ -67,7 +67,7 @@ export function UserProfile() {
           <div className="absolute right-0 mt-2 w-56 bg-gray-800 rounded-lg border border-gray-700 shadow-lg z-20">
             <div className="p-4 border-b border-gray-700">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div>

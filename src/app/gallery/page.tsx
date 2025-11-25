@@ -176,7 +176,7 @@ export default function GalleryPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
               <p className="text-gray-400">Loading models...</p>
             </div>
           </div>
@@ -201,7 +201,7 @@ export default function GalleryPage() {
             <Button
               onClick={handleCreateNew}
               variant="primary"
-              className="bg-cyan-600 hover:bg-cyan-700 w-full sm:w-auto"
+              className="bg-purple-600 hover:bg-purple-700 w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 mr-2" />
               Create New Model

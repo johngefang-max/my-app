@@ -25,7 +25,7 @@ export default function AuthPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <Logo className="h-12 w-12 text-cyan-400" />
+            <Logo className="h-12 w-12 text-purple-400" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">使用 Google 登录</h1>
           <p className="text-gray-400">仅支持 Google 账号登录</p>
