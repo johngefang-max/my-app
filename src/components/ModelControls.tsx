@@ -107,7 +107,7 @@ export function ModelControls() {
         <h4 className="text-sm font-medium text-white mb-3">Background</h4>
         <Select
           value={viewerSettings.backgroundColor}
-          onValueChange={(value) => setViewerSettings({ backgroundColor: value })}
+          onChange={(e) => setViewerSettings({ backgroundColor: (e.target as HTMLSelectElement).value })}
         >
           {backgroundColors.map((color) => (
             <option key={color.value} value={color.value}>
@@ -122,7 +122,7 @@ export function ModelControls() {
         <h4 className="text-sm font-medium text-white mb-3">Lighting</h4>
         <Select
           value={viewerSettings.lightingPreset}
-          onValueChange={(value) => setViewerSettings({ lightingPreset: value })}
+          onChange={(e) => setViewerSettings({ lightingPreset: (e.target as HTMLSelectElement).value })}
         >
           {lightingPresets.map((preset) => (
             <option key={preset.value} value={preset.value}>

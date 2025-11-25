@@ -6,7 +6,7 @@ import { Model3DViewer } from '@/components/Model3DViewer'
 import { ModelControls } from '@/components/ModelControls'
 import { ModelInfo } from '@/components/ModelInfo'
 import { Button } from '@/components/ui/Button'
-import { Download, Share2, Heart, Edit3D } from 'lucide-react'
+import { Download, Share2, Heart, Edit3 } from 'lucide-react'
 import { useStore } from '@/store/useStore'
 import { supabase } from '@/lib/supabase'
 import { Model, ModelFile } from '@/lib/supabase'
@@ -234,9 +234,9 @@ export default function ModelPreviewPage() {
             onClick={handleEdit}
             variant="primary"
             size="sm"
-            className="bg-purple-600/80 backdrop_blur-sm px-2 sm:px-3 py-1 text-xs sm:text-sm"
+            className="bg-purple-600/80 backdrop-blur-sm px-2 sm:px-3 py-1 text-xs sm:text-sm"
           >
-            <Edit3D className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+            <Edit3 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Edit</span>
           </Button>
         </div>

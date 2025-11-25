@@ -34,7 +34,7 @@ export function UserProfile() {
     enterprise: { label: 'Enterprise', color: 'text-purple-400' }
   }
 
-  const currentTier = subscriptionTiers[user.subscription_tier as keyof typeof subscriptionTiers] || subscriptionTiers.free
+  const currentTier = subscriptionTiers[user.plan as keyof typeof subscriptionTiers] || subscriptionTiers.free
 
   return (
     <div className="relative">
@@ -47,7 +47,7 @@ export function UserProfile() {
         </div>
         <div className="hidden md:block text-left">
           <div className="text-sm font-medium text-white">
-            {user.full_name || user.username}
+            {user.username}
           </div>
           <div className={`text-xs ${currentTier.color}`}>
             {currentTier.label} Plan
@@ -72,7 +72,7 @@ export function UserProfile() {
                 </div>
                 <div>
                   <div className="text-sm font-medium text-white">
-                    {user.full_name || user.username}
+                    {user.username}
                   </div>
                   <div className="text-xs text-gray-400">
                     {user.email}

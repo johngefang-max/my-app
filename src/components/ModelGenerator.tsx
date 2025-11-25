@@ -167,15 +167,14 @@ export function ModelGenerator() {
               </label>
               <Select
                 value={style}
-                onValueChange={setStyle}
-                options={[
-                  { value: 'realistic', label: 'Realistic' },
-                  { value: 'cartoon', label: 'Cartoon' },
-                  { value: 'low-poly', label: 'Low Poly' },
-                  { value: 'stylized', label: 'Stylized' },
-                  { value: 'anime', label: 'Anime' },
-                ]}
-              />
+                onChange={(e) => setStyle((e.target as HTMLSelectElement).value)}
+              >
+                <option value="realistic">Realistic</option>
+                <option value="cartoon">Cartoon</option>
+                <option value="low-poly">Low Poly</option>
+                <option value="stylized">Stylized</option>
+                <option value="anime">Anime</option>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -184,13 +183,12 @@ export function ModelGenerator() {
               </label>
               <Select
                 value={quality}
-                onValueChange={setQuality}
-                options={[
-                  { value: 'low', label: 'Low (Fast)' },
-                  { value: 'medium', label: 'Medium' },
-                  { value: 'high', label: 'High (Best)' },
-                ]}
-              />
+                onChange={(e) => setQuality((e.target as HTMLSelectElement).value)}
+              >
+                <option value="low">Low (Fast)</option>
+                <option value="medium">Medium</option>
+                <option value="high">High (Best)</option>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -199,13 +197,12 @@ export function ModelGenerator() {
               </label>
               <Select
                 value={format}
-                onValueChange={setFormat}
-                options={[
-                  { value: 'glb', label: 'GLB (Recommended)' },
-                  { value: 'obj', label: 'OBJ' },
-                  { value: 'fbx', label: 'FBX' },
-                ]}
-              />
+                onChange={(e) => setFormat((e.target as HTMLSelectElement).value)}
+              >
+                <option value="glb">GLB (Recommended)</option>
+                <option value="obj">OBJ</option>
+                <option value="fbx">FBX</option>
+              </Select>
             </div>
           </div>
 

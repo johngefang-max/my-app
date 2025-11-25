@@ -49,10 +49,13 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             .insert([
               {
                 id: authData.user.id,
-                email: authData.user.email,
+                email: authData.user.email!,
                 username,
-                full_name: username,
-                subscription_tier: 'free',
+                avatar_url: null,
+                plan: 'free',
+                usage_count: 0,
+                storage_used_bytes: 0,
+                max_storage_bytes: 0,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
               }
@@ -64,8 +67,12 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             id: authData.user.id,
             email: authData.user.email!,
             username,
-            full_name: username,
-            subscription_tier: 'free',
+            password_hash: null,
+            avatar_url: null,
+            plan: 'free',
+            usage_count: 0,
+            storage_used_bytes: 0,
+            max_storage_bytes: 0,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })

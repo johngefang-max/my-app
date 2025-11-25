@@ -14,7 +14,7 @@ const useTabs = () => {
   return context
 }
 
-interface TabsProps extends ComponentPropsWithoutRef<typeof Tabs> {
+interface TabsProps extends ComponentPropsWithoutRef<'div'> {
   value: string
   onValueChange: (value: string) => void
 }

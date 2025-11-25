@@ -558,7 +558,7 @@ export default function Generator() {
                       )}
                       <div className="flex justify-between">
                         <button onClick={()=> { setAutoRotate(true); setRotSpeed(20); setShadowIntensity(1); setShadowSoftness(0.6); setFov(45); setEnvPreset('studio'); setBgMode('gradient'); setBgColor('#0f172a') }} className="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs">重置视图</button>
-                        <button onClick={()=> viewerRef.current && viewerRef.current.reset?.()} className="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs">重置相机</button>
+                        <button onClick={()=> viewerRef.current && (viewerRef.current as any).reset?.()} className="bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs">重置相机</button>
                       </div>
                     </div>
                   </div>

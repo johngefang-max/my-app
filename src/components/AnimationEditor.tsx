@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from './ui/Button'
 import { Slider } from './ui/Slider'
 import { Select } from './ui/Select'
-import { useStore } from '@/store/useStore'
+ 
 
 interface AnimationClip {
   id: string
@@ -17,12 +17,12 @@ interface AnimationEditorProps {
 }
 
 export function AnimationEditor({ modelUrl, onAnimationUpdate }: AnimationEditorProps) {
-  const { editorSettings, setEditorSettings } = useStore()
   const [animations, setAnimations] = useState<AnimationClip[]>([])
   const [selectedAnimation, setSelectedAnimation] = useState<string>('')
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [playbackSpeed, setPlaybackSpeed] = useState(1)
+  const [isLoop, setIsLoop] = useState(false)
 
   useEffect(() => {
     // Load animations from model
@@ -89,7 +89,7 @@ export function AnimationEditor({ modelUrl, onAnimationUpdate }: AnimationEditor
   }
 
   const handleLoopToggle = () => {
-    setEditorSettings({ ...editorSettings, animationLoop: !editorSettings.animationLoop })
+    setIsLoop(!isLoop)
   }
 
   const currentAnimation = animations.find(anim => anim.id === selectedAnimation)
@@ -101,13 +101,12 @@ export function AnimationEditor({ modelUrl, onAnimationUpdate }: AnimationEditor
         <h3 className="text-sm font-medium text-gray-300">Animation Clip</h3>
         <Select
           value={selectedAnimation}
-          onChange={handleAnimationSelect}
-          options={animations.map(anim => ({
-            value: anim.id,
-            label: `${anim.name} (${anim.duration}s)`
-          }))}
-          placeholder="Select animation"
-        />
+          onChange={(e) => handleAnimationSelect((e.target as HTMLSelectElement).value)}
+        >
+          {animations.map(anim => (
+            <option key={anim.id} value={anim.id}>{`${anim.name} (${anim.duration}s)`}</option>
+          ))}
+        </Select>
       </div>
 
       {/* Playback Controls */}
@@ -135,7 +134,7 @@ export function AnimationEditor({ modelUrl, onAnimationUpdate }: AnimationEditor
           
           <Button
             onClick={handleLoopToggle}
-            variant={editorSettings.animationLoop ? 'primary' : 'secondary'}
+            variant={isLoop ? 'primary' : 'secondary'}
             size="sm"
             className="w-20"
           >
@@ -152,7 +151,7 @@ export function AnimationEditor({ modelUrl, onAnimationUpdate }: AnimationEditor
           
           <Slider
             value={currentTime}
-            onChange={handleTimeChange}
+            onValueChange={handleTimeChange}
             min={0}
             max={currentAnimation?.duration || 1}
             step={0.01}
@@ -169,7 +168,7 @@ export function AnimationEditor({ modelUrl, onAnimationUpdate }: AnimationEditor
           
           <Slider
             value={playbackSpeed}
-            onChange={handleSpeedChange}
+            onValueChange={handleSpeedChange}
             min={0.1}
             max={3}
             step={0.1}

@@ -14,9 +14,9 @@ interface ModelCardProps {
 
 export function ModelCard({ model, viewMode, onClick, onEdit, onDownload }: ModelCardProps) {
   const [imageError, setImageError] = useState(false)
-  
-  const primaryFile = model.model_files?.find((file: any) => file.is_primary) || 
-                     model.model_files?.[0]
+  const primaryFile = (model as any).model_files?.find((file: any) => file.is_primary) || 
+                     (model as any).model_files?.[0]
+  const thumbnailUrl = (model as any).thumbnail_url || primaryFile?.thumbnail_url || null
   
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes'
@@ -41,9 +41,9 @@ export function ModelCard({ model, viewMode, onClick, onEdit, onDownload }: Mode
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Thumbnail */}
           <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
-            {!imageError && model.thumbnail_url ? (
+            {!imageError && thumbnailUrl ? (
               <Image
-                src={model.thumbnail_url}
+                src={thumbnailUrl as string}
                 alt={model.title}
                 width={96}
                 height={96}
@@ -65,7 +65,7 @@ export function ModelCard({ model, viewMode, onClick, onEdit, onDownload }: Mode
             <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-gray-500">
               <div className="flex items-center gap-1">
                 <User className="w-3 h-3" />
-                <span>{model.user?.username || 'Anonymous'}</span>
+                <span>{(model as any).user?.username ?? 'Anonymous'}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
@@ -141,9 +141,9 @@ export function ModelCard({ model, viewMode, onClick, onEdit, onDownload }: Mode
          onClick={onClick}>
       {/* Thumbnail */}
       <div className="aspect-square bg-gray-700 relative overflow-hidden">
-        {!imageError && model.thumbnail_url ? (
+        {!imageError && thumbnailUrl ? (
           <Image
-            src={model.thumbnail_url}
+            src={thumbnailUrl as string}
             alt={model.title}
             fill
             className="object-cover"
@@ -177,14 +177,7 @@ export function ModelCard({ model, viewMode, onClick, onEdit, onDownload }: Mode
           </div>
         </div>
 
-        {/* Category Badge - Responsive */}
-        {model.category && (
-          <div className="absolute top-1 left-1 sm:top-2 sm:left-2">
-            <span className="px-1.5 py-0.5 sm:px-2 sm:py-1 bg-purple-600 text_white text-xs rounded-full">
-              {model.category}
-            </span>
-          </div>
-        )}
+        
       </div>
 
       {/* Model Info - Responsive */}
@@ -195,7 +188,7 @@ export function ModelCard({ model, viewMode, onClick, onEdit, onDownload }: Mode
         {/* Author - Hidden on very small screens */}
         <div className="hidden sm:flex items-center gap-1 mb-2 sm:mb-3 text-sm text-gray-500">
           <User className="w-3 h-3" />
-          <span>{model.user?.username || 'Anonymous'}</span>
+          <span>{(model as any).user?.username ?? 'Anonymous'}</span>
         </div>
 
         {/* Stats - Responsive */}

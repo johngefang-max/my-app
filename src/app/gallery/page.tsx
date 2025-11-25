@@ -40,7 +40,7 @@ export default function GalleryPage() {
     { value: 'title', label: 'Title A-Z' },
     { value: 'view_count', label: 'Most Viewed' },
     { value: 'download_count', label: 'Most Downloaded' },
-    { value: 'file_size', label: 'File Size' }
+    
   ]
 
   useEffect(() => {
@@ -90,16 +90,15 @@ export default function GalleryPage() {
     if (searchTerm) {
       filtered = filtered.filter(model =>
         model.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        model.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        model.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        model.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        model.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     }
 
     // Filter by category
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(model =>
-        model.category === selectedCategory ||
-        model.tags.includes(selectedCategory)
+        model.tags?.includes(selectedCategory)
       )
     }
 
@@ -112,8 +111,6 @@ export default function GalleryPage() {
           return (b.view_count || 0) - (a.view_count || 0)
         case 'download_count':
           return (b.download_count || 0) - (a.download_count || 0)
-        case 'file_size':
-          return (b.file_size || 0) - (a.file_size || 0)
         case 'created_at':
         default:
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -148,7 +145,7 @@ export default function GalleryPage() {
     router.push(`/editor/${modelId}`)
   }
 
-  const handleModelDownload = (model: Model, e: React.MouseEvent) => {
+  const handleModelDownload = (model: any, e: React.MouseEvent) => {
     e.stopPropagation()
     
     const primaryFile = model.model_files?.find((file: any) => file.is_primary) || 
@@ -219,7 +216,7 @@ export default function GalleryPage() {
                 type="text"
                 placeholder="Search models..."
                 value={searchTerm}
-                onChange={handleSearchChange}
+                onChange={(e) => handleSearchChange((e.target as HTMLInputElement).value)}
                 className="pl-10 w-full text-sm sm:text-base"
               />
             </div>
@@ -263,9 +260,12 @@ export default function GalleryPage() {
                 </label>
                 <Select
                   value={selectedCategory}
-                  onChange={setSelectedCategory}
-                  options={categories}
-                />
+                  onChange={(e) => setSelectedCategory((e.target as HTMLSelectElement).value)}
+                >
+                  {categories.map((c) => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
+                </Select>
               </div>
               
               <div>
@@ -274,9 +274,12 @@ export default function GalleryPage() {
                 </label>
                 <Select
                   value={sortBy}
-                  onChange={setSortBy}
-                  options={sortOptions}
-                />
+                  onChange={(e) => setSortBy((e.target as HTMLSelectElement).value)}
+                >
+                  {sortOptions.map((s) => (
+                    <option key={s.value} value={s.value}>{s.label}</option>
+                  ))}
+                </Select>
               </div>
               
               <div className="flex items-end">

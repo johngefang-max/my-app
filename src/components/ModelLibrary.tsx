@@ -230,18 +230,24 @@ export function ModelLibrary({
             {/* Category Filter */}
             <Select
               value={selectedCategory}
-              onValueChange={setSelectedCategory}
-              options={categories}
-              className="bg-gray-700 border-gray-600 text-white"
-            />
+              onChange={(e) => setSelectedCategory((e.target as HTMLSelectElement).value)}
+              className="bg_gray-700 border-gray-600 text-white"
+            >
+              {categories.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </Select>
             
             {/* Sort */}
             <Select
               value={sortBy}
-              onValueChange={setSortBy}
-              options={sortOptions}
+              onChange={(e) => setSortBy((e.target as HTMLSelectElement).value)}
               className="bg-gray-700 border-gray-600 text-white"
-            />
+            >
+              {sortOptions.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </Select>
             
             {/* View Toggle */}
             <div className="flex bg-gray-700 rounded-lg p-1">
@@ -466,7 +472,7 @@ export function ModelLibrary({
                     {/* Thumbnail */}
                     <div className="w-16 h-16 bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
                       {primaryFileUrl ? (
-                        <div className="bg-purple-600 w-10 h-10 rounded flex items-center justify_center">
+                        <div className="bg-purple-600 w-10 h-10 rounded flex items-center justify-center">
                           <div className="bg-white w-5 h-5 rounded"></div>
                         </div>
                       ) : (
