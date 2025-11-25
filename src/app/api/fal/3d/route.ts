@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
     const slat_guidance_strength = typeof body?.slat_guidance_strength === 'number' ? body.slat_guidance_strength : undefined
     const slat_sampling_steps = typeof body?.slat_sampling_steps === 'number' ? body.slat_sampling_steps : undefined
     const seed = typeof body?.seed === 'number' ? body.seed : undefined
-    if (!process.env.FAL_KEY) {
+    const falKey = process.env.FAL_KEY || '42b8cb66-d35e-451a-b039-67a52a101810:99ae2ab1190a2a3d88177218a1c96af8'
+    if (!falKey) {
       console.error('api/fal/3d', 'config')
       return NextResponse.json({ error: 'config' }, { status: 500 })
     }
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
       console.error('api/fal/3d', 'input')
       return NextResponse.json({ error: 'input' }, { status: 400 })
     }
-    fal.config({ credentials: process.env.FAL_KEY })
+    fal.config({ credentials: falKey })
     const modelId = provider === 'pro' ? 'fal-ai/hunyuan3d-v21' : 'fal-ai/trellis'
     const toBinary = (dataUri: string) => {
       const m = dataUri.match(/^data:(.*?);base64,(.*)$/)

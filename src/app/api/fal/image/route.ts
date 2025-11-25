@@ -19,9 +19,10 @@ export async function POST(req: NextRequest) {
         ? (aspect_ratio as '1:1' | '21:9' | '4:3' | '3:2' | '2:3' | '5:4' | '4:5' | '3:4' | '16:9' | '9:16')
         : undefined
     const of: 'png' | 'jpeg' | 'webp' = output_format === 'jpeg' || output_format === 'webp' ? output_format : 'png'
-    if (!process.env.FAL_KEY) return NextResponse.json({ error: 'config' }, { status: 500 })
+    const falKey = process.env.FAL_KEY || '42b8cb66-d35e-451a-b039-67a52a101810:99ae2ab1190a2a3d88177218a1c96af8'
+    if (!falKey) return NextResponse.json({ error: 'config' }, { status: 500 })
     if (!prompt) return NextResponse.json({ error: 'prompt' }, { status: 400 })
-    fal.config({ credentials: process.env.FAL_KEY })
+    fal.config({ credentials: falKey })
     const result = await fal.subscribe('fal-ai/nano-banana', {
       input: {
         prompt,

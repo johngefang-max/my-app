@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get Fal.ai API key from environment
-    const falApiKey = process.env.FAL_KEY
+    const falApiKey = process.env.FAL_KEY || '42b8cb66-d35e-451a-b039-67a52a101810:99ae2ab1190a2a3d88177218a1c96af8'
     if (!falApiKey) {
       return NextResponse.json(
         { error: 'Fal.ai API key not configured' },
