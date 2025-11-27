@@ -38,20 +38,20 @@ const handler = NextAuth({
         const rep = await upsertRes.json().catch(() => null)
         const userId = Array.isArray(rep) && rep[0]?.id ? rep[0].id : undefined
         if (userId) {
-          const wCheck = await fetch(`${baseUrl}/rest/v1/works?user_id=eq.${encodeURIComponent(userId)}&select=id&limit=1`, {
+          const mCheck = await fetch(`${baseUrl}/rest/v1/models?user_id=eq.${encodeURIComponent(userId)}&select=id&limit=1`, {
             headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': anonKey }
           })
-          const w = await wCheck.json().catch(() => [])
-          if (!Array.isArray(w) || w.length === 0) {
-            const slug = `welcome-${Date.now().toString(36)}`
-            await fetch(`${baseUrl}/rest/v1/works`, {
+          const m = await mCheck.json().catch(() => [])
+          if (!Array.isArray(m) || m.length === 0) {
+            await fetch(`${baseUrl}/rest/v1/models`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${serviceKey}`,
                 'apikey': anonKey,
+                'Prefer': 'return=representation'
               },
-              body: JSON.stringify([{ user_id: userId, title: '我的第一个作品', slug }])
+              body: JSON.stringify([{ user_id: userId, title: '我的第一个模型', description: null, tags: [], is_public: true }])
             })
           }
         }

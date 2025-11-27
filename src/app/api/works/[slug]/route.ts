@@ -11,16 +11,21 @@ export async function GET(req: NextRequest, context: { params: Promise<{ slug: s
     if (!baseUrl || !serviceKey || !anonKey) return NextResponse.json({ error: 'config' }, { status: 500 })
 
     const { slug } = await context.params
-    const res = await fetch(`${baseUrl}/rest/v1/works?slug=eq.${encodeURIComponent(slug)}&select=id,title,slug,model_url,model_file_name,created_at&limit=1`, {
+    const res = await fetch(`${baseUrl}/rest/v1/models?id=eq.${encodeURIComponent(slug)}&select=id,title,created_at&limit=1`, {
       headers: {
         'Authorization': `Bearer ${serviceKey}`,
         'apikey': anonKey,
       }
     })
-    const data = await res.json().catch(() => [])
-    const item = Array.isArray(data) ? data[0] : null
-    if (!item) return NextResponse.json({ error: 'not_found' }, { status: 404 })
-    return NextResponse.json({ id: item.id, title: item.title, slug: item.slug, model_url: item.model_url ?? null, model_file_name: item.model_file_name ?? null })
+    const modelArr = await res.json().catch(() => [])
+    const model = Array.isArray(modelArr) ? modelArr[0] : null
+    if (!model) return NextResponse.json({ error: 'not_found' }, { status: 404 })
+    const filesRes = await fetch(`${baseUrl}/rest/v1/model_files?model_id=eq.${encodeURIComponent(model.id)}&select=file_url,storage_path,is_primary,format&order=is_primary.desc`, {
+      headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': anonKey }
+    })
+    const files = await filesRes.json().catch(() => [])
+    const primary = Array.isArray(files) ? files[0] : null
+    return NextResponse.json({ id: model.id, title: model.title, model_url: primary?.file_url ?? null, model_file_name: primary?.storage_path ?? null })
   } catch {
     return NextResponse.json({ error: 'server' }, { status: 500 })
   }

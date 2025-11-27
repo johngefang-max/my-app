@@ -129,7 +129,7 @@ export default function GalleryPage() {
       alert('Please log in to create new models')
       return
     }
-    router.push('/generate')
+    router.push('/generator')
   }
 
   const handleModelClick = (modelId: string) => {

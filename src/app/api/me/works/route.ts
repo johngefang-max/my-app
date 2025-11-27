@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     const userId = users?.[0]?.id
     if (!userId) return NextResponse.json({ items: [] })
 
-    const worksRes = await fetch(`${baseUrl}/rest/v1/works?user_id=eq.${encodeURIComponent(userId)}&select=id,title,slug,created_at&order=created_at.desc`, {
+    const worksRes = await fetch(`${baseUrl}/rest/v1/models?user_id=eq.${encodeURIComponent(userId)}&select=id,title,created_at&order=created_at.desc`, {
       headers: {
         'Authorization': `Bearer ${serviceKey}`,
         'apikey': anonKey,
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     })
     const data = await worksRes.json()
     const items = Array.isArray(data)
-      ? data.map((w: { id: string; title: string; slug: string }) => ({ id: w.id, title: w.title, href: `/gallery/${w.slug}` }))
+      ? data.map((w: { id: string; title: string }) => ({ id: w.id, title: w.title, href: `/gallery/${w.id}` }))
       : []
     return NextResponse.json({ items })
   } catch {
@@ -69,23 +69,22 @@ export async function POST(req: NextRequest) {
     const userId = users?.[0]?.id
     if (!userId) return NextResponse.json({ error: 'user' }, { status: 404 })
 
-    let slug = `${slugBase}-${Date.now().toString(36)}`
-    for (let i = 0; i < 2; i++) {
-      const check = await fetch(`${baseUrl}/rest/v1/works?slug=eq.${encodeURIComponent(slug)}&select=id`, {
-        headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': anonKey }
-      })
-      const exists = await check.json()
-      if (!Array.isArray(exists) || exists.length === 0) break
-      slug = `${slugBase}-${Math.random().toString(36).slice(2, 8)}`
-    }
+    const modelInsertRes = await fetch(`${baseUrl}/rest/v1/models`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${serviceKey}`,
+        'apikey': anonKey,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify([{ user_id: userId, title, description: null, tags: [], is_public: false }])
+    })
+    const modelIns = await modelInsertRes.json().catch(() => null)
+    const modelId = Array.isArray(modelIns) ? modelIns[0]?.id : null
+    if (!modelId) return NextResponse.json({ error: 'insert_model' }, { status: 500 })
 
-    const payloadBase: Record<string, unknown> = { user_id: userId, title, slug }
-    const payloadExtended: Record<string, unknown> = { ...payloadBase }
-    if (model_url) payloadExtended.model_url = model_url
-    if (model_file_name) payloadExtended.model_file_name = model_file_name
-
-    const doInsert = async (payload: Record<string, unknown>) => {
-      const res = await fetch(`${baseUrl}/rest/v1/works`, {
+    if (model_url) {
+      await fetch(`${baseUrl}/rest/v1/model_files`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,19 +92,11 @@ export async function POST(req: NextRequest) {
           'apikey': anonKey,
           'Prefer': 'return=representation'
         },
-        body: JSON.stringify([payload])
+        body: JSON.stringify([{ model_id: modelId, file_url: model_url, thumbnail_url: null, format: (model_file_name?.split('.').pop() || 'glb'), size_bytes: 0, storage_path: model_file_name || 'model.glb', is_primary: true }])
       })
-      const data = await res.json().catch(() => null)
-      return { ok: res.ok, data }
     }
 
-    let ins = await doInsert(payloadExtended)
-    if (!ins.ok) {
-      ins = await doInsert(payloadBase)
-    }
-    const item = Array.isArray(ins.data) ? ins.data[0] : null
-    if (!item) return NextResponse.json({ error: 'insert' }, { status: 500 })
-    return NextResponse.json({ id: item.id, title: item.title, href: `/gallery/${item.slug}` })
+    return NextResponse.json({ id: modelId, title, href: `/gallery/${modelId}` })
   } catch {
     return NextResponse.json({ error: 'server' }, { status: 500 })
   }
