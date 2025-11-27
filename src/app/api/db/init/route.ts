@@ -5,7 +5,7 @@ import { readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 
 function getEnv() {
-  const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '').trim()
+  const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL || '').trim()
   const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || '').trim()
   const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || '').trim()
   const projectRef = (process.env.SUPABASE_PROJECT_REF || '').trim()
@@ -28,8 +28,8 @@ export async function GET() {
   const { baseUrl, serviceKey, anonKey, projectRef, accessToken } = getEnv()
   if (!baseUrl || !anonKey) {
     const missing = [
-      !baseUrl ? 'NEXT_PUBLIC_SUPABASE_URL/SUPABASE_URL' : null,
-      !anonKey ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY/SUPABASE_ANON_KEY' : null,
+      !baseUrl ? 'NEXT_PUBLIC_SUPABASE_URL/SUPABASE_URL or my_app_SUPABASE_URL/NEXT_PUBLIC_my_app_SUPABASE_URL' : null,
+      !anonKey ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY/SUPABASE_ANON_KEY or NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY/my_app_SUPABASE_ANON_KEY' : null,
     ].filter(Boolean)
     return NextResponse.json({ status: 'error', message: 'Supabase env missing', missing }, { status: 500 })
   }

@@ -1,7 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://bcwzqefgvzuxiwoukhpf.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjd3pxZWZndnp1eGl3b3VraHBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MjU1NjcsImV4cCI6MjA3NjEwMTU2N30.IeSLm84GEI6gc5ADHSZf2krDAU2EzA5oMDjFCMgN1_g'
+const supabaseUrl = (
+  typeof window === 'undefined'
+    ? (process.env.SUPABASE_URL
+        || process.env.my_app_SUPABASE_URL
+        || process.env.NEXT_PUBLIC_SUPABASE_URL
+        || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL)
+    : (process.env.NEXT_PUBLIC_SUPABASE_URL
+        || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL)
+) || 'https://bcwzqefgvzuxiwoukhpf.supabase.co'
+
+const supabaseAnonKey = (
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY
+  || process.env.my_app_SUPABASE_ANON_KEY
+  || process.env.SUPABASE_ANON_KEY
+) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjd3pxZWZndnp1eGl3b3VraHBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MjU1NjcsImV4cCI6MjA3NjEwMTU2N30.IeSLm84GEI6gc5ADHSZf2krDAU2EzA5oMDjFCMgN1_g'
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
