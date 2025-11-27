@@ -1,31 +1,6 @@
-'use server'
+-- AI3D Pro 数据库初始化脚本
+-- 在Supabase控制台的SQL编辑器中执行此脚本
 
-import { NextResponse } from 'next/server'
-import { readFileSync, readdirSync } from 'fs'
-import { join } from 'path'
-
-function getEnv() {
-  const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL || '').trim()
-  const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || '').trim()
-  const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || '').trim()
-  const projectRef = (process.env.SUPABASE_PROJECT_REF || '').trim()
-  const accessToken = (process.env.SUPABASE_ACCESS_TOKEN || '').trim()
-  return { baseUrl, serviceKey, anonKey, projectRef, accessToken }
-}
-
-async function tableExists(baseUrl: string, anonKey: string, bearer: string, table: string) {
-  try {
-    const res = await fetch(`${baseUrl}/rest/v1/${table}?select=id&limit=1`, {
-      headers: { 'Authorization': `Bearer ${bearer}`, 'apikey': anonKey }
-    })
-    return res.ok
-  } catch {
-    return false
-  }
-}
-
-// SQL语句来创建所有必要的表
-const initSQL = `
 -- 创建用户表
 CREATE TABLE IF NOT EXISTS users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -36,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     plan VARCHAR(20) DEFAULT 'free' CHECK (plan IN ('free', 'premium', 'enterprise')),
     usage_count INTEGER DEFAULT 0,
     storage_used_bytes BIGINT DEFAULT 0,
-    max_storage_bytes BIGINT DEFAULT 104857600, -- 100MB default
+    max_storage_bytes BIGINT DEFAULT 104857600,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -139,19 +114,16 @@ ALTER TABLE model_views ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 
 -- 创建RLS策略
--- 用户只能访问自己的记录
 CREATE POLICY "Users can view own profile" ON users FOR SELECT USING (auth.uid()::text = id::text);
 CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid()::text = id::text);
 CREATE POLICY "Users can insert own profile" ON users FOR INSERT WITH CHECK (auth.uid()::text = id::text);
 
--- 公开的模型可以被所有人查看，用户只能管理自己的模型
 CREATE POLICY "Models are viewable by everyone" ON models FOR SELECT USING (is_public = true);
 CREATE POLICY "Users can view own models" ON models FOR SELECT USING (auth.uid()::text = user_id::text);
 CREATE POLICY "Users can insert own models" ON models FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
 CREATE POLICY "Users can update own models" ON models FOR UPDATE USING (auth.uid()::text = user_id::text);
 CREATE POLICY "Users can delete own models" ON models FOR DELETE USING (auth.uid()::text = user_id::text);
 
--- 模型文件的访问策略
 CREATE POLICY "Model files are viewable based on model access" ON model_files FOR SELECT USING (
     EXISTS (SELECT 1 FROM models WHERE models.id = model_files.model_id AND (models.is_public = true OR auth.uid()::text = models.user_id::text))
 );
@@ -165,109 +137,9 @@ CREATE POLICY "Users can delete files for own models" ON model_files FOR DELETE 
     EXISTS (SELECT 1 FROM models WHERE models.id = model_files.model_id AND auth.uid()::text = models.user_id::text)
 );
 
--- 浏览记录策略
 CREATE POLICY "Users can view model views" ON model_views FOR SELECT USING (true);
 CREATE POLICY "Users can insert model views" ON model_views FOR INSERT WITH CHECK (true);
 
--- 交易记录策略
 CREATE POLICY "Users can view own transactions" ON transactions FOR SELECT USING (auth.uid()::text = user_id::text);
 CREATE POLICY "Users can insert own transactions" ON transactions FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
 CREATE POLICY "Users can update own transactions" ON transactions FOR UPDATE USING (auth.uid()::text = user_id::text);
-`
-
-export async function GET() {
-  const { baseUrl, serviceKey, anonKey, projectRef, accessToken } = getEnv()
-  if (!baseUrl || !anonKey) {
-    const missing = [
-      !baseUrl ? 'NEXT_PUBLIC_SUPABASE_URL/SUPABASE_URL or my_app_SUPABASE_URL/NEXT_PUBLIC_my_app_SUPABASE_URL' : null,
-      !anonKey ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY/SUPABASE_ANON_KEY or NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY/my_app_SUPABASE_ANON_KEY' : null,
-    ].filter(Boolean)
-    return NextResponse.json({ status: 'error', message: 'Supabase env missing', missing }, { status: 500 })
-  }
-
-  const requiredTables = ['users','models','model_files','model_views','transactions']
-  const missing: string[] = []
-  const existing: string[] = []
-  const bearer = serviceKey || anonKey
-
-  for (const t of requiredTables) {
-    const ok = await tableExists(baseUrl, anonKey, bearer, t)
-    if (!ok) missing.push(t)
-    else existing.push(t)
-  }
-
-  if (missing.length === 0) {
-    return NextResponse.json({
-      status: 'ok',
-      message: '所有表都已存在，数据库初始化完成',
-      existing,
-      missing: []
-    })
-  }
-
-  return NextResponse.json({
-    status: 'missing',
-    message: '缺少必要的数据库表',
-    existing,
-    missing,
-    totalRequired: requiredTables.length,
-    totalExisting: existing.length,
-    totalMissing: missing.length
-  }, { status: 200 })
-}
-
-export async function POST() {
-  const { baseUrl, serviceKey, anonKey, projectRef, accessToken } = getEnv()
-
-  if (!baseUrl || !anonKey) {
-    const missing = [
-      !baseUrl ? 'NEXT_PUBLIC_SUPABASE_URL/SUPABASE_URL or my_app_SUPABASE_URL/NEXT_PUBLIC_my_app_SUPABASE_URL' : null,
-      !anonKey ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY/SUPABASE_ANON_KEY or NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY/my_app_SUPABASE_ANON_KEY' : null,
-    ].filter(Boolean)
-    return NextResponse.json({ status: 'error', message: 'Supabase env missing', missing }, { status: 500 })
-  }
-
-  const bearer = serviceKey || anonKey
-
-  // 尝试通过Management API创建表
-  if (projectRef && accessToken) {
-    try {
-      const resp = await fetch(`https://api.supabase.com/v1/projects/${projectRef}/sql`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query: initSQL })
-      })
-
-      const body = await resp.json().catch(() => ({}))
-      if (resp.ok) {
-        return NextResponse.json({
-          status: 'ok',
-          message: '数据库初始化成功！所有表和策略已创建',
-          result: body,
-          sql: initSQL
-        })
-      } else {
-        console.warn('Management API失败:', body)
-      }
-    } catch (error) {
-      console.warn('Management API请求失败:', error)
-    }
-  }
-
-  // 如果Management API不可用，返回SQL供手动执行
-  return NextResponse.json({
-    status: 'manual',
-    message: '请手动在Supabase控制台执行以下SQL来初始化数据库',
-    sql: initSQL,
-    instructions: [
-      '1. 打开Supabase控制台',
-      '2. 进入SQL编辑器',
-      '3. 复制并执行上面返回的SQL语句',
-      '4. 执行完成后访问GET接口验证表是否创建成功'
-    ],
-    missingTables: ['users', 'models', 'model_files', 'model_views', 'transactions']
-  })
-}
