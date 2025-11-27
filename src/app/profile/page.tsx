@@ -1,6 +1,5 @@
 'use client'
 
-import Header from '../components/Header'
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
@@ -30,7 +29,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Header />
       <section className="pt-32 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center gap-4 mb-8">

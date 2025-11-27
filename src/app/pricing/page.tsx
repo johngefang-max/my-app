@@ -3,7 +3,6 @@
 import { Check, Star, Zap, Shield, Users, Clock, Download, Headphones, CheckCircle, Globe } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
-import Header from '../components/Header'
 
 export default function Pricing() {
   const { language, setLanguage, t } = useLanguage()
@@ -11,10 +10,6 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <Header
-        logoIcon={<Star className="h-8 w-8 text-purple-400" />}
-      />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">

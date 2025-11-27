@@ -6,7 +6,6 @@ import { Button } from './ui/Button'
 import { Menu, X, Home, GalleryVertical, PlusCircle, Settings, UserCircle } from 'lucide-react'
 import { Logo } from './Logo'
 import { UserProfile } from './UserProfile'
-import { useStore } from '@/store/useStore'
 import { useAuth } from '@/app/contexts/AuthContext'
 
 interface MobileNavProps {
@@ -17,8 +16,7 @@ export function MobileNav({ className = '' }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
-  const { isAuthenticated } = useStore()
-  const { openLogin } = useAuth()
+  const { isAuthenticated, openLogin } = useAuth()
 
   const navigation = [
     { name: 'Home', href: '/', icon: Home },

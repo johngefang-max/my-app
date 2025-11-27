@@ -1,6 +1,5 @@
 'use client'
 
-import Header from '../components/Header'
 import { useAuth } from '../contexts/AuthContext'
 import { useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
@@ -27,7 +26,6 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Header />
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mx-auto bg-black/30 rounded-2xl p-8 border border-white/10">
           <h1 className="text-3xl font-bold text-white mb-6">管理登录</h1>

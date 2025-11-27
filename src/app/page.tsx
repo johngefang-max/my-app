@@ -3,16 +3,15 @@
 import { ArrowRight, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
 import Image from 'next/image'
 import DotGridBackground from './components/DotGridBackground'
-import Header from './components/Header'
 import { useLanguage } from './contexts/LanguageContext'
-import { useStore } from '@/store/useStore'
+import { useAuth } from './contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
  
 
 export default function Home() {
   const { language, setLanguage, t } = useLanguage()
-  const { isAuthenticated } = useStore()
+  const { isAuthenticated, openLogin } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [imgError, setImgError] = useState(false)
@@ -21,7 +20,7 @@ export default function Home() {
     if (isAuthenticated) {
       router.push(path)
     } else {
-      router.push('/auth')
+      openLogin()
     }
   }
   
@@ -30,8 +29,6 @@ export default function Home() {
   }, [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <Header />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">

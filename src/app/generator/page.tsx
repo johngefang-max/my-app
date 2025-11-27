@@ -13,7 +13,6 @@ type ModelViewerProps = React.HTMLAttributes<HTMLElement> & {
 
 const ModelViewer: React.FC<ModelViewerProps> = (props) => React.createElement('model-viewer', props)
 import { useLanguage } from '../contexts/LanguageContext'
-import Header from '../components/Header'
 
 export default function Generator() {
   const { t } = useLanguage()
@@ -238,15 +237,10 @@ export default function Generator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <Header
-        logoText="AI 3D Generator"
-        logoIcon={<Sparkles className="h-8 w-8 text-purple-400" />}
-      />
       <Script src="https://unpkg.com/@google/model-viewer@latest/dist/model-viewer.min.js" strategy="beforeInteractive" />
 
       {/* Main Content */}
-      <div className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
