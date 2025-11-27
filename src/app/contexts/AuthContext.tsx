@@ -1,7 +1,7 @@
 'use client'
 
-import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from 'react'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { createContext, useContext, ReactNode, useState, useCallback } from 'react'
+import { signOut } from 'next-auth/react'
 
 type AuthContextType = {
   isAuthenticated: boolean
@@ -18,10 +18,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
-  const { data: session, status } = useSession()
-  
-  const isAuthenticated = !!session
-  const authLoading = status === 'loading'
+  const isAuthenticated = false
+  const authLoading = false
 
   const openLogin = useCallback(() => setIsLoginOpen(true), [])
   const closeLogin = useCallback(() => setIsLoginOpen(false), [])

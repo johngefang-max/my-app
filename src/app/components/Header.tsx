@@ -25,7 +25,9 @@ export default function Header({
   onBackClick
 }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage()
-  const { data: session, status } = useSession()
+  const sessionHook = useSession()
+  const session = sessionHook?.data
+  const status = sessionHook?.status ?? 'unauthenticated'
   const isAuthenticated = !!session
   const authLoading = status === 'loading'
   const { openLogin } = useAuth()

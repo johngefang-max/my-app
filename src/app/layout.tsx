@@ -41,16 +41,16 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        <AuthProvider>
-          <LanguageProvider initialLanguage={initialLanguage}>
-            <Providers>
-            <Layout>
-              {children}
-            </Layout>
-          </Providers>
-            <LoginModal />
-          </LanguageProvider>
-        </AuthProvider>
+        <Providers>
+          <AuthProvider>
+            <LanguageProvider initialLanguage={initialLanguage}>
+              <Layout>
+                {children}
+              </Layout>
+              <LoginModal />
+            </LanguageProvider>
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

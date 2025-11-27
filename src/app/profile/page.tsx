@@ -6,7 +6,8 @@ import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 
 export default function ProfilePage() {
-  const { data: session } = useSession()
+  const sessionHook = useSession()
+  const session = sessionHook?.data
   const name = session?.user?.name ?? '未登录用户'
   const [avatarError, setAvatarError] = useState(false)
   const avatar = avatarError ? '/avatars/avatar-1.jpg' : (session?.user?.image ?? '/avatars/avatar-1.jpg')
