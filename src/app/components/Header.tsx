@@ -4,7 +4,7 @@ import { Box, Globe, ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
 import { useRouter } from 'next/navigation'
@@ -25,8 +25,10 @@ export default function Header({
   onBackClick
 }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage()
-  const { isAuthenticated, authLoading, logout, openLogin } = useAuth()
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
+  const isAuthenticated = !!session
+  const authLoading = status === 'loading'
+  const { openLogin } = useAuth()
   const [avatarError, setAvatarError] = useState(false)
   const router = useRouter()
 
@@ -89,9 +91,9 @@ export default function Header({
                     </div>
                     <span className="text-sm font-medium">{session?.user?.name ?? 'User'}</span>
                   </Link>
-                  <button onClick={logout} className="px-3 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors text-sm">
-                    {t('nav.logout')}
-                  </button>
+                  <button onClick={() => signOut()} className="px-3 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors text-sm">
+                {t('nav.logout')}
+              </button>
                 </div>
               ) : (
                 <>

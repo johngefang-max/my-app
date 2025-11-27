@@ -7,6 +7,11 @@ import { getToken } from 'next-auth/jwt'
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const protectedPaths = ['/generator']
+  
+  // 排除 /admin 路由，不需要认证
+  if (pathname.startsWith('/admin')) {
+    return NextResponse.next()
+  }
 
   if (protectedPaths.some(p => pathname.startsWith(p))) {
     let authed = false

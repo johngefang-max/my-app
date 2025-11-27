@@ -1,9 +1,7 @@
 'use client'
 
-import { createContext, useContext, ReactNode, useState, useCallback } from 'react'
-
-// This context is now deprecated in favor of the Zustand store
-// but kept for compatibility with existing components
+import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from 'react'
+import { useSession, signIn, signOut } from 'next-auth/react'
 
 type AuthContextType = {
   isAuthenticated: boolean
@@ -20,19 +18,53 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
+  const { data: session, status } = useSession()
+  
+  const isAuthenticated = !!session
+  const authLoading = status === 'loading'
 
   const openLogin = useCallback(() => setIsLoginOpen(true), [])
   const closeLogin = useCallback(() => setIsLoginOpen(false), [])
+  
+  const login = useCallback((username: string, password: string) => {
+    // 这是为 /admin 路由提供的传统登录方式
+    if (username === 'admin' && password === 'admin123') {
+      // 设置一个本地认证标记
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('admin_auth', 'true')
+        window.location.reload()
+      }
+      return true
+    }
+    return false
+  }, [])
+  
+  const logout = useCallback(() => {
+    // 清除本地认证标记
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('admin_auth')
+    }
+    // 执行 NextAuth 登出
+    signOut()
+  }, [])
+  
+  const requireAuth = useCallback((onAuthed: () => void) => {
+    if (isAuthenticated) {
+      onAuthed()
+    } else {
+      openLogin()
+    }
+  }, [isAuthenticated, openLogin])
 
   const contextValue: AuthContextType = {
-    isAuthenticated: false,
-    authLoading: false,
+    isAuthenticated,
+    authLoading,
     isLoginOpen,
-    login: () => false,
-    logout: () => {},
+    login,
+    logout,
     openLogin,
     closeLogin,
-    requireAuth: () => {},
+    requireAuth,
   }
 
   return (

@@ -18,6 +18,7 @@ export default function AdminLogin() {
   const submit = () => {
     const ok = login(username.trim(), password.trim())
     if (ok) {
+      // 登录成功，重定向到目标页面
       router.push(redirect)
     } else {
       setError('用户名或密码错误')
@@ -45,6 +46,7 @@ export default function AdminLogin() {
               <Link href="/" className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg">返回主页</Link>
             </div>
             <div className="text-gray-400 text-sm">登录成功后将跳转至：{redirect}</div>
+            <div className="text-purple-400 text-sm mt-2">默认用户名：admin，密码：admin123</div>
           </div>
         </div>
       </section>
