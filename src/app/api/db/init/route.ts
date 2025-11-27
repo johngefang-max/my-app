@@ -7,16 +7,16 @@ import { join } from 'path'
 function getEnv() {
   const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '').trim()
   const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || '').trim()
-  const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || '').trim()
+  const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || '').trim()
   const projectRef = (process.env.SUPABASE_PROJECT_REF || '').trim()
   const accessToken = (process.env.SUPABASE_ACCESS_TOKEN || '').trim()
   return { baseUrl, serviceKey, anonKey, projectRef, accessToken }
 }
 
-async function tableExists(baseUrl: string, anonOrService: string, table: string) {
+async function tableExists(baseUrl: string, anonKey: string, bearer: string, table: string) {
   try {
     const res = await fetch(`${baseUrl}/rest/v1/${table}?select=id&limit=1`, {
-      headers: { 'Authorization': `Bearer ${anonOrService}`, 'apikey': anonOrService }
+      headers: { 'Authorization': `Bearer ${bearer}`, 'apikey': anonKey }
     })
     return res.ok
   } catch {
@@ -26,14 +26,19 @@ async function tableExists(baseUrl: string, anonOrService: string, table: string
 
 export async function GET() {
   const { baseUrl, serviceKey, anonKey, projectRef, accessToken } = getEnv()
-  if (!baseUrl || !serviceKey || !anonKey) {
-    return NextResponse.json({ status: 'error', message: 'Supabase env missing' }, { status: 500 })
+  if (!baseUrl || !anonKey) {
+    const missing = [
+      !baseUrl ? 'NEXT_PUBLIC_SUPABASE_URL/SUPABASE_URL' : null,
+      !anonKey ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY/SUPABASE_ANON_KEY' : null,
+    ].filter(Boolean)
+    return NextResponse.json({ status: 'error', message: 'Supabase env missing', missing }, { status: 500 })
   }
 
   const requiredTables = ['users','models','model_files','model_views','transactions']
   const missing: string[] = []
+  const bearer = serviceKey || anonKey
   for (const t of requiredTables) {
-    const ok = await tableExists(baseUrl, serviceKey, t)
+    const ok = await tableExists(baseUrl, anonKey, bearer, t)
     if (!ok) missing.push(t)
   }
 
@@ -43,7 +48,7 @@ export async function GET() {
 
   // Try to apply migrations via Supabase Management API if credentials provided
   try {
-    if (projectRef && accessToken) {
+    if (missing.length > 0 && projectRef && accessToken) {
       const migDir = join(process.cwd(), 'supabase', 'migrations')
       const files = readdirSync(migDir).filter(f => f.endsWith('.sql')).sort()
       const sql = files.map(f => readFileSync(join(migDir, f), 'utf-8')).join('\n\n')
@@ -71,4 +76,3 @@ export async function GET() {
     missing,
   }, { status: 200 })
 }
-
