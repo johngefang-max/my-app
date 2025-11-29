@@ -1,7 +1,7 @@
 'use client'
 
 import { Box, Globe, ArrowLeft } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
@@ -32,6 +32,7 @@ export default function Header({
   const authLoading = status === 'loading'
   const { openLogin, user, userLoading } = useAuth()
   const [avatarError, setAvatarError] = useState(false)
+  const [fallbackPoints, setFallbackPoints] = useState<number | null>(null)
   const router = useRouter()
 
   const go = (path: string) => {
@@ -64,6 +65,24 @@ export default function Header({
     if (points >= 5) return 'text-yellow-400'
     return 'text-red-400'
   }
+
+  useEffect(() => {
+    const run = async () => {
+      if (!isAuthenticated || user || !session?.user?.email) return
+      const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL || '')
+      const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || '')
+      if (!baseUrl || !anonKey) return
+      try {
+        const res = await fetch(`${baseUrl}/rest/v1/users?select=points,email&email=eq.${encodeURIComponent(session.user.email)}`, {
+          headers: { 'Authorization': `Bearer ${anonKey}`, 'apikey': anonKey }
+        })
+        const arr = await res.json().catch(() => [])
+        const row = Array.isArray(arr) ? arr[0] : null
+        if (row && typeof row.points === 'number') setFallbackPoints(row.points)
+      } catch {}
+    }
+    run()
+  }, [isAuthenticated, user, session?.user?.email])
 
   return (
     <header className="fixed top-0 w-full bg-black/20 backdrop-blur-md z-50 border-b border-white/10">
@@ -103,11 +122,11 @@ export default function Header({
               isAuthenticated ? (
                 <div className="flex items-center gap-3">
                   {/* Points Display */}
-                  {user && (
+                  {(user || fallbackPoints !== null) && (
                     <div className="flex items-center gap-2 bg-gray-800/50 px-3 py-2 rounded-lg">
                       <span className="text-xs text-gray-400">积分</span>
-                      <span className={`text-sm font-bold ${getPointsColor(user.points)}`}>
-                        {formatPoints(user.points)}
+                      <span className={`text-sm font-bold ${getPointsColor((user?.points ?? fallbackPoints) || 0)}`}>
+                        {formatPoints((user?.points ?? fallbackPoints) || 0)}
                       </span>
                     </div>
                   )}

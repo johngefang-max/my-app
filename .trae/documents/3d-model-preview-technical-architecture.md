@@ -24,37 +24,46 @@ graph TD
 ```
 
 ## 2. Technology Description
-- **Frontend**: Next.js 14 + React 18 + TypeScript + Tailwind CSS
-- **3D Rendering**: Three.js + React Three Fiber + Drei
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **AI Integration**: Fal.ai API for 3D model generation
-- **State Management**: React Context + Zustand
-- **UI Components**: Radix UI + Custom components
+
+* **Frontend**: Next.js 14 + React 18 + TypeScript + Tailwind CSS
+
+* **3D Rendering**: Three.js + React Three Fiber + Drei
+
+* **Backend**: Supabase (PostgreSQL, Auth, Storage)
+
+* **AI Integration**: Fal.ai API for 3D model generation
+
+* **State Management**: React Context + Zustand
+
+* **UI Components**: Radix UI + Custom components
 
 ## 3. Route Definitions
-| Route | Purpose |
-|-------|---------|
-| / | Home page with featured models and hero section |
-| /gallery | Browse all public 3D models |
-| /gallery/[id] | Individual model preview page |
-| /editor/[id] | 3D model editing interface |
-| /generator | AI-powered 3D model generation |
-| /profile | User dashboard and settings |
-| /pricing | Subscription plans and features |
-| /api/auth/* | NextAuth.js authentication handlers |
-| /api/works/* | Model CRUD operations |
-| /api/fal/* | AI generation proxy endpoints |
+
+| Route          | Purpose                                         |
+| -------------- | ----------------------------------------------- |
+| /              | Home page with featured models and hero section |
+| /gallery       | Browse all public 3D models                     |
+| /gallery/\[id] | Individual model preview page                   |
+| /editor/\[id]  | 3D model editing interface                      |
+| /generator     | AI-powered 3D model generation                  |
+| /profile       | User dashboard and settings                     |
+| /pricing       | Subscription plans and features                 |
+| /api/auth/\*   | NextAuth.js authentication handlers             |
+| /api/works/\*  | Model CRUD operations                           |
+| /api/fal/\*    | AI generation proxy endpoints                   |
 
 ## 4. API Definitions
 
 ### 4.1 Model Management API
 
 **Get Model Details**
+
 ```
 GET /api/works/[id]
 ```
 
 Response:
+
 ```json
 {
   "id": "uuid",
@@ -74,11 +83,13 @@ Response:
 ```
 
 **Update Model**
+
 ```
 PUT /api/works/[id]
 ```
 
 Request:
+
 ```json
 {
   "title": "Updated Model Name",
@@ -90,11 +101,13 @@ Request:
 ### 4.2 AI Generation API
 
 **Generate 3D Model**
+
 ```
 POST /api/fal/3d
 ```
 
 Request:
+
 ```json
 {
   "prompt": "A fluffy white dog in running pose",
@@ -105,6 +118,7 @@ Request:
 ```
 
 Response:
+
 ```json
 {
   "job_id": "fal_job_uuid",
@@ -115,11 +129,13 @@ Response:
 ```
 
 **Check Generation Status**
+
 ```
 GET /api/fal/3d/[job_id]
 ```
 
 Response:
+
 ```json
 {
   "job_id": "fal_job_uuid",
@@ -226,6 +242,7 @@ erDiagram
 ### 6.2 Data Definition Language
 
 **Users Table**
+
 ```sql
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -248,6 +265,7 @@ CREATE INDEX idx_users_plan ON users(plan);
 ```
 
 **Models Table**
+
 ```sql
 CREATE TABLE models (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -272,6 +290,7 @@ CREATE INDEX idx_models_view_count ON models(view_count DESC);
 ```
 
 **Model Files Table**
+
 ```sql
 CREATE TABLE model_files (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -294,6 +313,7 @@ CREATE UNIQUE INDEX idx_model_files_primary ON model_files(model_id) WHERE is_pr
 ```
 
 **Supabase Row Level Security Policies**
+
 ```sql
 -- Enable RLS
 ALTER TABLE models ENABLE ROW LEVEL SECURITY;
@@ -325,3 +345,4 @@ GRANT ALL ON models TO authenticated;
 GRANT SELECT ON model_files TO anon;
 GRANT ALL ON model_files TO authenticated;
 ```
+
