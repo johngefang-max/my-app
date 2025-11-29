@@ -30,7 +30,7 @@ export default function Header({
   const status = sessionHook?.status ?? 'unauthenticated'
   const isAuthenticated = !!session
   const authLoading = status === 'loading'
-  const { openLogin } = useAuth()
+  const { openLogin, user, userLoading } = useAuth()
   const [avatarError, setAvatarError] = useState(false)
   const router = useRouter()
 
@@ -48,6 +48,21 @@ export default function Header({
     } else {
       router.back()
     }
+  }
+
+  // Format points for display
+  const formatPoints = (points: number) => {
+    if (points >= 1000) {
+      return `${(points / 1000).toFixed(1)}k`
+    }
+    return points.toString()
+  }
+
+  // Get points color based on amount
+  const getPointsColor = (points: number) => {
+    if (points >= 10) return 'text-green-400'
+    if (points >= 5) return 'text-yellow-400'
+    return 'text-red-400'
   }
 
   return (
@@ -84,25 +99,56 @@ export default function Header({
               <Globe className="h-4 w-4" />
               <span className="text-sm font-medium">{language === 'zh' ? 'EN' : '中文'}</span>
             </button>
-            {authLoading ? null : (
+            {authLoading || userLoading ? null : (
               isAuthenticated ? (
                 <div className="flex items-center gap-3">
+                  {/* Points Display */}
+                  {user && (
+                    <div className="flex items-center gap-2 bg-gray-800/50 px-3 py-2 rounded-lg">
+                      <span className="text-xs text-gray-400">积分</span>
+                      <span className={`text-sm font-bold ${getPointsColor(user.points)}`}>
+                        {formatPoints(user.points)}
+                      </span>
+                    </div>
+                  )}
                   <Link href="/profile" className="flex items-center gap-3 text-white">
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10">
-                      <Image src={(avatarError ? '/avatars/avatar-1.jpg' : (session?.user?.image ?? '/avatars/avatar-1.jpg'))} alt="avatar" width={32} height={32} className="w-full h-full" onError={() => setAvatarError(true)} />
+                      <Image
+                        src={
+                          avatarError
+                            ? '/avatars/avatar-1.jpg'
+                            : (user?.avatar_url ?? session?.user?.image ?? '/avatars/avatar-1.jpg')
+                        }
+                        alt="avatar"
+                        width={32}
+                        height={32}
+                        className="w-full h-full object-cover"
+                        onError={() => setAvatarError(true)}
+                      />
                     </div>
-                    <span className="text-sm font-medium">{session?.user?.name ?? 'User'}</span>
+                    <span className="text-sm font-medium">
+                      {user?.name ?? session?.user?.name ?? 'User'}
+                    </span>
                   </Link>
-                  <button onClick={() => signOut()} className="px-3 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors text-sm">
-                {t('nav.logout')}
-              </button>
+                  <button
+                    onClick={() => signOut()}
+                    className="px-3 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors text-sm"
+                  >
+                    {t('nav.logout')}
+                  </button>
                 </div>
               ) : (
                 <>
-                  <button onClick={openLogin} className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors">
+                  <button
+                    onClick={openLogin}
+                    className="px-4 py-2 rounded-lg border border-purple-500 text-white hover:bg-purple-600 transition-colors"
+                  >
                     {t('nav.login')}
                   </button>
-                  <button onClick={() => router.push('/generator')} className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors">
+                  <button
+                    onClick={() => router.push('/generator')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors"
+                  >
                     {t('nav.startTrial')}
                   </button>
                 </>

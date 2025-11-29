@@ -390,8 +390,94 @@ const translations = {
     'common.contact': '联系我们',
     'common.privacy': '隐私政策',
     'common.terms': '服务条款',
-    'common.copyright': '版权所有'
-    ,
+    'common.copyright': '版权所有',
+
+    // Terms of Service Page
+    'terms.title': '服务条款',
+    'terms.subtitle': '请仔细阅读以下服务条款',
+    'terms.lastUpdated': '最后更新：2025年1月',
+    'terms.intro': '欢迎使用AI3D Pro！以下服务条款（"条款"）规定了您使用我们AI驱动的3D模型生成服务的条款和条件。',
+    'terms.acceptance': '通过访问或使用我们的服务，您确认您已阅读、理解并同意受本条款约束。',
+    'terms.tableOfContents': '目录',
+
+    // Terms sections
+    'terms.section1.title': '1. 服务描述',
+    'terms.section1.content': 'AI3D Pro是一个基于人工智能的3D模型生成平台，允许用户：\n• 通过文本描述生成3D模型\n• 上传图片转换为3D模型\n• 编辑和优化生成的3D模型\n• 下载和使用生成的模型文件\n• 分享和协作功能',
+
+    'terms.section2.title': '2. 用户账户',
+    'terms.section2.content': '账户注册：您需要创建账户才能使用我们的服务。您提供的所有信息必须真实、准确和完整。\n账户安全：您负责保护账户密码的安全性，并对您账户下的所有活动承担责任。\n账户终止：我们保留在违反条款的情况下暂停或终止您账户的权利。',
+
+    'terms.section3.title': '3. 使用许可',
+    'terms.section3.content': '免费用户：生成的模型可个人学习和非商业用途。\n付费用户：获得商业使用许可证，可将模型用于商业项目。\n内容所有权：您对生成的内容拥有所有权，但我们保留在服务中使用匿名的模型进行展示和推广的权利。',
+
+    'terms.section4.title': '4. 用户行为准则',
+    'terms4.content': '禁止行为：\n• 生成违法、有害、威胁性、辱骂性或侵权内容\n• 违反适用的法律法规\n• 侵犯他人的知识产权\n• 干扰或破坏服务的正常运行\n• 使用服务进行欺诈或恶意活动',
+
+    'terms.section5.title': '5. 知识产权',
+    'terms.section5.content': '平台权利：AI3D Pro及其所有内容、功能和服务均受知识产权法律保护。\n用户内容：您保留对生成内容的所有权，但授予我们使用、修改和展示的权利。\n反馈：我们欢迎用户反馈，您提供的反馈可能被用于改进服务。',
+
+    'terms.section6.title': '6. 付费与退款',
+    'terms.section6.content': '定价：服务采用订阅制，价格可能随时调整，调整前会通知用户。\n支付：我们支持多种支付方式，包括信用卡、支付宝、微信支付等。\n退款：根据我们的退款政策，未使用的订阅期可能获得部分退款。',
+
+    'terms.section7.title': '7. 免责声明',
+    'terms.section7.content': '服务按"现状"提供，不提供任何明示或暗示的保证。\n准确性：我们不保证AI生成结果的准确性或适用性。\n可用性：服务可能因维护、更新或其他原因暂时中断。\n损失责任：我们对因使用服务而产生的任何间接、偶然、特殊或后果性损害不承担责任。',
+
+    'terms.section8.title': '8. 服务变更与终止',
+    'terms.section8.content': '服务变更：我们保留随时修改或终止服务的权利，重要变更会提前通知用户。\n账户终止：用户可随时删除账户，删除后相关数据可能无法恢复。\n条款更新：我们会定期更新这些条款，继续使用服务即表示接受新条款。',
+
+    'terms.section9.title': '9. 争议解决',
+    'terms.section9.content': '适用法律：本条款受中华人民共和国法律管辖。\n争议解决：任何争议应通过友好协商解决，协商不成可向有管辖权的法院提起诉讼。\n管辖权：争议管辖法院为服务提供方所在地人民法院。',
+
+    'terms.section10.title': '10. 联系我们',
+    'terms.section10.content': '如有任何问题或疑虑，请通过以下方式联系我们：\n• 邮箱：support@ai3dpro.com\n• 电话：+86 123 4567 8900\n• 地址：中国上海市浦东新区XX路XX号',
+
+    // Privacy Policy Page
+    'privacy.title': '隐私政策',
+    'privacy.subtitle': '您的隐私对我们很重要',
+    'privacy.lastUpdated': '最后更新：2025年1月',
+    'privacy.intro': 'AI3D Pro（"我们"、"公司"或"服务"）致力于保护您的隐私。本隐私政策说明了我们如何收集、使用、存储和保护您的个人信息。',
+    'privacy.acceptance': '使用我们的服务即表示您同意本政策中描述的做法。',
+    'privacy.tableOfContents': '目录',
+
+    // Privacy sections
+    'privacy.section1.title': '1. 我们收集的信息',
+    'privacy.section1.content': '账户信息：包括您的姓名、电子邮件地址、密码、联系方式等。\n使用信息：包括您如何使用服务、生成历史记录、偏好设置等。\n技术信息：包括IP地址、浏览器类型、设备信息、访问时间等。\n支付信息：如果您使用付费服务，我们会收集相关的支付信息。',
+
+    'privacy.section2.title': '2. 信息使用方式',
+    'privacy.section2.content': '服务提供：提供、运营、维护和改进我们的AI3D生成服务。\n个性化：根据您的使用习惯提供个性化的用户体验。\n沟通：通过电子邮件、短信等方式与您沟通。\n分析：分析服务使用情况以改进我们的产品和服务。\n安全：监控和防范滥用、欺诈等安全威胁。',
+
+    'privacy.section3.title': '3. 信息共享',
+    'privacy.section3.content': '我们不会向第三方出售、交易或转移您的个人信息，除非：\n• 获得您的明确同意\n• 法律要求或法院命令\n• 为了保护我们的权利、财产或安全\n• 与可信服务提供商共享（仅限于提供服务所需）\n• 在合并、收购或资产转让的情况下',
+
+    'privacy.section4.title': '4. 数据安全',
+    'privacy.section4.content': '安全措施：我们采用行业标准的安全措施保护您的信息。\n数据加密：敏感数据在传输和存储过程中进行加密。\n访问控制：仅授权人员才能访问您的个人信息。\n定期审查：我们定期审查安全措施的有效性。',
+
+    'privacy.section5.title': '5. Cookie使用',
+    'privacy.section5.content': 'Cookie类型：我们使用必要Cookie、性能Cookie和营销Cookie。\n用途：Cookie用于记住您的偏好、分析网站流量和个性化广告。\n管理：您可以通过浏览器设置管理Cookie偏好。\n第三方：我们可能使用第三方分析服务，这些服务可能有自己的Cookie政策。',
+
+    'privacy.section6.title': '6. 数据保留',
+    'privacy.section6.content': '保留期限：我们仅在必要期间保留您的个人信息。\n删除请求：您有权要求删除您的个人信息，我们将根据法律要求处理。\n匿名化：不再需要的信息将被匿名化处理。',
+
+    'privacy.section7.title': '7. 您的权利',
+    'privacy.section7.content': '访问权：您有权访问我们持有的关于您的个人信息。\n• 更正权：您可以更正不准确的信息。\n• 删除权：在特定情况下，您可以要求删除您的信息。\n• 限制处理权：您可以限制我们处理您的信息。\n• 数据可携带权：您可以以结构化格式获取您的数据。',
+
+    'privacy.section8.title': '8. 第三方服务',
+    'privacy8.content': '我们的服务可能包含指向第三方网站或服务的链接。这些第三方有自己的隐私政策，我们不对其做法负责。\n建议您在使用第三方服务前阅读其隐私政策。',
+
+    'privacy.section9.title': '9. 儿童隐私',
+    'privacy.section9.content': '年龄限制：我们的服务不面向13岁以下的儿童。\n• 如果我们发现收集了13岁以下儿童的个人信息，我们将采取步骤删除这些信息。\n• 如果您认为我们可能收集了儿童信息，请立即联系我们。',
+
+    'privacy.section10.title': '10. 政策更新',
+    'privacy.section10.content': '更新频率：我们可能会不时更新本隐私政策。\n• 重要变更：当有重大变更时，我们会通过网站或电子邮件通知您。\n• 生效时间：更新后的政策将在发布后立即生效。',
+
+    'privacy.section11.title': '11. 联系我们',
+    'privacy.section11.content': '如果您对本隐私政策有任何疑问或疑虑，请通过以下方式联系我们：\n• 邮箱：privacy@ai3dpro.com\n• 电话：+86 123 4567 8901\n• 地址：中国上海市浦东新区XX路XX号',
+
+    // Common footer links
+    'terms.viewFull': '查看完整条款',
+    'privacy.viewFull': '查看完整政策',
+    'legal.creamPayment': 'Cream支付服务条款',
+
     'comments.title': '用户评论',
     'comments.addPlaceholder': '写下你的看法...',
     'comments.submit': '发送',
@@ -735,8 +821,94 @@ const translations = {
     'common.contact': 'Contact Us',
     'common.privacy': 'Privacy Policy',
     'common.terms': 'Terms of Service',
-    'common.copyright': 'Copyright'
-    ,
+    'common.copyright': 'All rights reserved.',
+
+    // Terms of Service Page
+    'terms.title': 'Terms of Service',
+    'terms.subtitle': 'Please read these terms of service carefully',
+    'terms.lastUpdated': 'Last Updated: January 2025',
+    'terms.intro': 'Welcome to AI3D Pro! These Terms of Service ("Terms") govern your use of our AI-powered 3D model generation service.',
+    'terms.acceptance': 'By accessing or using our service, you acknowledge that you have read, understood, and agree to be bound by these Terms.',
+    'terms.tableOfContents': 'Table of Contents',
+
+    // Terms sections
+    'terms.section1.title': '1. Service Description',
+    'terms.section1.content': 'AI3D Pro is an AI-powered 3D model generation platform that allows users to:\n• Generate 3D models from text descriptions\n• Upload images and convert them to 3D models\n• Edit and optimize generated 3D models\n• Download and use generated model files\n• Share and collaborate features',
+
+    'terms.section2.title': '2. User Accounts',
+    'terms.section2.content': 'Account Registration: You must create an account to use our services. All information you provide must be true, accurate, and complete.\nAccount Security: You are responsible for safeguarding your account password and for all activities that occur under your account.\nAccount Termination: We reserve the right to suspend or terminate your account for violation of these Terms.',
+
+    'terms.section3.title': '3. Usage License',
+    'terms.section3.content': 'Free Users: Generated models may be used for personal learning and non-commercial purposes.\nPaid Users: Receive commercial use licenses for models used in commercial projects.\nContent Ownership: You own the content you generate, but we reserve the right to use anonymous models in our service for display and promotional purposes.',
+
+    'terms.section4.title': '4. User Conduct',
+    'terms4.content': 'Prohibited Activities:\n• Generate illegal, harmful, threatening, abusive, or infringing content\n• Violate applicable laws and regulations\n• Infringe on others intellectual property rights\n• Interfere with or disrupt the normal operation of the service\n• Use the service for fraudulent or malicious activities',
+
+    'terms.section5.title': '5. Intellectual Property',
+    'terms.section5.content': 'Platform Rights: AI3D Pro and all its content, features, and functionality are protected by intellectual property laws.\nUser Content: You retain ownership of the content you generate, but grant us the right to use, modify, and display it.\nFeedback: We welcome user feedback, and feedback you provide may be used to improve our services.',
+
+    'terms.section6.title': '6. Payments and Refunds',
+    'terms.section6.content': 'Pricing: Services are offered on a subscription basis, and prices may change at any time with prior notice.\nPayment: We support multiple payment methods, including credit cards, Alipay, WeChat Pay, and others.\nRefunds: Partial refunds may be available for unused subscription periods according to our refund policy.',
+
+    'terms.section7.title': '7. Disclaimer of Warranties',
+    'terms.section7.content': 'Service Availability: The service is provided "as is" without any express or implied warranties.\nAccuracy: We do not guarantee the accuracy or suitability of AI-generated results.\nAvailability: The service may be temporarily interrupted for maintenance, updates, or other reasons.\nLimitation of Liability: We are not liable for any indirect, incidental, special, or consequential damages arising from your use of the service.',
+
+    'terms.section8.title': '8. Service Changes and Termination',
+    'terms8.content': 'Service Changes: We reserve the right to modify or terminate the service at any time, with important changes communicated in advance.\nAccount Termination: You may delete your account at any time; upon deletion, related data may not be recoverable.\nTerms Updates: We periodically update these Terms; continued use of the service indicates acceptance of the new Terms.',
+
+    'terms.section9.title': '9. Dispute Resolution',
+    'terms.section9.content': 'Governing Law: These Terms are governed by the laws of the Peoples Republic of China.\nDispute Resolution: Any disputes should be resolved through friendly negotiation; if negotiation fails, they may be brought to a competent court.\nJurisdiction: The jurisdiction for disputes shall be the Peoples Court where the service provider is located.',
+
+    'terms.section10.title': '10. Contact Us',
+    'terms.section10.content': 'If you have any questions or concerns, please contact us:\n• Email: support@ai3dpro.com\n• Phone: +86 123 4567 8900\n• Address: XX Road XX, Pudong New Area, Shanghai, China',
+
+    // Privacy Policy Page
+    'privacy.title': 'Privacy Policy',
+    'privacy.subtitle': 'Your privacy is important to us',
+    'privacy.lastUpdated': 'Last Updated: January 2025',
+    'privacy.intro': 'AI3D Pro ("we", "company", or "service") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your personal information.',
+    'privacy.acceptance': 'Your use of our service indicates your agreement to the practices described in this policy.',
+    'privacy.tableOfContents': 'Table of Contents',
+
+    // Privacy sections
+    'privacy.section1.title': '1. Information We Collect',
+    'privacy.section1.content': 'Account Information: Includes your name, email address, password, contact details, etc.\nUsage Information: Includes how you use the service, generation history, preferences, etc.\nTechnical Information: Includes IP address, browser type, device information, access times, etc.\nPayment Information: If you use paid services, we collect related payment information.',
+
+    'privacy.section2.title': '2. How We Use Your Information',
+    'privacy.section2.content': 'Service Provision: To provide, operate, maintain, and improve our AI3D generation service.\nPersonalization: To provide personalized user experiences based on your usage habits.\nCommunication: To communicate with you via email, SMS, etc.\nAnalytics: To analyze service usage patterns to improve our products and services.\nSecurity: To monitor and prevent abuse, fraud, and other security threats.',
+
+    'privacy.section3.title': '3. Information Sharing',
+    'privacy.section3.content': 'We do not sell, trade, or transfer your personal information to third parties, except:\n• With your explicit consent\n• When required by law or court order\n• To protect our rights, property, or safety\n• With trusted service providers (limited to service provision needs)\n• In case of merger, acquisition, or asset transfer',
+
+    'privacy.section4.title': '4. Data Security',
+    'privacy.section4.content': 'Security Measures: We implement industry-standard security measures to protect your information.\nData Encryption: Sensitive data is encrypted during transmission and storage.\nAccess Control: Only authorized personnel have access to your personal information.\nRegular Audits: We regularly review the effectiveness of our security measures.',
+
+    'privacy.section5.title': '5. Cookie Usage',
+    'privacy.section5.content': 'Cookie Types: We use essential, performance, and marketing cookies.\nPurpose: Cookies are used to remember your preferences, analyze website traffic, and personalize advertisements.\nManagement: You can manage your cookie preferences through browser settings.\nThird Party: We may use third-party analytics services that may have their own cookie policies.',
+
+    'privacy.section6.title': '6. Data Retention',
+    'privacy.section6.content': 'Retention Period: We retain your personal information only as long as necessary.\nDeletion Requests: You have the right to request deletion of your personal information; we will process according to legal requirements.\nAnonymization: Information no longer needed will be anonymized.',
+
+    'privacy.section7.title': '7. Your Rights',
+    'privacy7.content': 'Access Right: You have the right to access personal information we hold about you.\n• Correction Right: You can correct inaccurate information.\n• Deletion Right: In certain circumstances, you can request deletion of your information.\n• Restriction Right: You can restrict our processing of your information.\n• Data Portability Right: You can obtain your data in a structured format.',
+
+    'privacy.section8.title': '8. Third-Party Services',
+    'privacy8.content': 'Our service may contain links to third-party websites or services. These third parties have their own privacy policies, and we are not responsible for their practices.\nWe recommend reading their privacy policies before using third-party services.',
+
+    'privacy.section9.title': '9. Childrens Privacy',
+    'privacy.section9.content': 'Age Restrictions: Our service is not intended for children under 13 years of age.\n• If we discover that we have collected personal information from children under 13, we will take steps to delete this information.\n• If you believe we may have collected information from children, please contact us immediately.',
+
+    'privacy.section10.title': '10. Policy Updates',
+    'privacy.section10.content': 'Update Frequency: We may update this privacy policy from time to time.\n• Significant Changes: When we make significant changes, we will notify you via our website or email.\n• Effective Date: Updated policies take effect immediately upon posting.',
+
+    'privacy.section11.title': '11. Contact Us',
+    'privacy.section11.content': 'If you have any questions or concerns about this privacy policy, please contact us:\n• Email: privacy@ai3dpro.com\n• Phone: +86 123 4567 8901\n• Address: XX Road XX, Pudong New Area, Shanghai, China',
+
+    // Common footer links
+    'terms.viewFull': 'View Full Terms',
+    'privacy.viewFull': 'View Full Policy',
+    'legal.creamPayment': 'Cream Payment Terms',
+
     'comments.title': 'Comments',
     'comments.addPlaceholder': 'Write a comment...',
     'comments.submit': 'Send',

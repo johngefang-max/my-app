@@ -8,14 +8,14 @@ const supabaseUrl = (
         || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL)
     : (process.env.NEXT_PUBLIC_SUPABASE_URL
         || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL)
-) || 'https://bcwzqefgvzuxiwoukhpf.supabase.co'
+) || 'https://placeholder.supabase.co'
 
 const supabaseAnonKey = (
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY
   || process.env.my_app_SUPABASE_ANON_KEY
   || process.env.SUPABASE_ANON_KEY
-) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjd3pxZWZndnp1eGl3b3VraHBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MjU1NjcsImV4cCI6MjA3NjEwMTU2N30.IeSLm84GEI6gc5ADHSZf2krDAU2EzA5oMDjFCMgN1_g'
+) || 'anon-key-placeholder'
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -43,6 +43,9 @@ export type Database = {
           usage_count: number
           storage_used_bytes: number
           max_storage_bytes: number
+          points: number
+          total_points_earned: number
+          total_points_spent: number
           created_at: string
           updated_at: string
         }
@@ -56,6 +59,9 @@ export type Database = {
           usage_count?: number
           storage_used_bytes?: number
           max_storage_bytes?: number
+          points?: number
+          total_points_earned?: number
+          total_points_spent?: number
           created_at?: string
           updated_at?: string
         }
@@ -69,6 +75,9 @@ export type Database = {
           usage_count?: number
           storage_used_bytes?: number
           max_storage_bytes?: number
+          points?: number
+          total_points_earned?: number
+          total_points_spent?: number
           created_at?: string
           updated_at?: string
         }
@@ -184,6 +193,94 @@ export type Database = {
           metadata?: any | null
         }
       }
+      generations: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          description: string | null
+          model_url: string | null
+          image_url: string | null
+          model_type: '3d' | 'image'
+          generation_type: 'text-to-image' | 'image-edit' | 'image-to-3d' | 'text-to-3d'
+          model_id: string
+          parameters: any | null
+          points_cost: number
+          status: 'pending' | 'processing' | 'completed' | 'failed'
+          error_message: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          description?: string | null
+          model_url?: string | null
+          image_url?: string | null
+          model_type: '3d' | 'image'
+          generation_type: 'text-to-image' | 'image-edit' | 'image-to-3d' | 'text-to-3d'
+          model_id: string
+          parameters?: any | null
+          points_cost: number
+          status?: 'pending' | 'processing' | 'completed' | 'failed'
+          error_message?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          description?: string | null
+          model_url?: string | null
+          image_url?: string | null
+          model_type?: '3d' | 'image'
+          generation_type?: 'text-to-image' | 'image-edit' | 'image-to-3d' | 'text-to-3d'
+          model_id?: string
+          parameters?: any | null
+          points_cost?: number
+          status?: 'pending' | 'processing' | 'completed' | 'failed'
+          error_message?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      points_transactions: {
+        Row: {
+          id: string
+          user_id: string
+          amount: number
+          type: 'earned' | 'spent' | 'refunded' | 'bonus'
+          description: string
+          related_generation_id: string | null
+          balance_before: number
+          balance_after: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          amount: number
+          type: 'earned' | 'spent' | 'refunded' | 'bonus'
+          description: string
+          related_generation_id?: string | null
+          balance_before: number
+          balance_after: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          amount?: number
+          type?: 'earned' | 'spent' | 'refunded' | 'bonus'
+          description?: string
+          related_generation_id?: string | null
+          balance_before?: number
+          balance_after?: number
+          created_at?: string
+        }
+      }
       transactions: {
         Row: {
           id: string
@@ -229,3 +326,18 @@ export type Model = Tables['models']['Row']
 export type ModelFile = Tables['model_files']['Row']
 export type ModelView = Tables['model_views']['Row']
 export type Transaction = Tables['transactions']['Row']
+export type Generation = Tables['generations']['Row']
+export type PointsTransaction = Tables['points_transactions']['Row']
+
+// Points system configuration
+export const POINTS_CONFIG = {
+  GENERATION_COSTS: {
+    'text-to-image': 3,
+    'image-edit': 3,
+    'image-to-3d': 3,
+    'text-to-3d': 3,
+  },
+  DAILY_BONUS: 5,
+  SIGNUP_BONUS: 10,
+  REFERRAL_BONUS: 10,
+}

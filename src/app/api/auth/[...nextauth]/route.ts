@@ -14,10 +14,11 @@ const handler = NextAuth({
   events: {
     async signIn({ user, account }) {
       try {
-        const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL || 'https://bcwzqefgvzuxiwoukhpf.supabase.co') as string
-        const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjd3pxZWZndnp1eGl3b3VraHBmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDUyNTU2NywiZXhwIjoyMDc2MTAxNTY3fQ.Y7LAHi2E7FTBn687XiVYqKV4CQpH3vGqxbRIRyix4Do') as string
-        const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjd3pxZWZndnp1eGl3b3VraHBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1MjU1NjcsImV4cCI6MjA3NjEwMTU2N30.IeSLm84GEI6gc5ADHSZf2krDAU2EzA5oMDjFCMgN1_g') as string
-        if (!baseUrl || !serviceKey || !anonKey || !user?.email) return
+        const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL) as string
+        const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || '') as string
+        const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || process.env.my_app_SUPABASE_ANON_KEY || '') as string
+        if (!baseUrl || !anonKey || !user?.email) return
+        const bearer = serviceKey || anonKey
         const providerSub = account?.providerAccountId || ''
         const upsertBody = [{
           email: user.email ?? undefined,
@@ -29,7 +30,7 @@ const handler = NextAuth({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${serviceKey}`,
+            'Authorization': `Bearer ${bearer}`,
             'apikey': anonKey,
             'Prefer': 'resolution=merge-duplicates,return=representation',
           },
@@ -39,7 +40,7 @@ const handler = NextAuth({
         const userId = Array.isArray(rep) && rep[0]?.id ? rep[0].id : undefined
         if (userId) {
           const mCheck = await fetch(`${baseUrl}/rest/v1/models?user_id=eq.${encodeURIComponent(userId)}&select=id&limit=1`, {
-            headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': anonKey }
+            headers: { 'Authorization': `Bearer ${bearer}`, 'apikey': anonKey }
           })
           const m = await mCheck.json().catch(() => [])
           if (!Array.isArray(m) || m.length === 0) {
@@ -47,7 +48,7 @@ const handler = NextAuth({
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${serviceKey}`,
+                'Authorization': `Bearer ${bearer}`,
                 'apikey': anonKey,
                 'Prefer': 'return=representation'
               },
