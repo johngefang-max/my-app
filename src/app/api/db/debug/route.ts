@@ -48,13 +48,23 @@ function env() {
 export async function GET() {
   const e = env()
   const baseUrl = e.resolved.baseUrl
-  const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '').trim()
-  const bearer = (process.env.SUPABASE_SERVICE_ROLE_KEY || anonKey)
+  const anonKey = (
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    || process.env.SUPABASE_ANON_KEY
+    || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY
+    || process.env.my_app_SUPABASE_ANON_KEY
+    || ''
+  ).trim()
+  const bearer = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || anonKey)
 
   const checks: Record<string, unknown> = { env: e }
   
   if (!baseUrl || !anonKey) {
-    return NextResponse.json({ status: 'error', message: 'Supabase env missing', ...checks }, { status: 500 })
+    const missing = [
+      !baseUrl ? 'NEXT_PUBLIC_SUPABASE_URL/SUPABASE_URL or NEXT_PUBLIC_my_app_SUPABASE_URL/my_app_SUPABASE_URL' : null,
+      !anonKey ? 'NEXT_PUBLIC_SUPABASE_ANON_KEY/SUPABASE_ANON_KEY or NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY/my_app_SUPABASE_ANON_KEY' : null,
+    ].filter(Boolean)
+    return NextResponse.json({ status: 'error', message: 'Supabase env missing', missing, ...checks }, { status: 500 })
   }
 
   try {
