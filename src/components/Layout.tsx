@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { UserProfile } from '@/components/UserProfile'
 import { Button } from '@/components/ui/Button'
@@ -173,15 +174,15 @@ export function Layout({ children }: LayoutProps) {
               © 2024 3D Platform. All rights reserved.
             </div>
             <div className="flex space-x-6">
-              <button className="text-gray-400 hover:text-white text-sm transition-colors">
+              <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
                 Privacy Policy
-              </button>
-              <button className="text-gray-400 hover:text-white text-sm transition-colors">
+              </Link>
+              <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
                 Terms of Service
-              </button>
-              <button className="text-gray-400 hover:text-white text-sm transition-colors">
-                Contact
-              </button>
+              </Link>
+              <Link href="/pricing" className="text-gray-400 hover:text-white text-sm transition-colors">
+                Pricing
+              </Link>
             </div>
           </div>
         </div>
