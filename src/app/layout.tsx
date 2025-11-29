@@ -46,16 +46,6 @@ export default async function RootLayout({
             <LanguageProvider initialLanguage={initialLanguage}>
               <Header />
               {children}
-              <footer className="bg-gray-800 border-t border-gray-700 mt-auto">
-                <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                  <div className="text-gray-400 text-sm">© 2024 AI3D Pro</div>
-                  <div className="flex space-x-6">
-                    <a href="/privacy" className="text-gray-400 hover:text-white text-sm">Privacy Policy</a>
-                    <a href="/terms" className="text-gray-400 hover:text-white text-sm">Terms of Service</a>
-                    <a href="/pricing" className="text-gray-400 hover:text-white text-sm">Pricing</a>
-                  </div>
-                </div>
-              </footer>
               <LoginModal />
             </LanguageProvider>
           </AuthProvider>
