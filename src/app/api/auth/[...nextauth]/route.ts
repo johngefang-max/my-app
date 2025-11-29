@@ -19,12 +19,28 @@ const handler = NextAuth({
         const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || process.env.my_app_SUPABASE_ANON_KEY || '') as string
         if (!baseUrl || !anonKey || !user?.email) return
         const bearer = serviceKey || anonKey
-        const providerSub = account?.providerAccountId || ''
+        const baseName = (user.name || (user.email || '').split('@')[0] || '').toLowerCase().replace(/[^a-z0-9\-_.]/g, '-')
+        let username = baseName || `user-${Math.random().toString(36).slice(2,8)}`
+        // ensure unique username
+        for (let i = 0; i < 2; i++) {
+          const checkRes = await fetch(`${baseUrl}/rest/v1/users?username=eq.${encodeURIComponent(username)}&select=id&limit=1`, {
+            headers: { 'Authorization': `Bearer ${bearer}`, 'apikey': anonKey }
+          })
+          const exists = await checkRes.json().catch(() => [])
+          if (Array.isArray(exists) && exists.length > 0) {
+            username = `${baseName || 'user'}-${Math.random().toString(36).slice(2,8)}`
+          } else {
+            break
+          }
+        }
         const upsertBody = [{
           email: user.email ?? undefined,
-          name: user.name ?? undefined,
+          username,
           avatar_url: user.image ?? undefined,
-          provider_sub: providerSub,
+          plan: 'free',
+          usage_count: 0,
+          storage_used_bytes: 0,
+          max_storage_bytes: 1073741824,
         }]
         const upsertRes = await fetch(`${baseUrl}/rest/v1/users?on_conflict=email`, {
           method: 'POST',
