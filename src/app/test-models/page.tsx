@@ -2,6 +2,8 @@
 
 import { useRef, useEffect } from 'react'
 
+const ModelViewer: any = 'model-viewer'
+
 export default function TestModelPage() {
   const testModels = [
     {
@@ -71,7 +73,7 @@ function TestModelViewer({ model }: { model: { name: string; url: string; descri
       <p className="text-gray-400 mb-4">{model.description}</p>
 
       <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">
-        <model-viewer
+        <ModelViewer
           ref={viewerRef}
           src={model.url}
           auto-rotate

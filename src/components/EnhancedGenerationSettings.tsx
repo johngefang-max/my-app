@@ -43,7 +43,7 @@ export default function EnhancedGenerationSettings({
     if (modelConfig) {
       onSettingsChange({
         ...settings,
-        ...modelConfig.default_params
+        ...(modelConfig.default_params as FalApiConfig)
       })
     }
   }
@@ -124,9 +124,8 @@ export default function EnhancedGenerationSettings({
     icon: any
   }) => {
     const range = PARAM_RANGES[param as keyof typeof PARAM_RANGES]
-    const value = settings[param] as number || range.default
-
     if (!range) return null
+    const value = (settings[param] as number) ?? (range.default ?? 0)
 
     return (
       <div>
@@ -194,7 +193,7 @@ export default function EnhancedGenerationSettings({
     max?: number
   }) => {
     const range = PARAM_RANGES[param as keyof typeof PARAM_RANGES]
-    const value = settings[param] as number || range?.default || 1
+    const value = (settings[param] as number) ?? (range?.default ?? 1)
 
     return (
       <div>

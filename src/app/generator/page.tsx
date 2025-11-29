@@ -234,8 +234,9 @@ export default function NewGenerator() {
     input.type = 'file'
     input.accept = 'image/*,.jpg,.jpeg,.png,.webp'
     input.multiple = true
-    input.onchange = async (e) => {
-      const files = Array.from(e.target?.files || [])
+    input.onchange = async (e: Event) => {
+      const target = e.target as HTMLInputElement | null
+      const files = Array.from(target?.files ?? [])
       if (files.length > 0) {
         await handleImageUpload(files)
       }
@@ -249,8 +250,9 @@ export default function NewGenerator() {
     input.type = 'file'
     input.accept = '.glb,.gltf,.obj,.fbx,.stl,.dae,.ply'
     input.multiple = true
-    input.onchange = async (e) => {
-      const files = Array.from(e.target?.files || [])
+    input.onchange = async (e: Event) => {
+      const target = e.target as HTMLInputElement | null
+      const files = Array.from(target?.files ?? [])
 
       // 检查是否有图片文件
       const imageFiles = files.filter(file =>
@@ -1015,9 +1017,9 @@ export default function NewGenerator() {
                     onClick={handleGenerate}
                     disabled={
                       isGenerating ||
-                      (!textInput && activeMethod === 'text') && uploadedImages.length === 0 ||
+                      ((activeMethod === 'text' && !textInput) && uploadedImages.length === 0) ||
                       !isAuthenticated ||
-                      (user && user.points < 3)
+                      (!!user && user.points < 3)
                     }
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-600 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   >

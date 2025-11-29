@@ -42,7 +42,7 @@ export default function SimpleGenerationSettings({
     if (modelConfig) {
       onSettingsChange({
         ...settings,
-        ...modelConfig.default_params
+        ...(modelConfig.default_params as FalApiConfig)
       })
     }
   }
@@ -58,9 +58,8 @@ export default function SimpleGenerationSettings({
     icon: any
   }) => {
     const range = PARAM_RANGES[param as keyof typeof PARAM_RANGES]
-    const value = settings[param] as number || range.default
-
     if (!range) return null
+    const value = (settings[param] as number) ?? (range.default ?? 0)
 
     return (
       <div className="space-y-2">
@@ -99,7 +98,7 @@ export default function SimpleGenerationSettings({
     max?: number
   }) => {
     const range = PARAM_RANGES[param as keyof typeof PARAM_RANGES]
-    const value = settings[param] as number || range?.default || 1
+    const value = (settings[param] as number) ?? (range?.default ?? 1)
 
     return (
       <div className="space-y-2">

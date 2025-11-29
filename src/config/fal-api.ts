@@ -4,6 +4,9 @@ export interface FalApiConfig {
   model_id?: string
   seed?: number | null
   sync_mode?: boolean
+  enable_safety_checker?: boolean
+  num_attempts?: number
+  timeout?: number
 
   // Nano Banana Pro (文本转图像) 参数
   prompt?: string
@@ -13,23 +16,29 @@ export interface FalApiConfig {
   height?: number
   negative_prompt?: string
   num_images?: number
+  aspect_ratio?: string
+  prompt_strength?: number
+  safety_tolerance?: number
+  scheduler?: string
 
   // Nano Banana Pro Edit (图像编辑) 参数
   image_url?: string  // 用于图像编辑
-  num_inference_steps?: number
-  guidance_scale?: number
-  width?: number
-  height?: number
-  negative_prompt?: string
   strength?: number  // 编辑强度
 
   // Trellis (3D模型生成) 参数
   scale?: number  // 3D模型缩放
   num_samples?: number  // 生成样本数量
   output_format?: 'glb' | 'obj' | 'gltf' | 'ply'
+  output_format_3d?: 'glb' | 'gltf' | 'obj' | 'fbx' | 'stl' | 'ply'
   simplify?: boolean  // 简化模型
   texture_size?: number  // 纹理大小
   max_faces?: number  // 最大面数
+  mesh_simplify?: number
+  processing_mode?: string
+  ss_guidance_strength?: number
+  ss_sampling_steps?: number
+  slat_guidance_strength?: number
+  slat_sampling_steps?: number
 }
 
 // 不同API服务的参数映射
@@ -91,7 +100,11 @@ export const FAL_APIS = {
 export const PARAM_OPTIONS = {
   output_format: ['glb', 'obj', 'gltf', 'ply'],
   image_formats: ['jpg', 'jpeg', 'png', 'webp'],
-  model_formats: ['glb', 'gltf', 'obj', 'fbx', 'stl', 'dae', 'ply']
+  model_formats: ['glb', 'gltf', 'obj', 'fbx', 'stl', 'dae', 'ply'],
+  aspect_ratio: ['1:1','4:3','3:2','16:9','9:16'],
+  output_format_3d: ['glb','gltf','obj','fbx','stl','ply'],
+  scheduler: ['DDIM','PNDM','DEIS','LMS'],
+  processing_mode: ['fast','balanced','quality']
 }
 
 // 参数范围配置
@@ -100,6 +113,8 @@ export const PARAM_RANGES = {
   num_inference_steps: { min: 10, max: 50, step: 1, default: 20 },
   guidance_scale: { min: 1.0, max: 20.0, step: 0.1, default: 7.5 },
   strength: { min: 0.1, max: 1.0, step: 0.1, default: 0.8 },
+  prompt_strength: { min: 0.0, max: 1.0, step: 0.1, default: 0.5 },
+  safety_tolerance: { min: 0, max: 10, step: 1, default: 5 },
   seed: { min: 0, max: 999999999, step: 1, default: null },
 
   // 图像尺寸
@@ -111,7 +126,13 @@ export const PARAM_RANGES = {
   scale: { min: 0.1, max: 5.0, step: 0.1, default: 1.0 },
   num_samples: { min: 1, max: 4, step: 1, default: 1 },
   texture_size: { min: 256, max: 2048, step: 128, default: 1024 },
-  max_faces: { min: 1000, max: 50000, step: 1000, default: 10000 }
+  max_faces: { min: 1000, max: 50000, step: 1000, default: 10000 },
+  mesh_simplify: { min: 0.0, max: 1.0, step: 0.05, default: 0.3 }
+  ,
+  ss_guidance_strength: { min: 0.0, max: 10.0, step: 0.1, default: 5.0 },
+  ss_sampling_steps: { min: 1, max: 200, step: 1, default: 50 },
+  slat_guidance_strength: { min: 0.0, max: 10.0, step: 0.1, default: 5.0 },
+  slat_sampling_steps: { min: 1, max: 200, step: 1, default: 50 }
 }
 
 // 模型类型分类

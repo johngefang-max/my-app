@@ -50,7 +50,7 @@ export class PointsService {
     // Start a transaction-like operation
     const { data: user, error: userError } = await supabase
       .from('users')
-      .select('points')
+      .select('points,total_points_spent,total_points_earned')
       .eq('id', userId)
       .single()
 
@@ -125,7 +125,7 @@ export class PointsService {
   static async refundPoints(userId: string, generationId: string, amount: number): Promise<void> {
     const { data: user } = await supabase
       .from('users')
-      .select('points')
+      .select('points,total_points_spent')
       .eq('id', userId)
       .single()
 
@@ -247,7 +247,7 @@ export class PointsService {
 
     const { data: user } = await supabase
       .from('users')
-      .select('points')
+      .select('points,total_points_earned')
       .eq('id', userId)
       .single()
 
@@ -288,7 +288,7 @@ export class PointsService {
   static async awardSignupBonus(userId: string): Promise<void> {
     const { data: user } = await supabase
       .from('users')
-      .select('points')
+      .select('points,total_points_earned')
       .eq('id', userId)
       .single()
 

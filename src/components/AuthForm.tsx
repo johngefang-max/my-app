@@ -56,6 +56,9 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
                 usage_count: 0,
                 storage_used_bytes: 0,
                 max_storage_bytes: 0,
+                points: 10,
+                total_points_earned: 10,
+                total_points_spent: 0,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
               }
@@ -73,6 +76,9 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             usage_count: 0,
             storage_used_bytes: 0,
             max_storage_bytes: 0,
+            points: 10,
+            total_points_earned: 10,
+            total_points_spent: 0,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })

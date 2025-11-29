@@ -6,6 +6,8 @@ import {
   Camera, Download, Share2, Settings, Eye, EyeOff
 } from 'lucide-react'
 import Script from 'next/script'
+// 类型适配：使用变量持有自定义标签，避免 JSX 类型报错
+const ModelViewerTag: any = 'model-viewer'
 
 type ModelViewerProps = {
   src?: string
@@ -260,7 +262,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             </div>
           </div>
         ) : (
-          <model-viewer
+          <ModelViewerTag
             ref={viewerRef}
             src={modelSrc}
             auto-rotate={autoRotate}

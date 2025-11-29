@@ -17,7 +17,7 @@ export default function TestPage() {
     const modelConfig = FAL_APIS[defaultModel as keyof typeof FAL_APIS]
     return {
       model_id: defaultModel,
-      ...modelConfig?.default_params
+      ...(modelConfig?.default_params as FalApiConfig)
     }
   }
 
