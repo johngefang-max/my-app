@@ -36,7 +36,7 @@ export type Database = {
         Row: {
           id: string
           email: string
-          username: string
+          username: string | null
           password_hash: string | null
           avatar_url: string | null
           plan: 'free' | 'premium' | 'enterprise'
@@ -52,7 +52,7 @@ export type Database = {
         Insert: {
           id?: string
           email: string
-          username: string
+          username?: string | null
           password_hash?: string | null
           avatar_url?: string | null
           plan?: 'free' | 'premium' | 'enterprise'
@@ -68,7 +68,7 @@ export type Database = {
         Update: {
           id?: string
           email?: string
-          username?: string
+          username?: string | null
           password_hash?: string | null
           avatar_url?: string | null
           plan?: 'free' | 'premium' | 'enterprise'

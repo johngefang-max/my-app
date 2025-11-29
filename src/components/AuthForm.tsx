@@ -48,9 +48,8 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             .from('users')
             .insert([
               {
-                id: authData.user.id,
                 email: authData.user.email!,
-                username,
+                username: username || null,
                 avatar_url: null,
                 plan: 'free',
                 usage_count: 0,
@@ -69,7 +68,7 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
           setUser({
             id: authData.user.id,
             email: authData.user.email!,
-            username,
+            username: username || null,
             password_hash: null,
             avatar_url: null,
             plan: 'free',
@@ -97,7 +96,7 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
           const { data: userData, error: userError } = await supabase
             .from('users')
             .select('*')
-            .eq('id', authData.user.id)
+            .eq('email', authData.user.email!)
             .single()
 
           if (userError) throw userError
@@ -134,7 +133,7 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             className="pl-10"
-            required
+            
           />
         </div>
       )}
