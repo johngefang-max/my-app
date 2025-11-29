@@ -73,7 +73,7 @@ export async function GET() {
     checks.connectivity = { ready, authHealth }
   } catch {}
 
-  const tables = ['users','models','model_files','model_views','transactions']
+  const tables = ['users','models','model_files','model_views','transactions','generations','points_transactions']
   const tableStatus: Record<string, number> = {}
   for (const t of tables) {
     try {

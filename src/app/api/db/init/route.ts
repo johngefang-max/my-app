@@ -185,7 +185,7 @@ export async function GET() {
     return NextResponse.json({ status: 'error', message: 'Supabase env missing', missing }, { status: 500 })
   }
 
-  const requiredTables = ['users','models','model_files','model_views','transactions']
+  const requiredTables = ['users','models','model_files','model_views','transactions','generations','points_transactions']
   const missing: string[] = []
   const existing: string[] = []
   const bearer = serviceKey || anonKey
