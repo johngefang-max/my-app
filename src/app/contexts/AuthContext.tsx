@@ -55,18 +55,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('users')
         .select('*')
         .eq('email', sessionHook.data.user.email)
-        .single()
+        .maybeSingle()
 
-      if (error) {
-        console.error('Error fetching user data:', error)
-
-        // If user doesn't exist in Supabase, create them
-        if (error.code === 'PGRST116') {
-          await createSupabaseUser(sessionHook.data.user)
-          // Retry fetching user data
-          return fetchUserData()
-        }
-
+      if (error || !userData) {
+        try {
+          const up = await fetch('/api/me/user', { method: 'POST' })
+          if (up.ok) {
+            const d = await up.json()
+            if (d?.user) {
+              setUser({
+                id: d.user.id,
+                email: d.user.email,
+                name: d.user.username,
+                avatar_url: d.user.avatar_url,
+                points: d.user.points,
+                total_points_earned: d.user.total_points_earned,
+                total_points_spent: d.user.total_points_spent,
+                plan: d.user.plan,
+              })
+              return
+            }
+          }
+        } catch {}
         setUser(null)
         return
       }
@@ -92,42 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [isAuthenticated, sessionHook?.data?.user?.email])
 
-  // Create user in Supabase if they don't exist
-  const createSupabaseUser = async (sessionUser: any) => {
-    try {
-      const { data, error } = await supabase.auth.admin.createUser({
-        email: sessionUser.email!,
-        user_metadata: {
-          username: sessionUser.name || sessionUser.email!.split('@')[0],
-        }
-      })
-
-      if (!error && data.user) {
-        // Create user profile
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert({
-            id: data.user.id,
-            email: data.user.email!,
-            username: sessionUser.name || sessionUser.email!.split('@')[0],
-            avatar_url: sessionUser.image,
-            points: 10, // Starting points
-            total_points_earned: 10,
-            total_points_spent: 0,
-            plan: 'free'
-          })
-
-        if (profileError) {
-          console.error('Error creating user profile:', profileError)
-        } else {
-          // Award signup bonus
-          await PointsService.awardSignupBonus(data.user.id)
-        }
-      }
-    } catch (error) {
-      console.error('Error creating Supabase user:', error)
-    }
-  }
+  // Deprecated admin creation removed; upsert handled via /api/me/user
 
   // Refresh user data (call after points transactions)
   const refreshUserData = useCallback(async () => {

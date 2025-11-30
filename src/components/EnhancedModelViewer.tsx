@@ -253,40 +253,31 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
 
       {/* 3D模型查看器 */}
       <div className="relative w-full h-full rounded-xl overflow-hidden">
-        {!isModelViewerLoaded() ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded-xl">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-              <p className="text-gray-400">正在加载3D查看器...</p>
-              <p className="text-gray-500 text-sm mt-2">请稍候</p>
-            </div>
-          </div>
-        ) : (
-          <ModelViewerTag
-            ref={viewerRef}
-            src={modelSrc}
-            auto-rotate={autoRotate}
-            rotation-per-second="20deg"
-            camera-controls
-            touch-action="pan-y"
-            shadow-intensity={shadows ? 1 : 0}
-            shadow-softness={0.6}
-            environment-image={environmentPresets[environment as keyof typeof environmentPresets] || environmentPresets.studio}
-            environment-intensity={1}
-            field-of-view="45deg"
-            exposure={1}
-            loading="eager"
-            reveal="auto"
-            ar-modes="webxr scene-viewer quick-look"
-            ar
-            style={{
-              width: '100%',
-              height: '100%',
-              background: backgroundColor,
-              borderRadius: '0.75rem'
-            }}
-          />
-        )}
+        <ModelViewerTag
+          ref={viewerRef}
+          src={modelSrc}
+          auto-rotate={autoRotate}
+          rotation-per-second="20deg"
+          camera-controls
+          touch-action="pan-y"
+          shadow-intensity={shadows ? 1 : 0}
+          shadow-softness={0.6}
+          environment-image={environmentPresets[environment as keyof typeof environmentPresets] || environmentPresets.studio}
+          environment-intensity={1}
+          field-of-view="45deg"
+          exposure={1}
+          loading="eager"
+          reveal="auto"
+          crossorigin="anonymous"
+          ar-modes="webxr scene-viewer quick-look"
+          ar
+          style={{
+            width: '100%',
+            height: '100%',
+            background: backgroundColor,
+            borderRadius: '0.75rem'
+          }}
+        />
 
         {/* 加载状态 */}
         {isLoading && (
