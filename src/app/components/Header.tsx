@@ -69,16 +69,11 @@ export default function Header({
   useEffect(() => {
     const run = async () => {
       if (!isAuthenticated || user || !session?.user?.email) return
-      const baseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL || '')
-      const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || '')
-      if (!baseUrl || !anonKey) return
       try {
-        const res = await fetch(`${baseUrl}/rest/v1/users?select=points,email&email=eq.${encodeURIComponent(session.user.email)}`, {
-          headers: { 'Authorization': `Bearer ${anonKey}`, 'apikey': anonKey }
-        })
-        const arr = await res.json().catch(() => [])
-        const row = Array.isArray(arr) ? arr[0] : null
-        if (row && typeof row.points === 'number') setFallbackPoints(row.points)
+        const res = await fetch('/api/me/points')
+        if (!res.ok) return
+        const data = await res.json()
+        if (typeof data.points === 'number') setFallbackPoints(data.points)
       } catch {}
     }
     run()
