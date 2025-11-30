@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
+import { Coins } from 'lucide-react'
 
 export default function ProfilePage() {
   const sessionHook = useSession()
@@ -13,15 +14,22 @@ export default function ProfilePage() {
 
   const [works, setWorks] = useState<{ id: string; title: string; href: string }[]>([])
   const [transactions, setTransactions] = useState<{ id: string; date: string; item: string; amount: number }[]>([])
-  const balance = transactions.reduce((sum, t) => sum + t.amount, 0)
+  const [points, setPoints] = useState(0)
+  const [pointsHistory, setPointsHistory] = useState<Array<{ id: string; amount: number; type: string; description: string; created_at: string; balance_before: number; balance_after: number }>>([])
 
   useEffect(() => {
     const load = async () => {
       try {
-        const w = await fetch('/api/me/works').then(r => r.json())
-        const t = await fetch('/api/me/transactions').then(r => r.json())
+        const [w, t, p, ph] = await Promise.all([
+          fetch('/api/me/works').then(r => r.json()),
+          fetch('/api/me/transactions').then(r => r.json()),
+          fetch('/api/me/points').then(r => r.json()),
+          fetch('/api/me/points/history').then(r => r.json()),
+        ])
         if (Array.isArray(w.items)) setWorks(w.items)
         if (Array.isArray(t.items)) setTransactions(t.items)
+        if (typeof p.points === 'number') setPoints(p.points)
+        if (Array.isArray(ph.items)) setPointsHistory(ph.items)
       } catch {}
     }
     load()
@@ -58,11 +66,28 @@ export default function ProfilePage() {
 
             <div className="space-y-6">
               <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-                <h2 className="text-xl font-semibold text-white mb-2">账户余额</h2>
-                <div className="text-3xl font-bold text-green-400">¥ {balance.toFixed(2)}</div>
+                <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2"><Coins className="w-5 h-5 text-yellow-400" /> 积分</h2>
+                <div className="text-3xl font-bold text-yellow-400">{points}</div>
               </div>
               <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
-                <h2 className="text-xl font-semibold text-white mb-4">消费记录</h2>
+                <h2 className="text-xl font-semibold text-white mb-4">积分流水</h2>
+                <ul className="space-y-3">
+                  {pointsHistory.map((t) => (
+                    <li key={t.id} className="flex items-center justify-between">
+                      <div>
+                        <div className="text-white">{t.description} <span className="text-xs text-gray-400">({t.type})</span></div>
+                        <div className="text-gray-500 text-sm">{new Date(t.created_at).toLocaleString()}</div>
+                        <div className="text-gray-500 text-xs">{t.balance_before} → {t.balance_after}</div>
+                      </div>
+                      <div className={t.amount >= 0 ? 'text-green-400 font-semibold' : 'text-red-400 font-semibold'}>
+                        {t.amount >= 0 ? '+' : ''}{t.amount}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+                <h2 className="text-xl font-semibold text-white mb-4">支付流水</h2>
                 <ul className="space-y-3">
                   {transactions.map((t, i) => (
                     <li key={i} className="flex items-center justify-between">
