@@ -7,6 +7,7 @@ import {
   Sun, Moon, Camera, Share2, Save, FolderOpen, FileText
 } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import Script from 'next/script'
 import React from 'react'
 import ModelUploader from '@/components/ModelUploader'
@@ -589,6 +590,9 @@ export default function NewGenerator() {
                         <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                         <p className="text-white mb-2">点击或拖拽图片到这里</p>
                         <p className="text-gray-400 text-sm">支持 JPG, PNG, WebP 格式</p>
+                        <div className="mt-3 text-xs text-gray-500">
+                          上传图片即表示你同意 <Link href="/terms" className="underline hover:text-white">服务条款</Link> 和 <Link href="/privacy" className="underline hover:text-white">隐私政策</Link>
+                        </div>
                       </div>
 
                       {/* 显示已上传的图片 */}
