@@ -24,7 +24,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "3D Model Preview Platform",
+  title: "imageto3d",
   description: "Professional 3D model preview and editing platform with AI generation capabilities",
 };
 
