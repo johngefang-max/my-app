@@ -1,6 +1,6 @@
 export const metadata = {
-  title: '隐私政策 | AI3D Pro',
-  description: 'AI3D Pro 隐私政策',
+  title: '隐私政策 | imageto3d',
+  description: 'imageto3d 隐私政策',
 }
 export const dynamic = 'force-static'
 
@@ -65,4 +65,3 @@ export default function PrivacyPage() {
     </main>
   )
 }
-

@@ -11,7 +11,7 @@ const ModelViewerTag: any = 'model-viewer'
 
 type ModelViewerProps = {
   src?: string
-  modelFile?: File
+  modelFile?: File | { url?: string }
   autoRotate?: boolean
   environment?: string
   backgroundColor?: string
@@ -50,7 +50,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
   }
 
   // 处理模型文件
-  const modelSrc = src || (modelFile ? URL.createObjectURL(modelFile) : '')
+  const modelSrc = src || (modelFile ? (modelFile instanceof File ? URL.createObjectURL(modelFile) : (modelFile.url || '')) : '')
 
   // 检查Model Viewer是否已加载
   const isModelViewerLoaded = () => {
@@ -174,10 +174,10 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     }
 
     const handleError = (event: any) => {
-      setError('模型加载失败')
+      console.error('模型加载错误:', event)
+      setError('模型加载失败，请检查文件格式或URL是否有效')
       setIsLoading(false)
       setIsLoaded(false)
-      console.error('模型加载错误:', event)
     }
 
     const handleProgress = (e: any) => {
@@ -202,17 +202,58 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
     if (modelSrc) {
       setIsLoading(true)
       setError(null)
+      setIsLoaded(false)
+
+      console.log('Starting to load model:', modelSrc)
 
       // 等待Model Viewer加载后再初始化
       waitForModelViewer().then(() => {
-        console.log('Model Viewer loaded, initializing with model:', modelSrc)
-        // 设置一个超时来检测模型是否真的在加载
+        console.log('Model Viewer library loaded, waiting for model element...')
+
+        // 给model-viewer元素一些时间来初始化
         setTimeout(() => {
-          if (isLoading && !isLoaded && !error) {
-            setError('模型加载超时，请检查文件是否有效或网络连接')
+          if (viewerRef.current) {
+            console.log('Model viewer element found, setting src:', modelSrc)
+
+            // 监听加载状态变化
+            const checkLoadStatus = setInterval(() => {
+              const viewer = viewerRef.current
+              if (!viewer) {
+                clearInterval(checkLoadStatus)
+                return
+              }
+
+              // 检查是否已经开始加载
+              if (viewer.isLoading === false && viewer.loaded === true) {
+                console.log('Model loaded successfully!')
+                clearInterval(checkLoadStatus)
+                setIsLoaded(true)
+                setIsLoading(false)
+                setError(null)
+              } else if (viewer.error) {
+                console.error('Model load error:', viewer.error)
+                clearInterval(checkLoadStatus)
+                setError('模型加载失败: ' + viewer.error.message || '未知错误')
+                setIsLoading(false)
+                setIsLoaded(false)
+              }
+            }, 500)
+
+            // 设置超时检查
+            setTimeout(() => {
+              clearInterval(checkLoadStatus)
+              if (isLoading && !isLoaded && !error) {
+                console.warn('Model load timeout')
+                setError('模型加载超时，请检查文件是否有效或网络连接')
+                setIsLoading(false)
+              }
+            }, 10000) // 10秒超时
+          } else {
+            console.warn('Model viewer element not found')
+            setError('模型查看器初始化失败')
             setIsLoading(false)
           }
-        }, 10000) // 10秒超时
+        }, 1000) // 等待1秒让DOM更新
       })
     } else {
       setIsLoading(false)
@@ -277,6 +318,17 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             background: backgroundColor,
             borderRadius: '0.75rem'
           }}
+          onError={(e: any) => {
+            console.error('Model viewer error event:', e)
+            setError('模型加载失败: ' + (e.message || '未知错误'))
+            setIsLoading(false)
+          }}
+          onLoad={() => {
+            console.log('Model viewer load event triggered')
+            setIsLoaded(true)
+            setIsLoading(false)
+            setError(null)
+          }}
         />
 
         {/* 加载状态 */}
@@ -285,7 +337,7 @@ const ModelViewer: React.FC<ModelViewerProps> = ({
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
               <p className="text-white font-medium">加载模型中...</p>
-              <p className="text-gray-300 text-sm mt-2">正在处理 {modelFile?.name || '模型文件'}</p>
+              <p className="text-gray-300 text-sm mt-2">正在处理 {(modelFile && modelFile instanceof File) ? modelFile.name : '模型文件'}</p>
             </div>
           </div>
         )}

@@ -3,6 +3,7 @@
 import { ArrowRight, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
 import Image from 'next/image'
 import DotGridBackground from './components/DotGridBackground'
+import ModelViewer from './components/ModelViewer'
 import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -29,6 +30,10 @@ export default function Home() {
   }, [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+
+      <section className="px-0">
+        <ModelViewer className="min-h-screen" />
+      </section>
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative">
@@ -332,7 +337,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* User Reviews Section */}
+      {/* User Reviews Section - hidden per request */}
+      {false && (
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -503,6 +509,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-900/50 to-pink-900/50">
@@ -535,7 +542,7 @@ export default function Home() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <Box className="h-6 w-6 text-purple-400" />
-                <span className="text-xl font-bold text-white">AI3D Pro</span>
+                <span className="text-xl font-bold text-white">imageto3d</span>
               </div>
               <p className="text-gray-400">{t('home.subtitle')}</p>
             </div>
@@ -565,7 +572,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 AI3D Pro. {t('home.footer.rights')}</p>
+            <p>&copy; 2024 imageto3d. {t('home.footer.rights')}</p>
           </div>
         </div>
       </footer>

@@ -1,6 +1,6 @@
 export const metadata = {
-  title: '服务条款 | AI3D Pro',
-  description: 'AI3D Pro 服务条款',
+  title: '服务条款 | imageto3d',
+  description: 'imageto3d 服务条款',
 }
 export const dynamic = 'force-static'
 
@@ -15,7 +15,7 @@ export default function TermsPage() {
           <p className="mt-2 text-slate-400">最后更新：2025-11-27</p>
 
           <div className="mt-8 space-y-6 text-slate-300 leading-7">
-            <p>欢迎使用 AI3D Pro。使用本服务即表示你同意以下条款。</p>
+            <p>欢迎使用 imageto3d。使用本服务即表示你同意以下条款。</p>
 
             <h2 className="text-xl font-semibold text-white">1. 账户与资格</h2>
             <p>你须保证提供的注册信息真实、准确、完整，并在信息变更时及时更新。我们有权因违反条款或法律法规而暂停或终止账户。</p>
@@ -51,4 +51,3 @@ export default function TermsPage() {
     </main>
   )
 }
-

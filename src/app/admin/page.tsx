@@ -17,8 +17,8 @@ export default function AdminLogin() {
   const submit = () => {
     const ok = login(username.trim(), password.trim())
     if (ok) {
-      // 登录成功，重定向到目标页面
-      router.push(redirect)
+      // 登录成功，重定向到管理员仪表板
+      router.push('/admin/dashboard')
     } else {
       setError('用户名或密码错误')
     }

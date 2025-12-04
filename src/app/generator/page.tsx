@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   Upload, Type, Image as ImageIcon, Send, Download, Sparkles, RotateCcw,
   Settings, Eye, Grid, Layers, Palette, Zap, Plus, Minus,
@@ -11,7 +11,7 @@ import Link from 'next/link'
 import Script from 'next/script'
 import React from 'react'
 import ModelUploader from '@/components/ModelUploader'
-import EnhancedModelViewer from '@/components/EnhancedModelViewer'
+import ModelViewer from '../components/ModelViewer'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
 import { FAL_APIS, PARAM_RANGES, PARAM_OPTIONS } from '@/config/fal-api'
@@ -35,12 +35,26 @@ export default function NewGenerator() {
   const [activeMethod, setActiveMethod] = useState<'text' | 'image'>('text')
   const [textInput, setTextInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedModel, setGeneratedModel] = useState<string | null>('https://modelviewer.dev/shared-assets/models/Astronaut.glb')
+  const [generatedModel, setGeneratedModel] = useState<string | null>(null)
   const [generatedImages, setGeneratedImages] = useState<string[]>([])
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [uploadedFiles, setUploadedFiles] = useState<ModelFile[]>([])
   const [selectedFile, setSelectedFile] = useState<ModelFile | null>(null)
   const [showPreview, setShowPreview] = useState(true)
+
+  // 页面加载时自动设置测试模型
+  useEffect(() => {
+    const testModel: ModelFile = {
+      id: 'test-glb-auto',
+      file: new File([''], 'test.glb'),
+      name: 'Test Model (GLB)',
+      size: 500000,
+      type: 'glb',
+      url: '/test-models/test.glb'
+    }
+    setUploadedFiles([testModel])
+    setSelectedFile(testModel)
+  }, [])
 
   // 根据选定模型获取配置信息
   const currentModelConfig = FAL_APIS[selectedModel as keyof typeof FAL_APIS]
@@ -1050,6 +1064,32 @@ export default function NewGenerator() {
             {/* 导入模型区域 */}
             {activeTab === 'import' && (
               <div className="space-y-6">
+                {/* 测试模型加载按钮 */}
+                <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
+                  <h3 className="text-lg font-semibold text-white mb-4">快速测试</h3>
+                  <div className="flex items-center space-x-4">
+                    <button
+                      onClick={() => {
+                        // 加载测试模型
+                        const testModel: ModelFile = {
+                          id: 'test-glb',
+                          file: new File([''], 'test.glb'),
+                          name: 'Test Model (GLB)',
+                          size: 500000, // 假设500KB
+                          type: 'glb',
+                          url: '/test.glb'
+                        }
+                        setUploadedFiles([testModel])
+                        setSelectedFile(testModel)
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      加载测试GLB模型
+                    </button>
+                    <span className="text-gray-400 text-sm">点击加载预设的测试模型</span>
+                  </div>
+                </div>
+
                 <ModelUploader
                   onFilesChange={setUploadedFiles}
                   maxFiles={10}
@@ -1140,16 +1180,9 @@ export default function NewGenerator() {
                         ))}
                       </div>
                     </div>
-                  ) : (
-                    /* 显示3D模型查看器 */
-                    <EnhancedModelViewer
-                      src={generatedModel || selectedFile?.url}
-                      modelFile={selectedFile?.file}
-                      autoRotate={viewerSettings.autoRotate}
-                      environment={viewerSettings.environment}
-                      backgroundColor={viewerSettings.backgroundColor}
-                      showGrid={viewerSettings.showGrid}
-                      shadows={viewerSettings.shadows}
+                    ) : (
+                    <ModelViewer
+                      src={generatedModel || selectedFile?.url || '/test.glb'}
                       className="w-full h-full"
                     />
                   )}

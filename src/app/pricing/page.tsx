@@ -267,7 +267,7 @@ export default function Pricing() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <Star className="h-6 w-6 text-purple-400" />
-                <span className="text-xl font-bold text-white">AI3D Pro</span>
+                <span className="text-xl font-bold text-white">imageto3d</span>
               </div>
               <p className="text-gray-400">{language === 'zh' ? 'AI驱动的3D模型生成平台' : 'AI-powered 3D model generation platform'}</p>
             </div>
@@ -297,7 +297,7 @@ export default function Pricing() {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 AI3D Pro. {language === 'zh' ? '保留所有权利。' : 'All rights reserved.'}</p>
+            <p>&copy; 2024 imageto3d. {language === 'zh' ? '保留所有权利。' : 'All rights reserved.'}</p>
           </div>
         </div>
       </footer>

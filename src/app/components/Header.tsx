@@ -19,7 +19,7 @@ interface HeaderProps {
 
 export default function Header({
   showLogo = true,
-  logoText = 'AI3D Pro',
+  logoText = 'imageto3d',
   logoIcon = <Box className="h-8 w-8 text-purple-400" />,
   showBackButton = false,
   onBackClick

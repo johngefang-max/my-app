@@ -127,9 +127,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // 设置一个本地认证标记
       if (typeof window !== 'undefined') {
         localStorage.setItem('admin_auth', 'true')
-        window.location.reload()
+        // 不再需要页面刷新，直接返回成功
+        return true
       }
-      return true
     }
     return false
   }, [])

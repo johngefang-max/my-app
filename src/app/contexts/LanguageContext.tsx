@@ -126,7 +126,7 @@ const translations = {
     'home.footer.rights': '保留所有权利。',
     // 效果案例板块
     'home.portfolio.title': '精选案例展示',
-    'home.portfolio.subtitle': '看看全球创作者使用AI3D Pro创作的惊艳作品',
+    'home.portfolio.subtitle': '看看全球创作者使用imageto3d创作的惊艳作品',
     'home.portfolio.category.all': '全部',
     'home.portfolio.category.character': '角色设计',
     'home.portfolio.category.architecture': '建筑设计',
@@ -396,13 +396,13 @@ const translations = {
     'terms.title': '服务条款',
     'terms.subtitle': '请仔细阅读以下服务条款',
     'terms.lastUpdated': '最后更新：2025年1月',
-    'terms.intro': '欢迎使用AI3D Pro！以下服务条款（"条款"）规定了您使用我们AI驱动的3D模型生成服务的条款和条件。',
+    'terms.intro': '欢迎使用imageto3d！以下服务条款（"条款"）规定了您使用我们AI驱动的3D模型生成服务的条款和条件。',
     'terms.acceptance': '通过访问或使用我们的服务，您确认您已阅读、理解并同意受本条款约束。',
     'terms.tableOfContents': '目录',
 
     // Terms sections
     'terms.section1.title': '1. 服务描述',
-    'terms.section1.content': 'AI3D Pro是一个基于人工智能的3D模型生成平台，允许用户：\n• 通过文本描述生成3D模型\n• 上传图片转换为3D模型\n• 编辑和优化生成的3D模型\n• 下载和使用生成的模型文件\n• 分享和协作功能',
+    'terms.section1.content': 'imageto3d是一个基于人工智能的3D模型生成平台，允许用户：\n• 通过文本描述生成3D模型\n• 上传图片转换为3D模型\n• 编辑和优化生成的3D模型\n• 下载和使用生成的模型文件\n• 分享和协作功能',
 
     'terms.section2.title': '2. 用户账户',
     'terms.section2.content': '账户注册：您需要创建账户才能使用我们的服务。您提供的所有信息必须真实、准确和完整。\n账户安全：您负责保护账户密码的安全性，并对您账户下的所有活动承担责任。\n账户终止：我们保留在违反条款的情况下暂停或终止您账户的权利。',
@@ -414,7 +414,7 @@ const translations = {
     'terms4.content': '禁止行为：\n• 生成违法、有害、威胁性、辱骂性或侵权内容\n• 违反适用的法律法规\n• 侵犯他人的知识产权\n• 干扰或破坏服务的正常运行\n• 使用服务进行欺诈或恶意活动',
 
     'terms.section5.title': '5. 知识产权',
-    'terms.section5.content': '平台权利：AI3D Pro及其所有内容、功能和服务均受知识产权法律保护。\n用户内容：您保留对生成内容的所有权，但授予我们使用、修改和展示的权利。\n反馈：我们欢迎用户反馈，您提供的反馈可能被用于改进服务。',
+    'terms.section5.content': '平台权利：imageto3d及其所有内容、功能和服务均受知识产权法律保护。\n用户内容：您保留对生成内容的所有权，但授予我们使用、修改和展示的权利。\n反馈：我们欢迎用户反馈，您提供的反馈可能被用于改进服务。',
 
     'terms.section6.title': '6. 付费与退款',
     'terms.section6.content': '定价：服务采用订阅制，价格可能随时调整，调整前会通知用户。\n支付：我们支持多种支付方式，包括信用卡、支付宝、微信支付等。\n退款：根据我们的退款政策，未使用的订阅期可能获得部分退款。',
@@ -435,7 +435,7 @@ const translations = {
     'privacy.title': '隐私政策',
     'privacy.subtitle': '您的隐私对我们很重要',
     'privacy.lastUpdated': '最后更新：2025年1月',
-    'privacy.intro': 'AI3D Pro（"我们"、"公司"或"服务"）致力于保护您的隐私。本隐私政策说明了我们如何收集、使用、存储和保护您的个人信息。',
+    'privacy.intro': 'imageto3d（"我们"、"公司"或"服务"）致力于保护您的隐私。本隐私政策说明了我们如何收集、使用、存储和保护您的个人信息。',
     'privacy.acceptance': '使用我们的服务即表示您同意本政策中描述的做法。',
     'privacy.tableOfContents': '目录',
 
@@ -558,7 +558,7 @@ const translations = {
     'home.footer.rights': 'All rights reserved.',
     // Portfolio Section
     'home.portfolio.title': 'Featured Portfolio',
-    'home.portfolio.subtitle': 'Explore amazing creations from global creators using AI3D Pro',
+    'home.portfolio.subtitle': 'Explore amazing creations from global creators using imageto3d',
     'home.portfolio.category.all': 'All',
     'home.portfolio.category.character': 'Character Design',
     'home.portfolio.category.architecture': 'Architecture',
@@ -827,13 +827,13 @@ const translations = {
     'terms.title': 'Terms of Service',
     'terms.subtitle': 'Please read these terms of service carefully',
     'terms.lastUpdated': 'Last Updated: January 2025',
-    'terms.intro': 'Welcome to AI3D Pro! These Terms of Service ("Terms") govern your use of our AI-powered 3D model generation service.',
+    'terms.intro': 'Welcome to imageto3d! These Terms of Service ("Terms") govern your use of our AI-powered 3D model generation service.',
     'terms.acceptance': 'By accessing or using our service, you acknowledge that you have read, understood, and agree to be bound by these Terms.',
     'terms.tableOfContents': 'Table of Contents',
 
     // Terms sections
     'terms.section1.title': '1. Service Description',
-    'terms.section1.content': 'AI3D Pro is an AI-powered 3D model generation platform that allows users to:\n• Generate 3D models from text descriptions\n• Upload images and convert them to 3D models\n• Edit and optimize generated 3D models\n• Download and use generated model files\n• Share and collaborate features',
+    'terms.section1.content': 'imageto3d is an AI-powered 3D model generation platform that allows users to:\n• Generate 3D models from text descriptions\n• Upload images and convert them to 3D models\n• Edit and optimize generated 3D models\n• Download and use generated model files\n• Share and collaborate features',
 
     'terms.section2.title': '2. User Accounts',
     'terms.section2.content': 'Account Registration: You must create an account to use our services. All information you provide must be true, accurate, and complete.\nAccount Security: You are responsible for safeguarding your account password and for all activities that occur under your account.\nAccount Termination: We reserve the right to suspend or terminate your account for violation of these Terms.',
@@ -845,7 +845,7 @@ const translations = {
     'terms4.content': 'Prohibited Activities:\n• Generate illegal, harmful, threatening, abusive, or infringing content\n• Violate applicable laws and regulations\n• Infringe on others intellectual property rights\n• Interfere with or disrupt the normal operation of the service\n• Use the service for fraudulent or malicious activities',
 
     'terms.section5.title': '5. Intellectual Property',
-    'terms.section5.content': 'Platform Rights: AI3D Pro and all its content, features, and functionality are protected by intellectual property laws.\nUser Content: You retain ownership of the content you generate, but grant us the right to use, modify, and display it.\nFeedback: We welcome user feedback, and feedback you provide may be used to improve our services.',
+    'terms.section5.content': 'Platform Rights: imageto3d and all its content, features, and functionality are protected by intellectual property laws.\nUser Content: You retain ownership of the content you generate, but grant us the right to use, modify, and display it.\nFeedback: We welcome user feedback, and feedback you provide may be used to improve our services.',
 
     'terms.section6.title': '6. Payments and Refunds',
     'terms.section6.content': 'Pricing: Services are offered on a subscription basis, and prices may change at any time with prior notice.\nPayment: We support multiple payment methods, including credit cards, Alipay, WeChat Pay, and others.\nRefunds: Partial refunds may be available for unused subscription periods according to our refund policy.',
@@ -866,7 +866,7 @@ const translations = {
     'privacy.title': 'Privacy Policy',
     'privacy.subtitle': 'Your privacy is important to us',
     'privacy.lastUpdated': 'Last Updated: January 2025',
-    'privacy.intro': 'AI3D Pro ("we", "company", or "service") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your personal information.',
+    'privacy.intro': 'imageto3d ("we", "company", or "service") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your personal information.',
     'privacy.acceptance': 'Your use of our service indicates your agreement to the practices described in this policy.',
     'privacy.tableOfContents': 'Table of Contents',
 
