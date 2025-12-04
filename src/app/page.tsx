@@ -2,6 +2,7 @@
 
 import { ArrowRight, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import DotGridBackground from './components/DotGridBackground'
 import ModelViewer from './components/ModelViewer'
 import { useLanguage } from './contexts/LanguageContext'
@@ -529,6 +530,27 @@ export default function Home() {
           <div className="flex items-center justify-center space-x-2 mt-6 text-gray-300">
             <Star className="h-5 w-5 text-yellow-400" />
             <span>{t('home.footer.support')}</span>
+          </div>
+
+          {/* 服务条款和隐私政策链接 */}
+          <div className="flex items-center justify-center space-x-4 mt-4 text-sm text-gray-400">
+            <Link
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors underline"
+            >
+              服务条款
+            </Link>
+            <span>•</span>
+            <Link
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors underline"
+            >
+              隐私政策
+            </Link>
           </div>
         </div>
       </section>
