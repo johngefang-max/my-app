@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 interface HeaderProps {
   showLogo?: boolean
@@ -34,10 +34,18 @@ export default function Header({
   const [avatarError, setAvatarError] = useState(false)
   const [fallbackPoints, setFallbackPoints] = useState<number | null>(null)
   const router = useRouter()
+  const pathname = usePathname()
+
+  const stripLangPrefix = (p: string) => p.replace(/^\/(zh|en)(?=\/|$)/, '') || '/'
+  const langPrefix = `/${language}`
+  const langPath = (p: string) => {
+    if (p === '/') return langPrefix
+    return `${langPrefix}${p}`
+  }
 
   const go = (path: string) => {
     if (isAuthenticated) {
-      router.push(path)
+      router.push(langPath(path))
     } else {
       openLogin()
     }
@@ -91,7 +99,7 @@ export default function Header({
               </button>
             )}
             {showLogo && (
-              <Link href="/" className="flex items-center space-x-2">
+              <Link href={langPath('/')} className="flex items-center space-x-2">
                 {logoIcon}
                 <span className="text-2xl font-bold text-white">{logoText}</span>
               </Link>
@@ -100,14 +108,19 @@ export default function Header({
 
           <nav className="hidden md:flex space-x-8">
             <button onClick={() => go('/generator')} className="text-gray-300 hover:text-white transition-colors">{t('nav.product')}</button>
-            <Link href="/gallery" className="text-gray-300 hover:text-white transition-colors">{t('nav.browseWorks')}</Link>
+            <Link href={langPath('/gallery')} className="text-gray-300 hover:text-white transition-colors">{t('nav.browseWorks')}</Link>
             <button onClick={() => go('/pricing')} className="text-gray-300 hover:text-white transition-colors">{t('nav.pricing')}</button>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</a>
+            <Link href={langPath('/help')} className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</Link>
           </nav>
 
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => setLanguage(language === 'zh' ? 'en' : 'zh')}
+              onClick={() => {
+                const newLang = language === 'zh' ? 'en' : 'zh'
+                const target = `/${newLang}${stripLangPrefix(pathname)}`
+                router.push(target)
+                setLanguage(newLang)
+              }}
               className="flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700 text-white px-3 py-2 rounded-lg transition-colors"
             >
               <Globe className="h-4 w-4" />
@@ -123,7 +136,7 @@ export default function Header({
                       {formatPoints((user?.points ?? fallbackPoints ?? 0))}
                     </span>
                   </div>
-                  <Link href="/profile" className="flex items-center gap-3 text-white">
+                  <Link href={langPath('/profile')} className="flex items-center gap-3 text-white">
                     <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10">
                       <Image
                         src={
@@ -158,7 +171,7 @@ export default function Header({
                     {t('nav.login')}
                   </button>
                   <button
-                    onClick={() => router.push('/generator')}
+                    onClick={() => router.push(langPath('/generator'))}
                     className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition-colors"
                   >
                     {t('nav.startTrial')}
