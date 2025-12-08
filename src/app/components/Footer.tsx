@@ -8,6 +8,7 @@ export default function Footer() {
   const { t, language } = useLanguage()
   const termsHref = language === 'zh' ? '/zh/terms' : '/en/terms'
   const privacyHref = language === 'zh' ? '/zh/privacy' : '/en/privacy'
+  const pref = language === 'zh' ? '/zh' : '/en'
   return (
     <footer className="bg-black border-t border-gray-800 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -22,24 +23,22 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">{t('nav.product')}</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><Link href="/generator" className="hover:text-white">{language === 'zh' ? '文本生成' : 'Text Generation'}</Link></li>
-              <li><Link href="/generator" className="hover:text-white">{language === 'zh' ? '图片转3D' : 'Image to 3D'}</Link></li>
+              <li><Link href={`${pref}/generator`} className="hover:text-white">{language === 'zh' ? '文本生成' : 'Text Generation'}</Link></li>
+              <li><Link href={`${pref}/generator`} className="hover:text-white">{language === 'zh' ? '图片转3D' : 'Image to 3D'}</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-4">{t('home.footer.company')}</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><Link href="/help" className="hover:text-white">{t('home.footer.aboutUs')}</Link></li>
-              <li><Link href="/help" className="hover:text-white">{t('home.footer.careers')}</Link></li>
-              <li><Link href="/help" className="hover:text-white">{t('home.footer.contact')}</Link></li>
+              <li><Link href={`${pref}/about`} className="hover:text-white">{t('home.footer.aboutUs')}</Link></li>
+              <li><Link href={`${pref}/careers`} className="hover:text-white">{t('home.footer.careers')}</Link></li>
+              <li><Link href={`${pref}/contact`} className="hover:text-white">{t('home.footer.contact')}</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-4">{t('home.footer.support')}</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><Link href="/help" className="hover:text-white">{t('home.footer.helpCenter')}</Link></li>
-              <li><Link href="/help" className="hover:text-white">{t('home.footer.community')}</Link></li>
-              <li><Link href="/help" className="hover:text-white">{t('home.footer.status')}</Link></li>
+              <li><Link href={`${pref}/help`} className="hover:text-white">{t('home.footer.helpCenter')}</Link></li>
             </ul>
           </div>
         </div>
