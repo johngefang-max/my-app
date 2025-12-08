@@ -58,6 +58,20 @@ export default function NewGenerator() {
 
   // 根据选定模型获取配置信息
   const currentModelConfig = FAL_APIS[selectedModel as keyof typeof FAL_APIS]
+  const MODEL_I18N: Record<string, { name: string; desc: string }> = {
+    'fal-ai/nano-banana-pro': {
+      name: 'generator.model.nanoBanana.name',
+      desc: 'generator.model.nanoBanana.desc'
+    },
+    'fal-ai/nano-banana-pro/edit': {
+      name: 'generator.model.nanoBananaEdit.name',
+      desc: 'generator.model.nanoBananaEdit.desc'
+    },
+    'fal-ai/trellis': {
+      name: 'generator.model.trellis.name',
+      desc: 'generator.model.trellis.desc'
+    }
+  }
 
   // 参数状态 - 包含所有可能的参数
   const [params, setParams] = useState({
@@ -520,11 +534,11 @@ export default function NewGenerator() {
                             : 'border-gray-600 bg-gray-800/50 text-gray-300 hover:border-gray-500'
                         }`}
                       >
-                        <div className="font-semibold mb-2">{config.name}</div>
-                        <div className="text-sm opacity-75 mb-2">{config.description}</div>
+                        <div className="font-semibold mb-2">{t(MODEL_I18N[modelId].name)}</div>
+                        <div className="text-sm opacity-75 mb-2">{t(MODEL_I18N[modelId].desc)}</div>
                         <div className="text-xs opacity-60">
-                          类型: {config.type === 'text-to-image' ? '文本转图像' :
-                                config.type === 'image-edit' ? '图像编辑' : '图像转3D'}
+                          {t('generator.model.typeLabel')}: {config.type === 'text-to-image' ? t('generator.mode.textToImage') :
+                                config.type === 'image-edit' ? t('generator.mode.imageEdit') : t('generator.mode.imageTo3d')}
                         </div>
                       </button>
                     ))}

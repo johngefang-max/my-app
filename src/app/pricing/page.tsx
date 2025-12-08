@@ -254,15 +254,7 @@ export default function Pricing() {
               {t('pricing.cta.freeTrial')}
             </a>
           </div>
-          <div className="flex items-center justify-center gap-4 mt-6 text-gray-300">
-            <Link href={language === 'zh' ? '/zh/terms' : '/en/terms'} className="hover:text-white">
-              {language === 'zh' ? '服务条款' : 'Terms'}
-            </Link>
-            <span className="text-gray-600">·</span>
-            <Link href={language === 'zh' ? '/zh/privacy' : '/en/privacy'} className="hover:text-white">
-              {language === 'zh' ? '隐私政策' : 'Privacy'}
-            </Link>
-          </div>
+          
         </div>
       </section>
 

@@ -174,12 +174,7 @@ export function Layout({ children }: LayoutProps) {
               © 2024 3D Platform. All rights reserved.
             </div>
             <div className="flex space-x-6">
-              <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Terms of Service
-              </Link>
+              
               <Link href="/pricing" className="text-gray-400 hover:text-white text-sm transition-colors">
                 Pricing
               </Link>
