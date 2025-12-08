@@ -44,11 +44,7 @@ export default function Header({
   }
 
   const go = (path: string) => {
-    if (isAuthenticated) {
-      router.push(langPath(path))
-    } else {
-      openLogin()
-    }
+    router.push(langPath(path))
   }
 
   const handleBack = () => {

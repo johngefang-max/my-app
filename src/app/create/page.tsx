@@ -1,7 +1,6 @@
 'use client'
 
 import { ModelGenerator } from '@/components/ModelGenerator'
-import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { Wand2 } from 'lucide-react'
 
 function CreateContent() {
@@ -32,8 +31,6 @@ function CreateContent() {
 
 export default function Create() {
   return (
-    <ProtectedRoute>
-      <CreateContent />
-    </ProtectedRoute>
+    <CreateContent />
   )
 }

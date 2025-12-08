@@ -16,15 +16,14 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 // 检测用户浏览器的语言偏好
 const detectBrowserLanguage = (): Language => {
-  if (typeof window === 'undefined') return 'zh'
-  
+  if (typeof window === 'undefined') return 'en'
   const browserLang = navigator.language || navigator.languages[0]
   return browserLang?.startsWith('zh') ? 'zh' : 'en'
 }
 
 // 从cookie或localStorage获取保存的语言
 const getSavedLanguage = (): Language => {
-  if (typeof window === 'undefined') return 'zh'
+  if (typeof window === 'undefined') return 'en'
   
   try {
     // 优先使用cookie - 更高效的解析方式
