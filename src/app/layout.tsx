@@ -39,15 +39,16 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies();
   const langCookie = cookieStore.get("language")?.value;
-  const initialLanguage = langCookie === "zh" ? "zh" : "en";
+  const nextLocale = cookieStore.get("NEXT_LOCALE")?.value;
+  const selected = (langCookie || nextLocale) === "zh" ? "zh" : "en";
   return (
-    <html lang={initialLanguage}>
+    <html lang={selected}>
       <body
         className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
       >
         <Providers>
           <AuthProvider>
-            <LanguageProvider initialLanguage={initialLanguage}>
+            <LanguageProvider initialLanguage={selected}>
               <Header />
               {children}
               <LoginModal />

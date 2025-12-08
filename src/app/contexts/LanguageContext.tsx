@@ -31,6 +31,10 @@ const getSavedLanguage = (): Language => {
       .split('; ')
       .find(row => row.startsWith('language='))
       ?.split('=')[1]
+      || document.cookie
+      .split('; ')
+      .find(row => row.startsWith('NEXT_LOCALE='))
+      ?.split('=')[1]
     
     if (cookieValue && (cookieValue === 'zh' || cookieValue === 'en')) {
       return cookieValue as Language
