@@ -415,8 +415,8 @@ export default function NewGenerator() {
             <div className="flex items-center space-x-4">
               <Sparkles className="h-8 w-8 text-purple-400" />
               <div>
-                <h1 className="text-2xl font-bold text-white">3D模型工作室</h1>
-                <p className="text-gray-400 text-sm">AI生成 • 导入编辑</p>
+                <h1 className="text-2xl font-bold text-white">{t('generator.studio.title')}</h1>
+                <p className="text-gray-400 text-sm">{t('generator.studio.subtitle')}</p>
               </div>
             </div>
 
@@ -465,7 +465,7 @@ export default function NewGenerator() {
             >
               <div className="flex items-center space-x-2">
                 <Sparkles className="h-4 w-4" />
-                <span>AI生成</span>
+                <span>{t('generator.tabs.generate')}</span>
               </div>
             </button>
 
@@ -479,7 +479,7 @@ export default function NewGenerator() {
             >
               <div className="flex items-center space-x-2">
                 <Upload className="h-4 w-4" />
-                <span>导入模型</span>
+                <span>{t('generator.tabs.import')}</span>
               </div>
             </button>
           </div>
@@ -508,7 +508,7 @@ export default function NewGenerator() {
               <div className="space-y-6">
                 {/* FAL-AI模型选择 */}
                 <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-xl font-semibold text-white mb-4">选择FAL-AI模型</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">{t('generator.engine.title')}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {Object.entries(FAL_APIS).map(([modelId, config]) => (
                       <button
@@ -533,7 +533,7 @@ export default function NewGenerator() {
 
                 {/* 生成方法选择 */}
                 <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-xl font-semibold text-white mb-4">选择生成方法</h3>
+                  <h3 className="text-xl font-semibold text-white mb-4">{t('generator.input.title')}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       onClick={() => setActiveMethod('text')}
@@ -544,11 +544,9 @@ export default function NewGenerator() {
                       }`}
                     >
                       <Type className="h-10 w-10 mx-auto mb-3" />
-                      <div className="font-semibold mb-2">文本生成</div>
+                      <div className="font-semibold mb-2">{t('generator.input.text')}</div>
                       <div className="text-sm opacity-75">
-                        {currentModelConfig?.type === 'text-to-image' ? '用文字描述创建图像' :
-                         currentModelConfig?.type === 'image-edit' ? '用文字描述编辑图像' :
-                         '用文字描述创建3D模型'}
+                        {t('generator.input.text.desc')}
                       </div>
                     </button>
 
@@ -573,7 +571,7 @@ export default function NewGenerator() {
                     </button>
                   </div>
                   {currentModelConfig?.type === 'text-to-image' && activeMethod === 'image' && (
-                    <p className="text-yellow-400 text-sm mt-2">⚠️ Nano Banana Pro 模型只支持文本生成，请选择文本模式</p>
+                    <p className="text-yellow-400 text-sm mt-2">{t('generator.warn.nanoBananaTextOnly')}</p>
                   )}
                 </div>
 
@@ -602,14 +600,11 @@ export default function NewGenerator() {
                         className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-purple-500 transition-colors cursor-pointer"
                       >
                         <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-white mb-2">点击或拖拽图片到这里</p>
-                        <p className="text-gray-400 text-sm">支持 JPG, PNG, WebP 格式</p>
+                        <p className="text-white mb-2">{t('generator.image.upload')}</p>
+                        <p className="text-gray-400 text-sm">{t('generator.image.support')}</p>
                       </div>
 
-                      {/* 服务条款和隐私政策 */}
-                      <div className="text-center text-xs text-gray-500">
-                        上传图片即表示你同意 <Link href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-white transition-colors">服务条款</Link> 和 <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-white transition-colors">隐私政策</Link>
-                      </div>
+                      
 
                       {/* 显示已上传的图片 */}
                       {uploadedImages.length > 0 && (

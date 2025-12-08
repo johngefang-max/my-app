@@ -308,6 +308,16 @@ const translations = {
     'generator.footer.apiDocs': 'API 文档',
     'generator.footer.techSupport': '技术支持',
     'generator.footer.rights': '保留所有权利。',
+    'generator.studio.title': '3D 创作工作台',
+    'generator.studio.subtitle': 'AI 生成 • 导入与编辑',
+    'generator.engine.title': '选择生成引擎',
+    'generator.tabs.generate': 'AI 生成',
+    'generator.tabs.import': '导入模型',
+    'generator.model.typeLabel': '类型',
+    'generator.model.type.textToImage': '文本生成图像',
+    'generator.model.type.imageEdit': '图像编辑',
+    'generator.model.type.imageTo3d': '图片转 3D 模型',
+    'generator.warn.nanoBananaTextOnly': '⚠️ Nano Banana Pro 仅支持文本生成，请选择文本模式',
     
     // 画廊页
     'gallery.title': '探索AI生成的',
@@ -762,6 +772,16 @@ const translations = {
     'generator.footer.apiDocs': 'API Docs',
     'generator.footer.techSupport': 'Technical Support',
     'generator.footer.rights': 'All rights reserved.',
+    'generator.studio.title': '3D Studio',
+    'generator.studio.subtitle': 'AI Generate • Import & Edit',
+    'generator.engine.title': 'Select Generation Engine',
+    'generator.tabs.generate': 'AI Generate',
+    'generator.tabs.import': 'Import Models',
+    'generator.model.typeLabel': 'Type',
+    'generator.model.type.textToImage': 'Text to Image',
+    'generator.model.type.imageEdit': 'Image Edit',
+    'generator.model.type.imageTo3d': 'Image to 3D Model',
+    'generator.warn.nanoBananaTextOnly': 'Nano Banana Pro supports text-generation only. Please select Text mode.',
     
     // Gallery
     'gallery.title': 'Explore AI-Generated',
