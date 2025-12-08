@@ -27,7 +27,7 @@ interface ModelFile {
 }
 
 export default function NewGenerator() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const { user, isAuthenticated, refreshUserData } = useAuth()
   const [activeTab, setActiveTab] = useState<'generate' | 'import'>('generate')
   // FAL-AI模型选择和参数状态
@@ -562,11 +562,11 @@ export default function NewGenerator() {
                       }`}
                     >
                       <ImageIcon className="h-10 w-10 mx-auto mb-3" />
-                      <div className="font-semibold mb-2">图像生成</div>
+                      <div className="font-semibold mb-2">{t('generator.input.image')}</div>
                       <div className="text-sm opacity-75">
-                        {currentModelConfig?.type === 'image-edit' ? '上传图像进行编辑' :
-                         currentModelConfig?.type === 'image-to-3d' ? '上传图像转换为3D模型' :
-                         '该模型不支持图像输入'}
+                        {currentModelConfig?.type === 'image-edit' ? t('generator.input.image.desc.edit') :
+                         currentModelConfig?.type === 'image-to-3d' ? t('generator.input.image.desc.imageTo3d') :
+                         t('generator.input.image.desc.disabled')}
                       </div>
                     </button>
                   </div>
@@ -579,22 +579,22 @@ export default function NewGenerator() {
                 <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
                   {activeMethod === 'text' && (
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-white">描述你的3D模型</h3>
+                      <h3 className="text-lg font-semibold text-white">{t('generator.text.title')}</h3>
                       <textarea
                         value={textInput}
                         onChange={(e) => setTextInput(e.target.value)}
-                        placeholder="例如：一个未来风格的机器人，金属质感，蓝色发光眼睛..."
+                        placeholder={t('generator.text.placeholder')}
                         className="w-full h-32 bg-gray-800/50 border border-gray-600 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none"
                       />
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-sm">{textInput.length}/500 字符</span>
+                        <span className="text-gray-400 text-sm">{textInput.length}/500 {t('generator.text.characters')}</span>
                       </div>
                     </div>
                   )}
 
                   {activeMethod === 'image' && (
                     <div className="space-y-4">
-                      <h3 className="text-lg font-semibold text-white">上传参考图片</h3>
+                      <h3 className="text-lg font-semibold text-white">{t('generator.image.title')}</h3>
                       <div
                         onClick={triggerImageUpload}
                         className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-purple-500 transition-colors cursor-pointer"
@@ -613,7 +613,7 @@ export default function NewGenerator() {
                             <div key={index} className="relative group">
                               <Image
                                 src={url}
-                                alt={`上传的图片 ${index + 1}`}
+                                alt={`${t('generator.preview.imageLabel')} ${index + 1}`}
                                 width={100}
                                 height={100}
                                 className="rounded-lg object-cover"
@@ -626,7 +626,7 @@ export default function NewGenerator() {
                                 }}
                                 className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-600 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
                               >
-                                <span className="sr-only">删除图片</span>
+                                <span className="sr-only">{t('generator.image.remove')}</span>
                                 ×
                               </button>
                             </div>
@@ -642,11 +642,11 @@ export default function NewGenerator() {
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-white flex items-center">
                       <Settings className="h-5 w-5 mr-2" />
-                      {currentModelConfig?.name} 参数设置
+                      {currentModelConfig?.name} {t('generator.settings.headerSuffix')}
                     </h3>
                     <span className="text-sm text-gray-400">
-                      {currentModelConfig?.type === 'text-to-image' ? '文本转图像' :
-                       currentModelConfig?.type === 'image-edit' ? '图像编辑' : '图像转3D'} 模式
+                      {(currentModelConfig?.type === 'text-to-image' ? t('generator.mode.textToImage') :
+                       currentModelConfig?.type === 'image-edit' ? t('generator.mode.imageEdit') : t('generator.mode.imageTo3d'))} {t('generator.mode.suffix')}
                     </span>
                   </div>
 
@@ -654,12 +654,12 @@ export default function NewGenerator() {
                     {/* Seed 随机种子 - 所有模型通用 */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-gray-300">随机种子</label>
+                        <label className="text-sm font-medium text-gray-300">{t('generator.params.seed')}</label>
                         <button
                           onClick={() => setParams(prev => ({ ...prev, seed: null }))}
                           className="text-xs text-purple-400 hover:text-purple-300"
                         >
-                          随机
+                          {t('generator.params.random')}
                         </button>
                       </div>
                       <input
@@ -669,14 +669,14 @@ export default function NewGenerator() {
                           ...prev,
                           seed: e.target.value ? parseInt(e.target.value) : null
                         }))}
-                        placeholder="留空为随机"
+                        placeholder={t('generator.params.seedPlaceholder')}
                         className="w-full bg-gray-800/50 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-500"
                       />
                     </div>
 
                     {/* 同步模式 - 所有模型通用 */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-300">同步模式</label>
+                      <label className="text-sm font-medium text-gray-300">{t('generator.params.syncMode')}</label>
                       <div className="flex items-center space-x-3">
                         <button
                           onClick={() => setParams(prev => ({ ...prev, sync_mode: !prev.sync_mode }))}
@@ -689,7 +689,7 @@ export default function NewGenerator() {
                           }`} />
                         </button>
                         <span className="text-sm text-gray-400">
-                          {params.sync_mode ? '开启' : '关闭'}
+                          {params.sync_mode ? t('common.on') : t('common.off')}
                         </span>
                       </div>
                     </div>
@@ -700,7 +700,7 @@ export default function NewGenerator() {
                         {/* 推理步数 */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium text-gray-300">推理步数</label>
+                            <label className="text-sm font-medium text-gray-300">{t('generator.params.numInferenceSteps')}</label>
                             <span className="text-sm text-purple-400">{params.num_inference_steps}</span>
                           </div>
                           <input
@@ -724,7 +724,7 @@ export default function NewGenerator() {
                         {/* 引导强度 */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium text-gray-300">引导强度</label>
+                            <label className="text-sm font-medium text-gray-300">{t('generator.params.guidanceScale')}</label>
                             <span className="text-sm text-purple-400">{params.guidance_scale.toFixed(1)}</span>
                           </div>
                           <input
@@ -747,10 +747,10 @@ export default function NewGenerator() {
 
                         {/* 图像尺寸 */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-300">图像尺寸</label>
+                          <label className="text-sm font-medium text-gray-300">{t('generator.params.imageSize')}</label>
                           <div className="grid grid-cols-2 gap-2">
                             <div>
-                              <label className="text-xs text-gray-400">宽度</label>
+                              <label className="text-xs text-gray-400">{t('generator.params.width')}</label>
                               <input
                                 type="number"
                                 min={PARAM_RANGES.width.min}
@@ -765,7 +765,7 @@ export default function NewGenerator() {
                               />
                             </div>
                             <div>
-                              <label className="text-xs text-gray-400">高度</label>
+                              <label className="text-xs text-gray-400">{t('generator.params.height')}</label>
                               <input
                                 type="number"
                                 min={PARAM_RANGES.height.min}
@@ -784,11 +784,11 @@ export default function NewGenerator() {
 
                         {/* 负面提示词 */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-300">负面提示词</label>
+                          <label className="text-sm font-medium text-gray-300">{t('generator.params.negativePrompt')}</label>
                           <textarea
                             value={params.negative_prompt}
                             onChange={(e) => setParams(prev => ({ ...prev, negative_prompt: e.target.value }))}
-                            placeholder="描述不希望出现的内容..."
+                            placeholder={t('generator.params.negativePromptPlaceholder')}
                             className="w-full h-20 bg-gray-800/50 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none text-sm"
                           />
                         </div>
@@ -797,7 +797,7 @@ export default function NewGenerator() {
                         {currentModelConfig?.type === 'text-to-image' && (
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <label className="text-sm font-medium text-gray-300">生成数量</label>
+                              <label className="text-sm font-medium text-gray-300">{t('generator.params.numImages')}</label>
                               <span className="text-sm text-purple-400">{params.num_images}</span>
                             </div>
                             <input
@@ -823,7 +823,7 @@ export default function NewGenerator() {
                         {currentModelConfig?.type === 'image-edit' && (
                           <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                              <label className="text-sm font-medium text-gray-300">编辑强度</label>
+                              <label className="text-sm font-medium text-gray-300">{t('generator.params.strength')}</label>
                               <span className="text-sm text-purple-400">{params.strength.toFixed(1)}</span>
                             </div>
                             <input
@@ -853,7 +853,7 @@ export default function NewGenerator() {
                         {/* 3D模型缩放 */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium text-gray-300">模型缩放</label>
+                            <label className="text-sm font-medium text-gray-300">{t('generator.params.scale')}</label>
                             <span className="text-sm text-purple-400">{params.scale.toFixed(1)}</span>
                           </div>
                           <input
@@ -877,7 +877,7 @@ export default function NewGenerator() {
                         {/* 生成样本数量 */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium text-gray-300">样本数量</label>
+                            <label className="text-sm font-medium text-gray-300">{t('generator.params.numSamples')}</label>
                             <span className="text-sm text-purple-400">{params.num_samples}</span>
                           </div>
                           <input
@@ -900,7 +900,7 @@ export default function NewGenerator() {
 
                         {/* 输出格式 */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-300">输出格式</label>
+                          <label className="text-sm font-medium text-gray-300">{t('generator.params.outputFormat')}</label>
                           <div className="grid grid-cols-2 gap-2">
                             {PARAM_OPTIONS.output_format.map(format => (
                               <button
@@ -920,7 +920,7 @@ export default function NewGenerator() {
 
                         {/* 简化模型 */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-300">简化模型</label>
+                          <label className="text-sm font-medium text-gray-300">{t('generator.params.simplify')}</label>
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => setParams(prev => ({ ...prev, simplify: !prev.simplify }))}
@@ -941,7 +941,7 @@ export default function NewGenerator() {
                         {/* 纹理大小 */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium text-gray-300">纹理大小</label>
+                            <label className="text-sm font-medium text-gray-300">{t('generator.params.textureSize')}</label>
                             <span className="text-sm text-purple-400">{params.texture_size}</span>
                           </div>
                           <input
@@ -965,7 +965,7 @@ export default function NewGenerator() {
                         {/* 最大面数 */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <label className="text-sm font-medium text-gray-300">最大面数</label>
+                            <label className="text-sm font-medium text-gray-300">{t('generator.params.maxFaces')}</label>
                             <span className="text-sm text-purple-400">{params.max_faces}</span>
                           </div>
                           <input
@@ -1011,7 +1011,7 @@ export default function NewGenerator() {
                         className="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
                       >
                         <RotateCcw className="h-4 w-4" />
-                        <span>重置为默认值</span>
+                        <span>{t('generator.params.reset')}</span>
                       </button>
                     </div>
                   </div>
@@ -1020,10 +1020,10 @@ export default function NewGenerator() {
                 {/* 生成按钮 */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
-                    <span>生成成本: <span className="text-purple-400 font-bold">3 积分</span></span>
+                    <span>{t('generator.cost.label')}: <span className="text-purple-400 font-bold">3 {t('generator.cost.points')}</span></span>
                     {user && (
                       <span className={user.points >= 3 ? 'text-green-400' : 'text-red-400'}>
-                        剩余: {user.points} 积分
+                        {t('generator.cost.remaining')}: {user.points} {t('generator.cost.points')}
                       </span>
                     )}
                   </div>
@@ -1041,15 +1041,15 @@ export default function NewGenerator() {
                     {isGenerating ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        <span>生成{currentModelConfig?.type === 'image-to-3d' ? '3D模型' : '图像'}中...</span>
+                        <span>{t('generator.actions.generating')}</span>
                       </>
                     ) : (
                       <>
                         <Grid className="h-5 w-5" />
                         <span>
-                          {!isAuthenticated ? '请先登录' :
-                           (user && user.points < 3) ? '积分不足' :
-                           `开始生成${currentModelConfig?.type === 'image-to-3d' ? '3D模型' : '图像'} (-3积分)`}
+                          {!isAuthenticated ? t('generator.actions.loginRequired') :
+                           (user && user.points < 3) ? t('generator.actions.pointsInsufficient') :
+                           `${t('generator.actions.start')} ${currentModelConfig?.type === 'image-to-3d' ? t('generator.preview.modelTitle') : t('generator.preview.imageTitle')} ${t('generator.actions.deductionSuffix')}`}
                         </span>
                       </>
                     )}
@@ -1063,7 +1063,7 @@ export default function NewGenerator() {
               <div className="space-y-6">
                 {/* 测试模型加载按钮 */}
                 <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
-                  <h3 className="text-lg font-semibold text-white mb-4">快速测试</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">{t('generator.import.quickTest')}</h3>
                   <div className="flex items-center space-x-4">
                     <button
                       onClick={() => {
@@ -1081,9 +1081,9 @@ export default function NewGenerator() {
                       }}
                       className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
                     >
-                      加载测试GLB模型
+                      {t('generator.import.loadTestGLB')}
                     </button>
-                    <span className="text-gray-400 text-sm">点击加载预设的测试模型</span>
+                    <span className="text-gray-400 text-sm">{t('generator.import.tipLoadPreset')}</span>
                   </div>
                 </div>
 
@@ -1096,7 +1096,7 @@ export default function NewGenerator() {
                 {/* 文件列表 */}
                 {uploadedFiles.length > 0 && (
                   <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
-                    <h3 className="text-lg font-semibold text-white mb-4">已导入的模型</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">{t('generator.import.importedModels')}</h3>
                     <div className="grid gap-3">
                       {uploadedFiles.map(file => (
                         <div
@@ -1118,7 +1118,7 @@ export default function NewGenerator() {
                             </div>
                             {selectedFile?.id === file.id && (
                               <div className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
-                                已选择
+                                {t('generator.import.selected')}
                               </div>
                             )}
                           </div>
@@ -1140,8 +1140,8 @@ export default function NewGenerator() {
               <div className="h-full bg-black/30 rounded-2xl border border-white/10 p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-semibold text-white">
-                    {generatedModel ? '3D模型预览' :
-                     generatedImages.length > 0 ? '图像预览' : '模型预览'}
+                    {generatedModel ? t('generator.preview.modelTitle') :
+                     generatedImages.length > 0 ? t('generator.preview.imageTitle') : t('generator.preview.defaultTitle')}
                   </h3>
                   <div className="flex items-center space-x-2">
                     {generatedModel && (
@@ -1171,7 +1171,7 @@ export default function NewGenerator() {
                               unoptimized
                             />
                             <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md rounded-lg p-2 text-white text-xs">
-                              图像 {index + 1}
+                              {t('generator.preview.imageLabel')} {index + 1}
                             </div>
                           </div>
                         ))}
@@ -1192,7 +1192,7 @@ export default function NewGenerator() {
               <div className="bg-black/30 rounded-2xl border border-white/10 p-4 h-full">
                 <div className="flex items-center justify-between h-full">
                   <div className="text-sm font-medium text-white">
-                    操作面板
+                    {t('generator.panel.title')}
                   </div>
                   <div className="flex items-center space-x-3">
                     {(generatedModel || generatedImages.length > 0 || selectedFile) && (
@@ -1201,10 +1201,10 @@ export default function NewGenerator() {
                         <button
                           onClick={handleSave}
                           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
-                          title="保存"
+                          title={t('common.save')}
                         >
                           <Save className="h-4 w-4" />
-                          <span>保存</span>
+                          <span>{t('common.save')}</span>
                         </button>
 
                         {/* 下载按钮 */}
@@ -1212,10 +1212,10 @@ export default function NewGenerator() {
                           <button
                             onClick={() => downloadModel(generatedModel)}
                             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
-                            title="下载3D模型"
+                            title={t('generator.actions.downloadModelTitle')}
                           >
                             <Download className="h-4 w-4" />
-                            <span>下载</span>
+                            <span>{t('common.download')}</span>
                           </button>
                         )}
 
@@ -1227,7 +1227,7 @@ export default function NewGenerator() {
                                 key={index}
                                 onClick={() => downloadImage(imageUrl, index)}
                                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-colors text-sm"
-                                title={`下载图像 ${index + 1}`}
+                            title={`${t('generator.actions.downloadImageTitle')} ${index + 1}`}
                               >
                                 图{index + 1}
                               </button>
@@ -1247,7 +1247,7 @@ export default function NewGenerator() {
                             title="查看文件"
                           >
                             <Download className="h-4 w-4" />
-                            <span>下载</span>
+                            <span>{t('common.download')}</span>
                           </button>
                         )}
                       </>
