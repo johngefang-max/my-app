@@ -65,9 +65,8 @@ export default function HelpPage() {
               <h2 className="text-xl font-semibold text-white">{t('help.section.contact.title')}</h2>
             </div>
             <ul className="space-y-3 text-gray-300">
-              <li>{t('help.contact.support')}: 24/7</li>
+              <li>{t('help.contact.support')}</li>
               <li>{t('help.contact.email')}: support@ai3dpro.com</li>
-              <li>{t('help.contact.status')} <Link href={language === 'zh' ? '/zh' : '/en'} className="text-purple-400 hover:text-purple-300">status</Link></li>
             </ul>
           </div>
         </div>

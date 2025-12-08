@@ -304,6 +304,15 @@ export default function Pricing() {
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2025 imageto3d. {language === 'zh' ? '保留所有权利。' : 'All rights reserved.'}</p>
+            <div className="mt-3 flex items-center justify-center gap-4 text-sm">
+              <Link href={language === 'zh' ? '/zh/terms' : '/en/terms'} className="hover:text-white">
+                {language === 'zh' ? '服务条款' : 'Terms'}
+              </Link>
+              <span className="text-gray-600">·</span>
+              <Link href={language === 'zh' ? '/zh/privacy' : '/en/privacy'} className="hover:text-white">
+                {language === 'zh' ? '隐私政策' : 'Privacy'}
+              </Link>
+            </div>
           </div>
         </div>
       </footer>

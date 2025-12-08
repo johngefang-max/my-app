@@ -119,7 +119,7 @@ const translations = {
     'home.cta.subtitle': '加入数千名创作者的行列，用AI加速你的3D创作流程',
     'home.cta.freeTrial': '免费开始',
     'home.cta.viewPricing': '查看定价方案',
-    'home.footer.support': '无需信用卡 • 随时取消 • 24/7客服支持',
+    'home.footer.support': '支持',
     'home.footer.company': '公司',
     'home.footer.aboutUs': '关于我们',
     'home.footer.careers': '加入我们',
@@ -246,7 +246,7 @@ const translations = {
     'pricing.cta.subtitle': '免费开始，体验AI驱动的3D模型生成',
     'pricing.cta.freeTrial': '免费开始',
     'pricing.cta.watchDemo': '观看演示',
-    'pricing.footer.support': '无需信用卡 • 随时取消 • 24/7客服支持',
+    'pricing.footer.support': '',
     
     // 生成器页
     'generator.title': '创造你的',
@@ -574,7 +574,7 @@ const translations = {
     'home.cta.subtitle': 'Join thousands of creators speeding up 3D work with AI',
     'home.cta.freeTrial': 'Start for free',
     'home.cta.viewPricing': 'View Pricing',
-    'home.footer.support': 'No credit card required • Cancel anytime • 24/7 support',
+    'home.footer.support': 'Support',
     'home.footer.company': 'Company',
     'home.footer.aboutUs': 'About us',
     'home.footer.careers': 'Careers',
@@ -700,7 +700,7 @@ const translations = {
     'pricing.cta.title': 'Ready to build?',
     'pricing.cta.subtitle': 'Start free and create production‑ready 3D assets with AI',
     'pricing.cta.freeTrial': 'Start for free',
-    'pricing.footer.support': 'No credit card required • Cancel anytime • 24/7 support',
+    'pricing.footer.support': '',
     
     // Generator
     'generator.title': 'Create Your',

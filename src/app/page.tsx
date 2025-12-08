@@ -589,6 +589,11 @@ export default function Home() {
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2025 imageto3d. {t('home.footer.rights')}</p>
+            <div className="mt-3 flex items-center justify-center gap-4 text-sm">
+              <a href="/terms" className="hover:text-white">{language === 'zh' ? '服务条款' : 'Terms'}</a>
+              <span className="text-gray-600">·</span>
+              <a href="/privacy" className="hover:text-white">{language === 'zh' ? '隐私政策' : 'Privacy'}</a>
+            </div>
           </div>
         </div>
       </footer>
