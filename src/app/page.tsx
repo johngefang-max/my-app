@@ -19,11 +19,7 @@ export default function Home() {
   const [imgError, setImgError] = useState(false)
   const heroSrc = (process.env.NEXT_PUBLIC_HERO_IMAGE_URL as string) || '/alis.png'
   const go = (path: string) => {
-    if (isAuthenticated) {
-      router.push(path)
-    } else {
-      openLogin()
-    }
+    router.push(path)
   }
   
   useEffect(() => {
@@ -577,22 +573,22 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4">{t('home.footer.company')}</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">{t('home.footer.aboutUs')}</a></li>
-                <li><a href="#" className="hover:text-white">{t('home.footer.careers')}</a></li>
-                <li><a href="#" className="hover:text-white">{t('home.footer.contact')}</a></li>
+                <li><a href="/help" className="hover:text-white">{t('home.footer.aboutUs')}</a></li>
+                <li><a href="/help" className="hover:text-white">{t('home.footer.careers')}</a></li>
+                <li><a href="/help" className="hover:text-white">{t('home.footer.contact')}</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">{t('home.footer.support')}</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">{t('home.footer.helpCenter')}</a></li>
-                <li><a href="#" className="hover:text-white">{t('home.footer.community')}</a></li>
-                <li><a href="#" className="hover:text-white">{t('home.footer.status')}</a></li>
+                <li><a href="/help" className="hover:text-white">{t('home.footer.helpCenter')}</a></li>
+                <li><a href="/help" className="hover:text-white">{t('home.footer.community')}</a></li>
+                <li><a href="/help" className="hover:text-white">{t('home.footer.status')}</a></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 imageto3d. {t('home.footer.rights')}</p>
+            <p>&copy; 2025 imageto3d. {t('home.footer.rights')}</p>
           </div>
         </div>
       </footer>

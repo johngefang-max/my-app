@@ -1,6 +1,7 @@
 'use client'
 
 import { Check, Star, Zap, Shield, Users, Clock, Download, Headphones, CheckCircle, Globe } from 'lucide-react'
+import Link from 'next/link'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -253,9 +254,14 @@ export default function Pricing() {
               {t('pricing.cta.freeTrial')}
             </a>
           </div>
-          <div className="flex items-center justify-center space-x-2 mt-6 text-gray-300">
-            <CheckCircle className="h-5 w-5 text-green-400" />
-            <span>{t('pricing.footer.support')}</span>
+          <div className="flex items-center justify-center gap-4 mt-6 text-gray-300">
+            <Link href={language === 'zh' ? '/zh/terms' : '/en/terms'} className="hover:text-white">
+              {language === 'zh' ? '服务条款' : 'Terms'}
+            </Link>
+            <span className="text-gray-600">·</span>
+            <Link href={language === 'zh' ? '/zh/privacy' : '/en/privacy'} className="hover:text-white">
+              {language === 'zh' ? '隐私政策' : 'Privacy'}
+            </Link>
           </div>
         </div>
       </section>
@@ -276,28 +282,28 @@ export default function Pricing() {
               <ul className="space-y-2 text-gray-400">
                 <li><a href="/generator" className="hover:text-white">{language === 'zh' ? '文本生成' : 'Text Generation'}</a></li>
                 <li><a href="/generator" className="hover:text-white">{language === 'zh' ? '图片转3D' : 'Image to 3D'}</a></li>
-                <li><a href="#" className="hover:text-white">{t('nav.api')}</a></li>
+                <li><a href="/help" className="hover:text-white">{t('nav.api')}</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">{t('nav.pricing')}</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">{t('pricing.free.title')}</a></li>
-                <li><a href="#" className="hover:text-white">{t('pricing.pro.title')}</a></li>
-                <li><a href="#" className="hover:text-white">{language === 'zh' ? '企业方案' : 'Enterprise'}</a></li>
+                <li><a href="/pricing" className="hover:text-white">{t('pricing.free.title')}</a></li>
+                <li><a href="/pricing" className="hover:text-white">{t('pricing.pro.title')}</a></li>
+                <li><a href="/pricing" className="hover:text-white">{language === 'zh' ? '企业方案' : 'Enterprise'}</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-4">{t('common.help')}</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">{language === 'zh' ? '帮助中心' : 'Help Center'}</a></li>
-                <li><a href="#" className="hover:text-white">{language === 'zh' ? '联系客服' : 'Contact Support'}</a></li>
-                <li><a href="#" className="hover:text-white">{language === 'zh' ? '退款政策' : 'Refund Policy'}</a></li>
+                <li><a href="/help" className="hover:text-white">{language === 'zh' ? '帮助中心' : 'Help Center'}</a></li>
+                <li><a href="/help" className="hover:text-white">{language === 'zh' ? '联系客服' : 'Contact Support'}</a></li>
+                <li><a href="/terms" className="hover:text-white">{language === 'zh' ? '退款政策' : 'Refund Policy'}</a></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 imageto3d. {language === 'zh' ? '保留所有权利。' : 'All rights reserved.'}</p>
+            <p>&copy; 2025 imageto3d. {language === 'zh' ? '保留所有权利。' : 'All rights reserved.'}</p>
           </div>
         </div>
       </footer>
