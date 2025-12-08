@@ -6,6 +6,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import LoginModal from "./components/LoginModal";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import { Providers } from "./providers";
 
 const inter = Inter({
@@ -51,6 +52,7 @@ export default async function RootLayout({
             <LanguageProvider initialLanguage={selected}>
               <Header />
               {children}
+              <Footer />
               <LoginModal />
             </LanguageProvider>
           </AuthProvider>

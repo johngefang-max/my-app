@@ -551,52 +551,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-black border-t border-gray-800 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Box className="h-6 w-6 text-purple-400" />
-                <span className="text-xl font-bold text-white">imageto3d</span>
-              </div>
-              <p className="text-gray-400">{t('home.subtitle')}</p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">{t('nav.product')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><button onClick={() => go('/generator')} className="hover:text-white">{t('home.feature2.title')}</button></li>
-                <li><button onClick={() => go('/generator')} className="hover:text-white">{t('home.feature1.title')}</button></li>
-                
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">{t('home.footer.company')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="/help" className="hover:text-white">{t('home.footer.aboutUs')}</a></li>
-                <li><a href="/help" className="hover:text-white">{t('home.footer.careers')}</a></li>
-                <li><a href="/help" className="hover:text-white">{t('home.footer.contact')}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">{t('home.footer.support')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="/help" className="hover:text-white">{t('home.footer.helpCenter')}</a></li>
-                <li><a href="/help" className="hover:text-white">{t('home.footer.community')}</a></li>
-                <li><a href="/help" className="hover:text-white">{t('home.footer.status')}</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 imageto3d. {t('home.footer.rights')}</p>
-            <div className="mt-3 flex items-center justify-center gap-4 text-sm">
-              <a href="/terms" className="hover:text-white">{language === 'zh' ? '服务条款' : 'Terms'}</a>
-              <span className="text-gray-600">·</span>
-              <a href="/privacy" className="hover:text-white">{language === 'zh' ? '隐私政策' : 'Privacy'}</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      
       
     </div>
   )

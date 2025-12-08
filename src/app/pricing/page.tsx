@@ -266,56 +266,7 @@ export default function Pricing() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-black border-t border-gray-800 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Star className="h-6 w-6 text-purple-400" />
-                <span className="text-xl font-bold text-white">imageto3d</span>
-              </div>
-              <p className="text-gray-400">{language === 'zh' ? 'AI驱动的3D模型生成平台' : 'AI-powered 3D model generation platform'}</p>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">{t('nav.product')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="/generator" className="hover:text-white">{language === 'zh' ? '文本生成' : 'Text Generation'}</a></li>
-                <li><a href="/generator" className="hover:text-white">{language === 'zh' ? '图片转3D' : 'Image to 3D'}</a></li>
-                <li><a href="/help" className="hover:text-white">{t('nav.api')}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">{t('nav.pricing')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="/pricing" className="hover:text-white">{t('pricing.free.title')}</a></li>
-                <li><a href="/pricing" className="hover:text-white">{t('pricing.pro.title')}</a></li>
-                <li><a href="/pricing" className="hover:text-white">{language === 'zh' ? '企业方案' : 'Enterprise'}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-white font-semibold mb-4">{t('common.help')}</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="/help" className="hover:text-white">{language === 'zh' ? '帮助中心' : 'Help Center'}</a></li>
-                <li><a href="/help" className="hover:text-white">{language === 'zh' ? '联系客服' : 'Contact Support'}</a></li>
-                <li><a href="/terms" className="hover:text-white">{language === 'zh' ? '退款政策' : 'Refund Policy'}</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 imageto3d. {language === 'zh' ? '保留所有权利。' : 'All rights reserved.'}</p>
-            <div className="mt-3 flex items-center justify-center gap-4 text-sm">
-              <Link href={language === 'zh' ? '/zh/terms' : '/en/terms'} className="hover:text-white">
-                {language === 'zh' ? '服务条款' : 'Terms'}
-              </Link>
-              <span className="text-gray-600">·</span>
-              <Link href={language === 'zh' ? '/zh/privacy' : '/en/privacy'} className="hover:text-white">
-                {language === 'zh' ? '隐私政策' : 'Privacy'}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      
     </div>
   )
 }
