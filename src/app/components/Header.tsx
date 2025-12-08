@@ -107,6 +107,8 @@ export default function Header({
             <Link href={langPath('/gallery')} className="text-gray-300 hover:text-white transition-colors">{t('nav.browseWorks')}</Link>
             <button onClick={() => go('/pricing')} className="text-gray-300 hover:text-white transition-colors">{t('nav.pricing')}</button>
             <Link href={langPath('/help')} className="text-gray-300 hover:text-white transition-colors">{t('nav.help')}</Link>
+            <Link href={langPath('/terms')} className="text-gray-300 hover:text-white transition-colors">{language === 'zh' ? '服务条款' : 'Terms'}</Link>
+            <Link href={langPath('/privacy')} className="text-gray-300 hover:text-white transition-colors">{language === 'zh' ? '隐私政策' : 'Privacy'}</Link>
           </nav>
 
           <div className="flex items-center space-x-4">
