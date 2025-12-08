@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 
 type Language = 'zh' | 'en'
 
@@ -969,6 +970,7 @@ const translations = {
 export function LanguageProvider({ children, initialLanguage = 'en' }: { children: ReactNode, initialLanguage?: Language }) {
   const [language, setLanguage] = useState<Language>(typeof window === 'undefined' ? initialLanguage : getSavedLanguage())
   const [isLoading] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     try {
@@ -977,6 +979,16 @@ export function LanguageProvider({ children, initialLanguage = 'en' }: { childre
       }
     } catch {}
   }, [language])
+
+  useEffect(() => {
+    try {
+      const m = pathname?.match(/^\/(zh|en)(?=\/|$)/)
+      const pLang = (m?.[1] as Language | undefined) || null
+      if (pLang && pLang !== language) {
+        handleSetLanguage(pLang)
+      }
+    } catch {}
+  }, [pathname])
 
   // 保存语言偏好到cookie和localStorage
   const handleSetLanguage = (lang: Language) => {
