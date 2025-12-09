@@ -25,8 +25,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "imageto3d",
-  description: "Professional 3D model preview and editing platform with AI generation capabilities",
+  title: "imageto3d - AI Image to 3D Model Generator",
+  description: "Transform your images into stunning 3D models with AI. Upload any image and get high-quality 3D models in seconds. Perfect for creators, designers, and developers.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",

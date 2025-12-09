@@ -468,13 +468,13 @@ const translations = {
     'terms.title': '服务条款',
     'terms.subtitle': '请仔细阅读以下服务条款',
     'terms.lastUpdated': '最后更新：2025年1月',
-    'terms.intro': '欢迎使用imageto3d！以下服务条款（"条款"）规定了您使用我们AI驱动的3D模型生成服务的条款和条件。',
+    'terms.intro': '欢迎使用imageto3d！以下服务条款（"条款"）规定了您使用我们AI驱动的图片转3D模型生成服务的条款和条件。',
     'terms.acceptance': '通过访问或使用我们的服务，您确认您已阅读、理解并同意受本条款约束。',
     'terms.tableOfContents': '目录',
 
     // Terms sections
     'terms.section1.title': '1. 服务描述',
-    'terms.section1.content': 'imageto3d是一个基于人工智能的3D模型生成平台，允许用户：\n• 通过文本描述生成3D模型\n• 上传图片转换为3D模型\n• 编辑和优化生成的3D模型\n• 下载和使用生成的模型文件\n• 分享和协作功能',
+    'terms.section1.content': 'imageto3d是一个基于人工智能的图片转3D模型生成平台，允许用户：\n• 上传图片转换为3D模型\n• 通过文本描述生成3D模型\n• 编辑和优化生成的3D模型\n• 下载和使用生成的模型文件\n• 分享和协作功能',
 
     'terms.section2.title': '2. 用户账户',
     'terms.section2.content': '账户注册：您需要创建账户才能使用我们的服务。您提供的所有信息必须真实、准确和完整。\n账户安全：您负责保护账户密码的安全性，并对您账户下的所有活动承担责任。\n账户终止：我们保留在违反条款的情况下暂停或终止您账户的权利。',
@@ -501,7 +501,7 @@ const translations = {
     'terms.section9.content': '适用法律：本条款受中华人民共和国法律管辖。\n争议解决：任何争议应通过友好协商解决，协商不成可向有管辖权的法院提起诉讼。\n管辖权：争议管辖法院为服务提供方所在地人民法院。',
 
     'terms.section10.title': '10. 联系我们',
-    'terms.section10.content': '如有任何问题或疑虑，请通过以下方式联系我们：\n• 邮箱：support@ai3dpro.com\n• 电话：+86 123 4567 8900\n• 地址：中国上海市浦东新区XX路XX号',
+    'terms.section10.content': '如有任何问题或疑虑，请通过以下方式联系我们：\n• 邮箱：johngefang@gmail.com\n• 电话：+86 123 4567 8900\n• 地址：中国上海市浦东新区XX路XX号',
 
     // Privacy Policy Page
     'privacy.title': '隐私政策',
@@ -513,10 +513,10 @@ const translations = {
 
     // Privacy sections
     'privacy.section1.title': '1. 我们收集的信息',
-    'privacy.section1.content': '账户信息：包括您的姓名、电子邮件地址、密码、联系方式等。\n使用信息：包括您如何使用服务、生成历史记录、偏好设置等。\n技术信息：包括IP地址、浏览器类型、设备信息、访问时间等。\n支付信息：如果您使用付费服务，我们会收集相关的支付信息。',
+    'privacy.section1.content': '账户信息：包括您的姓名、电子邮件地址、密码、联系方式等。\n使用信息：包括您如何使用服务、图片上传历史记录、生成历史记录、偏好设置等。\n技术信息：包括IP地址、浏览器类型、设备信息、访问时间等。\n支付信息：如果您使用付费服务，我们会收集相关的支付信息。',
 
     'privacy.section2.title': '2. 信息使用方式',
-    'privacy.section2.content': '服务提供：提供、运营、维护和改进我们的AI3D生成服务。\n个性化：根据您的使用习惯提供个性化的用户体验。\n沟通：通过电子邮件、短信等方式与您沟通。\n分析：分析服务使用情况以改进我们的产品和服务。\n安全：监控和防范滥用、欺诈等安全威胁。',
+    'privacy.section2.content': '服务提供：提供、运营、维护和改进我们的AI图片转3D生成服务。\n个性化：根据您的使用习惯提供个性化的用户体验。\n沟通：通过电子邮件、短信等方式与您沟通。\n分析：分析服务使用情况以改进我们的产品和服务。\n安全：监控和防范滥用、欺诈等安全威胁。',
 
     'privacy.section3.title': '3. 信息共享',
     'privacy.section3.content': '我们不会向第三方出售、交易或转移您的个人信息，除非：\n• 获得您的明确同意\n• 法律要求或法院命令\n• 为了保护我们的权利、财产或安全\n• 与可信服务提供商共享（仅限于提供服务所需）\n• 在合并、收购或资产转让的情况下',
@@ -543,7 +543,7 @@ const translations = {
     'privacy.section10.content': '更新频率：我们可能会不时更新本隐私政策。\n• 重要变更：当有重大变更时，我们会通过网站或电子邮件通知您。\n• 生效时间：更新后的政策将在发布后立即生效。',
 
     'privacy.section11.title': '11. 联系我们',
-    'privacy.section11.content': '如果您对本隐私政策有任何疑问或疑虑，请通过以下方式联系我们：\n• 邮箱：privacy@ai3dpro.com\n• 电话：+86 123 4567 8901\n• 地址：中国上海市浦东新区XX路XX号',
+    'privacy.section11.content': '如果您对本隐私政策有任何疑问或疑虑，请通过以下方式联系我们：\n• 邮箱：johngefang@gmail.com\n• 电话：+86 123 4567 8901\n• 地址：中国上海市浦东新区XX路XX号',
 
     // Common footer links
     'terms.viewFull': '查看完整条款',
@@ -990,13 +990,13 @@ const translations = {
     'terms.title': 'Terms of Service',
     'terms.subtitle': 'Please read these terms of service carefully',
     'terms.lastUpdated': 'Last Updated: January 2025',
-    'terms.intro': 'Welcome to imageto3d! These Terms of Service ("Terms") govern your use of our AI-powered 3D model generation service.',
+    'terms.intro': 'Welcome to imageto3d! These Terms of Service ("Terms") govern your use of our AI-powered image to 3D model generation service.',
     'terms.acceptance': 'By accessing or using our service, you acknowledge that you have read, understood, and agree to be bound by these Terms.',
     'terms.tableOfContents': 'Table of Contents',
 
     // Terms sections
     'terms.section1.title': '1. Service Description',
-    'terms.section1.content': 'imageto3d is an AI-powered 3D model generation platform that allows users to:\n• Generate 3D models from text descriptions\n• Upload images and convert them to 3D models\n• Edit and optimize generated 3D models\n• Download and use generated model files\n• Share and collaborate features',
+    'terms.section1.content': 'imageto3d is an AI-powered image to 3D model generation platform that allows users to:\n• Upload images and convert them to 3D models\n• Generate 3D models from text descriptions\n• Edit and optimize generated 3D models\n• Download and use generated model files\n• Share and collaborate features',
 
     'terms.section2.title': '2. User Accounts',
     'terms.section2.content': 'Account Registration: You must create an account to use our services. All information you provide must be true, accurate, and complete.\nAccount Security: You are responsible for safeguarding your account password and for all activities that occur under your account.\nAccount Termination: We reserve the right to suspend or terminate your account for violation of these Terms.',
@@ -1023,7 +1023,7 @@ const translations = {
     'terms.section9.content': 'Governing Law: These Terms are governed by the laws of the Peoples Republic of China.\nDispute Resolution: Any disputes should be resolved through friendly negotiation; if negotiation fails, they may be brought to a competent court.\nJurisdiction: The jurisdiction for disputes shall be the Peoples Court where the service provider is located.',
 
     'terms.section10.title': '10. Contact Us',
-    'terms.section10.content': 'If you have any questions or concerns, please contact us:\n• Email: support@ai3dpro.com\n• Phone: +86 123 4567 8900\n• Address: XX Road XX, Pudong New Area, Shanghai, China',
+    'terms.section10.content': 'If you have any questions or concerns, please contact us:\n• Email: johngefang@gmail.com\n• Phone: +86 123 4567 8900\n• Address: XX Road XX, Pudong New Area, Shanghai, China',
 
     // Privacy Policy Page
     'privacy.title': 'Privacy Policy',
@@ -1035,10 +1035,10 @@ const translations = {
 
     // Privacy sections
     'privacy.section1.title': '1. Information We Collect',
-    'privacy.section1.content': 'Account Information: Includes your name, email address, password, contact details, etc.\nUsage Information: Includes how you use the service, generation history, preferences, etc.\nTechnical Information: Includes IP address, browser type, device information, access times, etc.\nPayment Information: If you use paid services, we collect related payment information.',
+    'privacy.section1.content': 'Account Information: Includes your name, email address, password, contact details, etc.\nUsage Information: Includes how you use the service, image upload history, generation history, preferences, etc.\nTechnical Information: Includes IP address, browser type, device information, access times, etc.\nPayment Information: If you use paid services, we collect related payment information.',
 
     'privacy.section2.title': '2. How We Use Your Information',
-    'privacy.section2.content': 'Service Provision: To provide, operate, maintain, and improve our AI3D generation service.\nPersonalization: To provide personalized user experiences based on your usage habits.\nCommunication: To communicate with you via email, SMS, etc.\nAnalytics: To analyze service usage patterns to improve our products and services.\nSecurity: To monitor and prevent abuse, fraud, and other security threats.',
+    'privacy.section2.content': 'Service Provision: To provide, operate, maintain, and improve our AI image to 3D generation service.\nPersonalization: To provide personalized user experiences based on your usage habits.\nCommunication: To communicate with you via email, SMS, etc.\nAnalytics: To analyze service usage patterns to improve our products and services.\nSecurity: To monitor and prevent abuse, fraud, and other security threats.',
 
     'privacy.section3.title': '3. Information Sharing',
     'privacy.section3.content': 'We do not sell, trade, or transfer your personal information to third parties, except:\n• With your explicit consent\n• When required by law or court order\n• To protect our rights, property, or safety\n• With trusted service providers (limited to service provision needs)\n• In case of merger, acquisition, or asset transfer',
@@ -1065,7 +1065,7 @@ const translations = {
     'privacy.section10.content': 'Update Frequency: We may update this privacy policy from time to time.\n• Significant Changes: When we make significant changes, we will notify you via our website or email.\n• Effective Date: Updated policies take effect immediately upon posting.',
 
     'privacy.section11.title': '11. Contact Us',
-    'privacy.section11.content': 'If you have any questions or concerns about this privacy policy, please contact us:\n• Email: privacy@ai3dpro.com\n• Phone: +86 123 4567 8901\n• Address: XX Road XX, Pudong New Area, Shanghai, China',
+    'privacy.section11.content': 'If you have any questions or concerns about this privacy policy, please contact us:\n• Email: johngefang@gmail.com\n• Phone: +86 123 4567 8901\n• Address: XX Road XX, Pudong New Area, Shanghai, China',
 
     // Common footer links
     'terms.viewFull': 'View Full Terms',

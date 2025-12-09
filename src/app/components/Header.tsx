@@ -127,7 +127,7 @@ export default function Header({
                 <div className="flex items-center gap-3">
                   {/* Points Display */}
                   <div className="flex items-center gap-2 bg-gray-800/50 px-3 py-2 rounded-lg">
-                    <span className="text-xs text-gray-400">积分</span>
+                    <span className="text-xs text-gray-400">Points</span>
                     <span className={`text-sm font-bold ${getPointsColor((user?.points ?? fallbackPoints ?? 0))}`}>
                       {formatPoints((user?.points ?? fallbackPoints ?? 0))}
                     </span>
