@@ -522,13 +522,7 @@ export default function Home() {
             <button onClick={() => go('/pricing')} className="border border-white text-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
               {t('home.cta.viewPricing')}
             </button>
-          </div>
-          <div className="flex items-center justify-center space-x-2 mt-6 text-gray-300">
-            <Star className="h-5 w-5 text-yellow-400" />
-            <span>{t('home.footer.support')}</span>
-          </div>
-
-          
+          </div>  
         </div>
       </section>
 
