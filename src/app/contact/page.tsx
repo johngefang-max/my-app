@@ -8,7 +8,7 @@ export default function ContactPage() {
       <section className="px-4 sm:px-6 lg:px-8 py-10 border-b border-white/10 bg-black/30">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold text-white mb-3">{t('home.footer.contact')}</h1>
-          <p className="text-gray-400">Email: support@ai3dpro.com</p>
+          <p className="text-gray-400">Email: johngefang@gmail.com</p>
         </div>
       </section>
       <section className="px-4 sm:px-6 lg:px-8 py-12">

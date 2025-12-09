@@ -31,7 +31,6 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4">{t('home.footer.company')}</h4>
             <ul className="space-y-2 text-gray-400">
               <li><Link href={`${pref}/about`} className="hover:text-white">{t('home.footer.aboutUs')}</Link></li>
-              <li><Link href={`${pref}/careers`} className="hover:text-white">{t('home.footer.careers')}</Link></li>
               <li><Link href={`${pref}/contact`} className="hover:text-white">{t('home.footer.contact')}</Link></li>
             </ul>
           </div>
