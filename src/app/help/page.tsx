@@ -66,7 +66,7 @@ export default function HelpPage() {
             </div>
             <ul className="space-y-3 text-gray-300">
               <li>{t('help.contact.support')}</li>
-              <li>{t('help.contact.email')}: support@ai3dpro.com</li>
+              <li>{t('help.contact.email')}: johngefang@gmail.com</li>
             </ul>
           </div>
         </div>
