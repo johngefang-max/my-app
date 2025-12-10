@@ -15,16 +15,39 @@ export async function GET(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET })
   const email = token?.email as string | undefined
   const { baseUrl, serviceKey, anonKey } = env()
-  if (!email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  if (!baseUrl || !anonKey) return NextResponse.json({ error: 'config' }, { status: 500 })
+
+  console.log('GET /api/me/user called for email:', email)
+
+  if (!email) {
+    console.error('No email found in token')
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+  if (!baseUrl || !anonKey) {
+    console.error('Missing database configuration')
+    return NextResponse.json({ error: 'config' }, { status: 500 })
+  }
   const bearer = serviceKey || anonKey
 
-  const res = await fetch(`${baseUrl}/rest/v1/users?select=*&email=eq.${encodeURIComponent(email)}`, {
+  const checkResponse = await fetch(`${baseUrl}/rest/v1/users?select=*&email=eq.${encodeURIComponent(email)}`, {
     headers: { 'Authorization': `Bearer ${bearer}`, 'apikey': anonKey }
   })
-  const arr = await res.json().catch(() => [])
-  const row = Array.isArray(arr) ? arr[0] : null
-  if (!row) return NextResponse.json({ error: 'not_found' }, { status: 404 })
+
+  const responseText = await checkResponse.text()
+  console.log('GET response status:', checkResponse.status, 'response:', responseText)
+
+  if (!checkResponse.ok) {
+    console.error('GET request failed:', responseText)
+    return NextResponse.json({ error: 'request_failed', details: responseText }, { status: checkResponse.status })
+  }
+
+  const arr = await checkResponse.json()
+  const row = Array.isArray(arr) && arr.length > 0 ? arr[0] : null
+  if (!row) {
+    console.error('User not found in database')
+    return NextResponse.json({ error: 'not_found' }, { status: 404 })
+  }
+
+  console.log('User found:', { id: row.id, email: row.email, points: row.points })
   return NextResponse.json({ user: row })
 }
 
@@ -47,9 +70,25 @@ export async function POST(req: NextRequest) {
   }
   const bearer = serviceKey || anonKey
 
+  // 首先检查用户是否已存在
+  const checkResponse = await fetch(`${baseUrl}/rest/v1/users?select=*&email=eq.${encodeURIComponent(email)}`, {
+    headers: { 'Authorization': `Bearer ${bearer}`, 'apikey': anonKey }
+  })
+
+  if (checkResponse.ok) {
+    const existingUsers = await checkResponse.json()
+    const existingUser = Array.isArray(existingUsers) && existingUsers.length > 0 ? existingUsers[0] : null
+
+    if (existingUser) {
+      console.log('User already exists, returning existing user:', { id: existingUser.id, email: existingUser.email, points: existingUser.points })
+      return NextResponse.json({ user: existingUser })
+    }
+  }
+
   const baseName = (name || email.split('@')[0] || '').toLowerCase().replace(/[^a-z0-9\-_.]/g, '-')
   const username = baseName || `user-${Math.random().toString(36).slice(2,8)}`
 
+  // 只有新用户才获得10积分
   const body = [{
     email,
     username,
@@ -58,40 +97,40 @@ export async function POST(req: NextRequest) {
     usage_count: 0,
     storage_used_bytes: 0,
     max_storage_bytes: 1073741824,
-    points: 10,
+    points: 10,           // 首次注册赠送10积分
     total_points_earned: 10,
     total_points_spent: 0,
   }]
 
-  console.log('Attempting to upsert user with body:', body)
+  console.log('Creating new user with body:', body)
 
-  const upsert = await fetch(`${baseUrl}/rest/v1/users?on_conflict=email`, {
+  const upsert = await fetch(`${baseUrl}/rest/v1/users`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${bearer}`,
       'apikey': anonKey,
-      'Prefer': 'resolution=merge-duplicates,return=representation'
+      'Prefer': 'return=representation'
     },
     body: JSON.stringify(body)
   })
 
   const responseText = await upsert.text()
-  console.log('Upsert response status:', upsert.status, 'response:', responseText)
+  console.log('Create response status:', upsert.status, 'response:', responseText)
 
   if (!upsert.ok) {
-    console.error('Failed to upsert user:', responseText)
-    return NextResponse.json({ error: 'upsert_failed', details: responseText }, { status: upsert.status })
+    console.error('Failed to create user:', responseText)
+    return NextResponse.json({ error: 'create_failed', details: responseText }, { status: upsert.status })
   }
 
   const rep = JSON.parse(responseText)
   const row = Array.isArray(rep) ? rep[0] : null
   if (!row) {
-    console.error('No user returned from upsert')
-    return NextResponse.json({ error: 'upsert_failed', details: 'No user returned' }, { status: 500 })
+    console.error('No user returned from create')
+    return NextResponse.json({ error: 'create_failed', details: 'No user returned' }, { status: 500 })
   }
 
-  console.log('User upserted successfully:', { id: row.id, email: row.email, points: row.points })
+  console.log('New user created successfully:', { id: row.id, email: row.email, points: row.points })
   return NextResponse.json({ user: row })
 }
 

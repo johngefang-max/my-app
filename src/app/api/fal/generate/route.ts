@@ -200,31 +200,31 @@ async function generate3D(data: any) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { type, data, userId } = await request.json()
+    const { type, data, userEmail } = await request.json()
 
-    console.log('API Request received:', { type, data, userId })
+    console.log('API Request received:', { type, data, userEmail })
 
-    if (!type || !data || !userId) {
+    if (!type || !data || !userEmail) {
       return NextResponse.json(
-        { error: '缺少必要参数: type, data 和 userId' },
+        { error: '缺少必要参数: type, data 和 userEmail' },
         { status: 400 }
       )
     }
 
-    console.log('Validating user:', userId)
+    console.log('Validating user by email:', userEmail)
 
-    // 验证用户身份
+    // 验证用户身份 - 通过email查找用户
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
-      .eq('id', userId)
-      .single()
+      .eq('email', userEmail)
+      .maybeSingle()
 
     console.log('User validation result:', { userData, userError: userError?.message })
 
     if (userError || !userData) {
       console.error('User validation failed:', {
-        userId,
+        userEmail,
         userError: userError?.message,
         userData
       })
@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
         {
           error: '用户验证失败',
           details: userError?.message || '用户不存在',
-          userId: userId
+          userEmail: userEmail
         },
         { status: 401 }
       )
@@ -275,7 +275,7 @@ export async function POST(request: NextRequest) {
     // 创建生成记录并扣除积分
     let generation
     try {
-      const result = await PointsService.createGeneration(userId, {
+      const result = await PointsService.createGeneration(userData.id, {
         title: `${generationType} generation`,
         description: data.prompt?.substring(0, 100),
         model_type: type === '3d' ? '3d' : 'image',
@@ -292,7 +292,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Generation created, ID:', generation.id, 'Points deducted:', cost)
+    console.log('Generation created, ID:', generation.id, 'Points deducted:', cost, 'User ID:', userData.id)
 
     let apiResult
 
@@ -333,7 +333,7 @@ export async function POST(request: NextRequest) {
 
       // 退还积分
       try {
-        await PointsService.refundPoints(userId, generation.id, cost)
+        await PointsService.refundPoints(userData.id, generation.id, cost)
         console.log('Points refunded:', cost)
       } catch (refundError) {
         console.error('积分退还失败:', refundError)

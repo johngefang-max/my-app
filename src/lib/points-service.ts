@@ -8,7 +8,7 @@ export class PointsService {
       .from('users')
       .select('points')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error('Error fetching user points:', error)
@@ -52,7 +52,7 @@ export class PointsService {
       .from('users')
       .select('points,total_points_spent,total_points_earned')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (userError || !user) {
       throw new Error('Failed to fetch user data')
@@ -127,7 +127,7 @@ export class PointsService {
       .from('users')
       .select('points,total_points_spent')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       throw new Error('User not found')
@@ -249,7 +249,7 @@ export class PointsService {
       .from('users')
       .select('points,total_points_earned')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       throw new Error('User not found')
@@ -290,7 +290,7 @@ export class PointsService {
       .from('users')
       .select('points,total_points_earned')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (!user) {
       throw new Error('User not found')

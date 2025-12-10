@@ -134,16 +134,16 @@ export default function NewGenerator() {
       return
     }
 
-    // 检查用户ID是否存在
-    if (!user.id) {
-      console.error('User ID is missing:', user)
+    // 检查用户邮箱是否存在
+    if (!user.email) {
+      console.error('User email is missing:', user)
       alert('用户信息不完整，请重新登录')
       return
     }
 
     if (!textInput && activeMethod === 'text' && !uploadedImages.length) return
 
-    console.log('Starting generation with user:', { id: user.id, email: user.email, points: user.points })
+    console.log('Starting generation with user:', { email: user.email, points: user.points })
 
     setIsGenerating(true)
     try {
@@ -208,7 +208,7 @@ export default function NewGenerator() {
         body: JSON.stringify({
           type: currentModelConfig.type === 'image-to-3d' ? '3d' : 'image',
           data: requestData,
-          userId: user.id
+          userEmail: user.email  // 使用email而不是id进行验证
         })
       })
 
