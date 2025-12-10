@@ -52,15 +52,7 @@ export default function Home() {
           
           
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 mb-8 sm:mb-16">
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-white">50K+</div>
-              <div className="text-gray-400 text-sm sm:text-base">{t('home.activeUsers')}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-white">1M+</div>
-              <div className="text-gray-400 text-sm sm:text-base">{t('home.generatedModels')}</div>
-            </div>
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-8 mb-8 sm:mb-16 max-w-2xl mx-auto">
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-white">95%</div>
               <div className="text-gray-400 text-sm sm:text-base">{t('home.accuracy')}</div>
@@ -143,7 +135,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Portfolio Section */}
+      {/* Portfolio Section - hidden per request */}
+      {false && (
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -331,6 +324,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
       {/* User Reviews Section - hidden per request */}
       {false && (
