@@ -134,7 +134,16 @@ export default function NewGenerator() {
       return
     }
 
+    // 检查用户ID是否存在
+    if (!user.id) {
+      console.error('User ID is missing:', user)
+      alert('用户信息不完整，请重新登录')
+      return
+    }
+
     if (!textInput && activeMethod === 'text' && !uploadedImages.length) return
+
+    console.log('Starting generation with user:', { id: user.id, email: user.email, points: user.points })
 
     setIsGenerating(true)
     try {
@@ -245,6 +254,12 @@ export default function NewGenerator() {
         // 处理积分不足的情况
         if (response.status === 402) {
           alert(`积分不足！需要 ${result.required} 积分，当前只有 ${result.available} 积分`)
+        } else if (response.status === 401) {
+          // 用户验证失败
+          console.error('Authentication failed:', result)
+          alert(`用户验证失败: ${result.details || result.error}。请重新登录。`)
+          // 可选：重定向到登录页面或刷新用户数据
+          await refreshUserData()
         } else {
           alert(`生成失败: ${errorMsg}`)
         }

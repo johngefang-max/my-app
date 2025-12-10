@@ -50,6 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setUserLoading(true)
     try {
+      console.log('Fetching user data for email:', sessionHook.data.user.email)
+
       // Get user from Supabase by email
       const { data: userData, error } = await supabase
         .from('users')
@@ -57,12 +59,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('email', sessionHook.data.user.email)
         .maybeSingle()
 
+      console.log('Supabase user query result:', { userData, error: error?.message })
+
       if (error || !userData) {
+        console.log('User not found in database, attempting to create/upsert...')
         try {
           const up = await fetch('/api/me/user', { method: 'POST' })
+          const responseText = await up.text()
+          console.log('Upsert response:', { status: up.status, response: responseText })
+
           if (up.ok) {
-            const d = await up.json()
+            const d = JSON.parse(responseText)
             if (d?.user) {
+              console.log('User created/retrieved successfully:', d.user)
               setUser({
                 id: d.user.id,
                 email: d.user.email,
@@ -75,13 +84,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               })
               return
             }
+          } else {
+            console.error('Failed to upsert user:', responseText)
           }
-        } catch {}
+        } catch (upError) {
+          console.error('Error during user upsert:', upError)
+        }
+
+        console.error('Failed to get or create user, setting user to null')
         setUser(null)
         return
       }
 
       if (userData) {
+        console.log('User found in database:', userData)
         const authUser: AuthUser = {
           id: userData.id,
           email: userData.email,

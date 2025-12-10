@@ -34,8 +34,17 @@ export async function POST(req: NextRequest) {
   const name = token?.name as string | undefined
   const image = (token as any)?.picture as string | undefined
   const { baseUrl, serviceKey, anonKey } = env()
-  if (!email) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
-  if (!baseUrl || !anonKey) return NextResponse.json({ error: 'config' }, { status: 500 })
+
+  console.log('POST /api/me/user called:', { email, name, hasImage: !!image })
+
+  if (!email) {
+    console.error('No email found in token')
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+  }
+  if (!baseUrl || !anonKey) {
+    console.error('Missing database configuration')
+    return NextResponse.json({ error: 'config' }, { status: 500 })
+  }
   const bearer = serviceKey || anonKey
 
   const baseName = (name || email.split('@')[0] || '').toLowerCase().replace(/[^a-z0-9\-_.]/g, '-')
@@ -54,6 +63,8 @@ export async function POST(req: NextRequest) {
     total_points_spent: 0,
   }]
 
+  console.log('Attempting to upsert user with body:', body)
+
   const upsert = await fetch(`${baseUrl}/rest/v1/users?on_conflict=email`, {
     method: 'POST',
     headers: {
@@ -64,9 +75,23 @@ export async function POST(req: NextRequest) {
     },
     body: JSON.stringify(body)
   })
-  const rep = await upsert.json().catch(() => [])
+
+  const responseText = await upsert.text()
+  console.log('Upsert response status:', upsert.status, 'response:', responseText)
+
+  if (!upsert.ok) {
+    console.error('Failed to upsert user:', responseText)
+    return NextResponse.json({ error: 'upsert_failed', details: responseText }, { status: upsert.status })
+  }
+
+  const rep = JSON.parse(responseText)
   const row = Array.isArray(rep) ? rep[0] : null
-  if (!row) return NextResponse.json({ error: 'upsert_failed' }, { status: 500 })
+  if (!row) {
+    console.error('No user returned from upsert')
+    return NextResponse.json({ error: 'upsert_failed', details: 'No user returned' }, { status: 500 })
+  }
+
+  console.log('User upserted successfully:', { id: row.id, email: row.email, points: row.points })
   return NextResponse.json({ user: row })
 }
 

@@ -211,6 +211,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.log('Validating user:', userId)
+
     // 验证用户身份
     const { data: userData, error: userError } = await supabase
       .from('users')
@@ -218,9 +220,20 @@ export async function POST(request: NextRequest) {
       .eq('id', userId)
       .single()
 
+    console.log('User validation result:', { userData, userError: userError?.message })
+
     if (userError || !userData) {
+      console.error('User validation failed:', {
+        userId,
+        userError: userError?.message,
+        userData
+      })
       return NextResponse.json(
-        { error: '用户验证失败' },
+        {
+          error: '用户验证失败',
+          details: userError?.message || '用户不存在',
+          userId: userId
+        },
         { status: 401 }
       )
     }
