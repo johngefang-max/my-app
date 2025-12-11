@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, Star, Zap, Shield, Image as ImageIcon, Box, Globe } from 'lucide-react'
+import { ArrowRight, Star, Zap, Shield, Image as ImageIcon, Box, Globe, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import DotGridBackground from './components/DotGridBackground'
@@ -9,19 +9,60 @@ import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
- 
 
 export default function Home() {
   const { language, setLanguage, t } = useLanguage()
-  const { isAuthenticated, openLogin } = useAuth()
+  const { isAuthenticated, user, openLogin } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [imgError, setImgError] = useState(false)
+  const [loadingPayment, setLoadingPayment] = useState(false)
   const heroSrc = (process.env.NEXT_PUBLIC_HERO_IMAGE_URL as string) || '/alis.png'
   const go = (path: string) => {
     router.push(path)
   }
-  
+
+  // 处理 Creem 支付
+  const handleCreemPayment = async () => {
+    if (!isAuthenticated || !user?.id) {
+      // 重定向到登录页面
+      router.push('/auth?redirect=/')
+      return
+    }
+
+    setLoadingPayment(true)
+
+    try {
+      const response = await fetch('/api/creem/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          planId: 'pro_monthly',
+          userId: user.id
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.checkout_url) {
+        // 重定向到 Creem 支付页面
+        window.location.href = data.checkout_url
+      } else {
+        alert(data.error || 'Failed to create payment. Please try again.')
+      }
+    } catch (error) {
+      console.error('Payment creation error:', error)
+      alert('Payment service is currently unavailable. Please try again later.')
+    } finally {
+      setLoadingPayment(false)
+    }
+  }
+
+  // 检查用户是否已经是 Pro 用户
+  const isProUser = user?.subscription_status === 'active' && user?.plan?.startsWith('pro')
+
   useEffect(() => {
     // no modal login; use /auth route for authentication
   }, [])
@@ -508,9 +549,38 @@ export default function Home() {
             {t('home.cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            {!isAuthenticated && (
-              <button onClick={() => router.push('/generator')} className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-all">
+            {!isAuthenticated ? (
+              <button
+                onClick={() => router.push('/generator')}
+                className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-all"
+              >
                 {t('home.cta.freeTrial')}
+              </button>
+            ) : isProUser ? (
+              <button
+                onClick={() => go('/generator')}
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2"
+              >
+                <span>{language === 'zh' ? '开始使用 Pro 功能' : 'Use Pro Features'}</span>
+                <ArrowRight className="h-5 w-5" />
+              </button>
+            ) : (
+              <button
+                onClick={handleCreemPayment}
+                disabled={loadingPayment}
+                className="bg-purple-600 hover:bg-purple-700 disabled:bg-purple-800 disabled:opacity-50 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all flex items-center justify-center space-x-2"
+              >
+                {loadingPayment ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>{language === 'zh' ? '处理中...' : 'Processing...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <span>{language === 'zh' ? '升级到 Pro - $9.99/月' : 'Upgrade to Pro - $9.99/month'}</span>
+                    <ArrowRight className="h-5 w-5" />
+                  </>
+                )}
               </button>
             )}
             <button onClick={() => go('/pricing')} className="border border-white text-white hover:bg-white hover:text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold transition-all">

@@ -1,13 +1,55 @@
 'use client'
 
-import { Check, Star, Zap, Shield, Users, Clock, Download, Headphones, CheckCircle, Globe } from 'lucide-react'
+import { Check, Star, Zap, Shield, Users, Clock, Download, Headphones, CheckCircle, Globe, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useAuth } from '../contexts/AuthContext'
+import { useState } from 'react'
 
 export default function Pricing() {
   const { language, setLanguage, t } = useLanguage()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
+  const [loading, setLoading] = useState<string | null>(null)
+
+  const handleSubscribe = async (planId: string) => {
+    if (!isAuthenticated || !user?.id) {
+      // Redirect to login with return to pricing
+      window.location.href = `/?login=1&redirect=/pricing`
+      return
+    }
+
+    setLoading(planId)
+
+    try {
+      const response = await fetch('/api/payments/creem/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          planId: planId,
+          userId: user.id
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.paymentUrl) {
+        // Redirect to Creem payment page
+        window.location.href = data.paymentUrl
+      } else {
+        alert(data.error || 'Failed to create payment. Please try again.')
+      }
+    } catch (error) {
+      console.error('Payment creation error:', error)
+      alert('Payment service is currently unavailable. Please try again later.')
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  // Check if user is already on pro plan
+  const isProUser = user?.subscription_status === 'active' && user?.plan?.startsWith('pro')
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -24,7 +66,7 @@ export default function Pricing() {
           <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
             {t('pricing.subtitle')}
           </p>
-          
+
           {/* Billing Toggle */}
           <div className="flex items-center justify-center space-x-4 mb-12">
             <span className="text-gray-300">{t('pricing.monthly')}</span>
@@ -51,7 +93,7 @@ export default function Pricing() {
                 <div className="text-4xl font-bold text-white mb-2">{t('pricing.free.price')}</div>
                 <div className="text-gray-400">{t('pricing.free.period')}</div>
               </div>
-              
+
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center space-x-3">
                   <Check className="h-5 w-5 text-green-400" />
@@ -74,7 +116,7 @@ export default function Pricing() {
                   <span className="text-gray-300">{t('pricing.free.feature5')}</span>
                 </li>
               </ul>
-              
+
               <button className="w-full bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 rounded-lg transition-colors">
                 {t('pricing.free.current')}
               </button>
@@ -87,7 +129,7 @@ export default function Pricing() {
                   {language === 'zh' ? '最受欢迎' : 'Most Popular'}
                 </div>
               </div>
-              
+
               <div className="text-center mb-8">
                 <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Zap className="h-6 w-6 text-white" />
@@ -99,7 +141,7 @@ export default function Pricing() {
                 </div>
                 <div className="text-gray-400">{t('pricing.pro.yearly')}</div>
               </div>
-              
+
               <ul className="space-y-3 mb-8">
                 <li className="flex items-center space-x-3">
                   <Check className="h-5 w-5 text-green-400" />
@@ -134,10 +176,44 @@ export default function Pricing() {
                   <span className="text-gray-300">{t('pricing.pro.feature8')}</span>
                 </li>
               </ul>
-              
-              <a href="/generator" className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition-colors font-semibold text-center">
-                {t('pricing.pro.choose')}
-              </a>
+
+              {isProUser ? (
+                <div className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition-colors font-semibold text-center">
+                  {language === 'zh' ? '当前计划' : 'Current Plan'}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <button
+                    onClick={() => handleSubscribe('pro_monthly')}
+                    disabled={loading === 'pro_monthly'}
+                    className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-800 disabled:opacity-50 text-white py-3 px-4 rounded-lg transition-colors font-semibold flex items-center justify-center space-x-2"
+                  >
+                    {loading === 'pro_monthly' ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>{language === 'zh' ? '处理中...' : 'Processing...'}</span>
+                      </>
+                    ) : (
+                      <span>{language === 'zh' ? '按月订阅 $9.99' : 'Monthly $9.99'}</span>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => handleSubscribe('pro_yearly')}
+                    disabled={loading === 'pro_yearly'}
+                    className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-green-800 disabled:to-emerald-800 disabled:opacity-50 text-white py-3 px-4 rounded-lg transition-all font-semibold flex items-center justify-center space-x-2"
+                  >
+                    {loading === 'pro_yearly' ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>{language === 'zh' ? '处理中...' : 'Processing...'}</span>
+                      </>
+                    ) : (
+                      <span>{language === 'zh' ? '按年订阅 $99.99 (省17%)' : 'Yearly $99.99 (Save 17%)'}</span>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -150,7 +226,7 @@ export default function Pricing() {
             <h2 className="text-4xl font-bold text-white mb-4">{t('pricing.compare.title')}</h2>
             <p className="text-xl text-gray-300">{t('pricing.compare.subtitle')}</p>
           </div>
-          
+
           <div className="bg-gray-800/50 rounded-2xl overflow-hidden border border-gray-700">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -217,23 +293,23 @@ export default function Pricing() {
             <h2 className="text-4xl font-bold text-white mb-4">{t('pricing.faq.title')}</h2>
             <p className="text-xl text-gray-300">{t('pricing.faq.subtitle')}</p>
           </div>
-          
+
           <div className="space-y-6">
             <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
               <h3 className="text-xl font-semibold text-white mb-3">{t('pricing.faq.q1')}</h3>
               <p className="text-gray-300">{t('pricing.faq.a1')}</p>
             </div>
-            
+
             <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
               <h3 className="text-xl font-semibold text-white mb-3">{t('pricing.faq.q2')}</h3>
               <p className="text-gray-300">{t('pricing.faq.a2')}</p>
             </div>
-            
+
             <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
               <h3 className="text-xl font-semibold text-white mb-3">{t('pricing.faq.q3')}</h3>
               <p className="text-gray-300">{t('pricing.faq.a3')}</p>
             </div>
-            
+
             <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
               <h3 className="text-xl font-semibold text-white mb-3">{t('pricing.faq.q4')}</h3>
               <p className="text-gray-300">{t('pricing.faq.a4')}</p>
@@ -254,11 +330,11 @@ export default function Pricing() {
               {t('pricing.cta.freeTrial')}
             </a>
           </div>
-          
+
         </div>
       </section>
 
-      
+
     </div>
   )
 }
