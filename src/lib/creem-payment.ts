@@ -197,4 +197,5 @@ export function getCreemService(): CreemPaymentService {
   return creemService
 }
 
-export { CreemPaymentService, CreemConfig, CreemPaymentRequest, CreemPaymentResponse, CreemPaymentCallback }
+export type { CreemConfig, CreemPaymentRequest, CreemPaymentResponse, CreemPaymentCallback }
+export { CreemPaymentService }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCreemService } from '@/lib/creem-payment'
+import { createCheckout } from '@/services/creem'
 import { supabase } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
@@ -50,21 +50,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Create payment with Creem
-    const creemService = getCreemService()
-    const paymentResult = await creemService.createPayment({
-      amount: plan.amount,
-      currency: plan.currency,
-      userId: userId,
-      planId: planId,
-      description: plan.description
+    const paymentResult = await createCheckout({
+      requestId: `req_${Date.now()}_${userId}`,
+      successUrl: `${process.env.NEXTAUTH_URL}/payment/success`
     })
-
-    if (!paymentResult.success) {
-      return NextResponse.json(
-        { error: paymentResult.error || 'Failed to create payment' },
-        { status: 500 }
-      )
-    }
 
     // Store payment attempt in database
     await supabase.from('transactions').insert({
@@ -74,7 +63,7 @@ export async function POST(request: NextRequest) {
       currency: plan.currency,
       status: 'pending',
       metadata: {
-        payment_id: paymentResult.paymentId,
+        checkout_id: paymentResult.checkout_id,
         plan_id: planId,
         payment_provider: 'creem'
       }
@@ -82,8 +71,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      paymentUrl: paymentResult.paymentUrl,
-      paymentId: paymentResult.paymentId
+      paymentUrl: paymentResult.checkout_url,
+      checkoutId: paymentResult.checkout_id
     })
 
   } catch (error) {

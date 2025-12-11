@@ -13,7 +13,10 @@ interface AuthUser {
   points: number
   total_points_earned: number
   total_points_spent: number
-  plan: 'free' | 'premium' | 'enterprise'
+  plan: 'free' | 'pro_monthly' | 'pro_yearly' | 'premium' | 'enterprise'
+  subscription_status?: 'active' | 'inactive' | 'cancelled'
+  subscribed_at?: string
+  subscription_expires_at?: string
 }
 
 type AuthContextType = {
@@ -106,7 +109,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           points: userData.points,
           total_points_earned: userData.total_points_earned,
           total_points_spent: userData.total_points_spent,
-          plan: userData.plan
+          plan: userData.plan,
+          subscription_status: userData.subscription_status,
+          subscribed_at: userData.subscribed_at,
+          subscription_expires_at: userData.subscription_expires_at
         }
         setUser(authUser)
       }

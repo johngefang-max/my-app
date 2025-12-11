@@ -33,7 +33,7 @@ export default function Home() {
     setLoadingPayment(true)
 
     try {
-      const response = await fetch('/api/creem/create-checkout', {
+      const response = await fetch('/api/payments/creem/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -46,9 +46,9 @@ export default function Home() {
 
       const data = await response.json()
 
-      if (data.success && data.checkout_url) {
+      if (data.success && data.paymentUrl) {
         // 重定向到 Creem 支付页面
-        window.location.href = data.checkout_url
+        window.location.href = data.paymentUrl
       } else {
         alert(data.error || 'Failed to create payment. Please try again.')
       }

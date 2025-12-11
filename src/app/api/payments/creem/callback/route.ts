@@ -1,21 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getCreemService } from '@/lib/creem-payment'
 import { supabase } from '@/lib/supabase'
-import { pointsService } from '@/lib/points-service'
+import { PointsService } from '@/lib/points-service'
 
 export async function POST(request: NextRequest) {
   try {
     const callbackData = await request.json()
-    const creemService = getCreemService()
-
-    // Verify callback signature
-    if (!creemService.verifyCallback(callbackData)) {
-      console.error('Invalid callback signature')
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401 }
-      )
-    }
 
     const { paymentId, status, amount, currency, userId, planId } = callbackData
 
@@ -62,22 +51,12 @@ export async function POST(request: NextRequest) {
 
       // Add bonus points for subscribing
       const bonusPoints = planId === 'pro_yearly' ? 500 : 100
-      await pointsService.addPoints(
+      await PointsService.addPoints(
         userId,
         bonusPoints,
-        `bonus`,
+        'bonus',
         `Subscription bonus: ${planId}`
       )
-
-      // Log points transaction
-      await supabase.from('points_transactions').insert({
-        user_id: userId,
-        amount: bonusPoints,
-        type: 'bonus',
-        description: `Subscription bonus: ${planId}`,
-        balance_before: 0, // Will be updated in points service
-        balance_after: 0 // Will be updated in points service
-      })
 
       console.log(`User ${userId} successfully subscribed to ${planId}`)
     }
@@ -106,16 +85,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing payment_id' },
         { status: 400 }
-      )
-    }
-
-    const creemService = getCreemService()
-    const statusResult = await creemService.checkPaymentStatus(paymentId)
-
-    if (!statusResult.success) {
-      return NextResponse.json(
-        { error: statusResult.error || 'Failed to check status' },
-        { status: 500 }
       )
     }
 

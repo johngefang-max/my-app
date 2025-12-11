@@ -322,4 +322,50 @@ export class PointsService {
         balance_after: balanceAfter
       })
   }
+
+  // Add points to user account
+  static async addPoints(userId: string, amount: number, type: 'bonus' | 'earned' | 'refunded', description: string): Promise<void> {
+    const { data: user } = await supabase
+      .from('users')
+      .select('points,total_points_earned')
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    const balanceBefore = user.points
+    const balanceAfter = balanceBefore + amount
+
+    // Update user points
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({
+        points: balanceAfter,
+        total_points_earned: user.total_points_earned + amount,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId)
+
+    if (updateError) {
+      throw updateError
+    }
+
+    // Record points transaction
+    const { error: transError } = await supabase
+      .from('points_transactions')
+      .insert({
+        user_id: userId,
+        amount: amount,
+        type: type,
+        description: description,
+        balance_before: balanceBefore,
+        balance_after: balanceAfter
+      })
+
+    if (transError) {
+      throw transError
+    }
+  }
 }

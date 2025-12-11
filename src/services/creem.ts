@@ -213,7 +213,7 @@ export function extractAndVerifySignature(searchParams: URLSearchParams): {
   }
 
   // 验证签名
-  const isValid = verifySignature(params, params.signature);
+  const isValid = verifySignature(params as Record<string, string | null>, params.signature);
 
   return { isValid, params };
 }
@@ -254,7 +254,7 @@ export class CreemPaymentService {
   verifyCallbackSignature(params: RedirectParams): boolean {
     if (!params.signature) return false;
 
-    return verifySignature(params, params.signature, this.apiKey);
+    return verifySignature(params as Record<string, string | null>, params.signature, this.apiKey);
   }
 
   /**
