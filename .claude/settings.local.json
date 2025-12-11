@@ -15,7 +15,8 @@
       "mcp__playwright__browser_press_key",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

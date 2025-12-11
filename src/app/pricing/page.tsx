@@ -49,7 +49,7 @@ export default function Pricing() {
   }
 
   // Check if user is already on pro plan
-  const isProUser = user?.subscription_status === 'active' && user?.plan?.startsWith('pro')
+  const isProUser = user?.plan?.startsWith('pro')
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
