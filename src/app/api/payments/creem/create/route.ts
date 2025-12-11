@@ -1,29 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createCheckout } from '@/services/creem'
 import { supabase } from '@/lib/supabase'
+import { getToken } from 'next-auth/jwt'
 
 export async function POST(request: NextRequest) {
   try {
-    const { planId, userId } = await request.json()
+    const { planId } = await request.json()
 
-    console.log('Payment creation request:', { planId, userId })
+    console.log('Payment creation request:', { planId })
 
-    if (!planId || !userId) {
-      console.error('Missing required parameters:', { planId, userId })
+    if (!planId) {
+      console.error('Missing required parameter: planId')
       return NextResponse.json(
-        { error: 'Missing planId or userId' },
+        { error: 'Missing planId' },
         { status: 400 }
       )
     }
 
-    // Get user info with more detailed error handling
-    console.log('Looking up user with ID:', userId)
+    // Get user from JWT token instead of trusting frontend
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
+    })
 
-    const { data: user, error: userError } = await supabase
+    if (!token?.email) {
+      console.error('No authenticated user found')
+      return NextResponse.json(
+        { error: 'User not authenticated' },
+        { status: 401 }
+      )
+    }
+
+    console.log('Looking up user with email:', token.email)
+
+    // Get user by email (more reliable than ID)
+    let user: any = null
+    const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
-      .eq('id', userId)
+      .eq('email', token.email)
       .single()
+
+    user = userData
 
     if (userError) {
       console.error('Database error when finding user:', userError)
@@ -33,35 +51,64 @@ export async function POST(request: NextRequest) {
         hint: userError.hint,
         code: userError.code
       })
-      return NextResponse.json(
-        {
-          error: 'Database error when finding user',
-          details: userError.message,
-          userId: userId
-        },
-        { status: 500 }
-      )
+
+      // Try to create the user if not found
+      if (userError.code === 'PGRST116') {
+        console.log('User not found in database, attempting to create...')
+        try {
+          const response = await fetch(`${process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL}/api/me/user`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+
+          if (response.ok) {
+            const data = await response.json()
+            user = data.user
+            console.log('User created successfully:', user)
+          } else {
+            console.error('Failed to create user:', await response.text())
+            return NextResponse.json(
+              {
+                error: 'User not found and could not be created',
+                details: userError.message,
+                email: token.email
+              },
+              { status: 404 }
+            )
+          }
+        } catch (createError) {
+          console.error('Error creating user:', createError)
+          return NextResponse.json(
+            {
+              error: 'User not found and could not be created',
+              details: userError.message,
+              email: token.email
+            },
+            { status: 404 }
+          )
+        }
+      } else {
+        return NextResponse.json(
+          {
+            error: 'Database error when finding user',
+            details: userError.message,
+            email: token.email
+          },
+          { status: 500 }
+        )
+      }
     }
 
     if (!user) {
-      console.error('User not found in database:', userId)
-
-      // Let's check if there are any users at all
-      const { data: allUsers, error: allUsersError } = await supabase
-        .from('users')
-        .select('id, email, username')
-        .limit(5)
-
-      console.log('Sample users in database:', allUsers)
-      if (allUsersError) {
-        console.error('Error fetching sample users:', allUsersError)
-      }
+      console.error('User not found after database query')
 
       return NextResponse.json(
         {
           error: 'User not found',
-          userId: userId,
-          message: 'The user ID was not found in the database. Please make sure you are logged in correctly.'
+          email: token.email,
+          message: 'The user was not found in the database. Please make sure you are logged in correctly.'
         },
         { status: 404 }
       )
@@ -98,13 +145,13 @@ export async function POST(request: NextRequest) {
 
     // Create payment with Creem
     const paymentResult = await createCheckout({
-      requestId: `req_${Date.now()}_${userId}`,
-      successUrl: `${process.env.NEXTAUTH_URL}/payment/success`
+      requestId: `req_${Date.now()}_${user.id}`,
+      successUrl: `${process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL}/payment/success`
     })
 
     // Store payment attempt in database
     await supabase.from('transactions').insert({
-      user_id: userId,
+      user_id: user.id,
       type: 'subscription',
       amount: plan.amount,
       currency: plan.currency,

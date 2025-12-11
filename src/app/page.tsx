@@ -38,7 +38,7 @@ export default function Home() {
     setLoadingPayment(true)
 
     try {
-      console.log('Creating payment request with userId:', user.id)
+      console.log('Creating payment request for user:', user.email)
 
       const response = await fetch('/api/payments/creem/create', {
         method: 'POST',
@@ -46,8 +46,7 @@ export default function Home() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          planId: 'pro_monthly',
-          userId: user.id
+          planId: 'pro_monthly'
         })
       })
 

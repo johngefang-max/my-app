@@ -12,7 +12,7 @@ export default function Pricing() {
   const [loading, setLoading] = useState<string | null>(null)
 
   const handleSubscribe = async (planId: string) => {
-    if (!isAuthenticated || !user?.id) {
+    if (!isAuthenticated || !user?.email) {
       // Redirect to login with return to pricing
       window.location.href = `/?login=1&redirect=/pricing`
       return
@@ -27,8 +27,7 @@ export default function Pricing() {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          planId: planId,
-          userId: user.id
+          planId: planId
         })
       })
 
