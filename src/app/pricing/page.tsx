@@ -37,7 +37,15 @@ export default function Pricing() {
         // Redirect to Creem payment page
         window.location.href = data.paymentUrl
       } else {
-        alert(data.error || 'Failed to create payment. Please try again.')
+        if (data.requiresReauth) {
+          // User needs to re-authenticate with Google
+          if (confirm(data.details || 'Please log out and log back in with your Google account to continue.')) {
+            // Redirect to home with logout
+            window.location.href = '/?logout=1&redirect=/pricing'
+          }
+        } else {
+          alert(data.error || data.details || 'Failed to create payment. Please try again.')
+        }
       }
     } catch (error) {
       console.error('Payment creation error:', error)

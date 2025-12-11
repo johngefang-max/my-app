@@ -52,53 +52,15 @@ export async function POST(request: NextRequest) {
         code: userError.code
       })
 
-      // Try to create the user if not found
-      if (userError.code === 'PGRST116') {
-        console.log('User not found in database, attempting to create...')
-        try {
-          const response = await fetch(`${process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL}/api/me/user`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-
-          if (response.ok) {
-            const data = await response.json()
-            user = data.user
-            console.log('User created successfully:', user)
-          } else {
-            console.error('Failed to create user:', await response.text())
-            return NextResponse.json(
-              {
-                error: 'User not found and could not be created',
-                details: userError.message,
-                email: token.email
-              },
-              { status: 404 }
-            )
-          }
-        } catch (createError) {
-          console.error('Error creating user:', createError)
-          return NextResponse.json(
-            {
-              error: 'User not found and could not be created',
-              details: userError.message,
-              email: token.email
-            },
-            { status: 404 }
-          )
-        }
-      } else {
-        return NextResponse.json(
-          {
-            error: 'Database error when finding user',
-            details: userError.message,
-            email: token.email
-          },
-          { status: 500 }
-        )
-      }
+      return NextResponse.json(
+        {
+          error: 'User not found in database',
+          details: 'Please log out and log back in with your Google account to create your account',
+          email: token.email,
+          requiresReauth: true
+        },
+        { status: 404 }
+      )
     }
 
     if (!user) {
@@ -108,7 +70,8 @@ export async function POST(request: NextRequest) {
         {
           error: 'User not found',
           email: token.email,
-          message: 'The user was not found in the database. Please make sure you are logged in correctly.'
+          details: 'Please log out and log back in with your Google account to create your account',
+          requiresReauth: true
         },
         { status: 404 }
       )
