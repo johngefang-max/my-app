@@ -39,7 +39,7 @@ export type Database = {
           username: string | null
           password_hash: string | null
           avatar_url: string | null
-          plan: 'free' | 'premium' | 'enterprise'
+          plan: 'free' | 'premium' | 'enterprise' | 'pro_monthly' | 'pro_yearly'
           usage_count: number
           storage_used_bytes: number
           max_storage_bytes: number
@@ -55,7 +55,7 @@ export type Database = {
           username?: string | null
           password_hash?: string | null
           avatar_url?: string | null
-          plan?: 'free' | 'premium' | 'enterprise'
+          plan?: 'free' | 'premium' | 'enterprise' | 'pro_monthly' | 'pro_yearly'
           usage_count?: number
           storage_used_bytes?: number
           max_storage_bytes?: number
@@ -71,7 +71,7 @@ export type Database = {
           username?: string | null
           password_hash?: string | null
           avatar_url?: string | null
-          plan?: 'free' | 'premium' | 'enterprise'
+          plan?: 'free' | 'premium' | 'enterprise' | 'pro_monthly' | 'pro_yearly'
           usage_count?: number
           storage_used_bytes?: number
           max_storage_bytes?: number

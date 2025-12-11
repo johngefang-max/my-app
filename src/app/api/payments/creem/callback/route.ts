@@ -37,11 +37,7 @@ export async function POST(request: NextRequest) {
       // Update user subscription
       const subscriptionData = {
         plan: planId === 'pro_yearly' ? 'pro_yearly' : 'pro_monthly',
-        subscription_status: 'active',
-        subscribed_at: new Date().toISOString(),
-        subscription_expires_at: planId === 'pro_yearly'
-          ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
-          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        updated_at: new Date().toISOString()
       }
 
       await supabase

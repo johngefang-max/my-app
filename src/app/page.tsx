@@ -24,7 +24,12 @@ export default function Home() {
 
   // 处理 Creem 支付
   const handleCreemPayment = async () => {
+    console.log('Creem payment button clicked')
+    console.log('Authentication status:', isAuthenticated)
+    console.log('User data:', user)
+
     if (!isAuthenticated || !user?.id) {
+      console.log('User not authenticated, redirecting to login')
       // 重定向到登录页面
       router.push('/auth?redirect=/')
       return
@@ -33,6 +38,8 @@ export default function Home() {
     setLoadingPayment(true)
 
     try {
+      console.log('Creating payment request with userId:', user.id)
+
       const response = await fetch('/api/payments/creem/create', {
         method: 'POST',
         headers: {
@@ -44,13 +51,18 @@ export default function Home() {
         })
       })
 
-      const data = await response.json()
+      console.log('Payment API response status:', response.status)
 
-      if (data.success && data.paymentUrl) {
+      const data = await response.json()
+      console.log('Payment API response data:', data)
+
+      if (response.ok && data.success && data.paymentUrl) {
         // 重定向到 Creem 支付页面
+        console.log('Redirecting to payment URL:', data.paymentUrl)
         window.location.href = data.paymentUrl
       } else {
-        alert(data.error || 'Failed to create payment. Please try again.')
+        console.error('Payment creation failed:', data)
+        alert(data.error || data.details || 'Failed to create payment. Please try again.')
       }
     } catch (error) {
       console.error('Payment creation error:', error)
@@ -61,7 +73,7 @@ export default function Home() {
   }
 
   // 检查用户是否已经是 Pro 用户
-  const isProUser = user?.subscription_status === 'active' && user?.plan?.startsWith('pro')
+  const isProUser = user?.plan && (user.plan === 'pro_monthly' || user.plan === 'pro_yearly')
 
   useEffect(() => {
     // no modal login; use /auth route for authentication

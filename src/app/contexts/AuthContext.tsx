@@ -13,10 +13,9 @@ interface AuthUser {
   points: number
   total_points_earned: number
   total_points_spent: number
-  plan: 'free' | 'pro_monthly' | 'pro_yearly' | 'premium' | 'enterprise'
-  subscription_status?: 'active' | 'inactive' | 'cancelled'
-  subscribed_at?: string
-  subscription_expires_at?: string
+  plan: 'free' | 'premium' | 'enterprise' | 'pro_monthly' | 'pro_yearly'
+  // 注意：subscription_status 等字段在当前数据库中不存在
+  // 如果需要，可以添加到数据库表中
 }
 
 type AuthContextType = {
@@ -104,15 +103,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const authUser: AuthUser = {
           id: userData.id,
           email: userData.email,
-          name: userData.username,
+          name: userData.username || userData.email.split('@')[0], // 使用username或邮箱前缀
           avatar_url: userData.avatar_url,
           points: userData.points,
           total_points_earned: userData.total_points_earned,
           total_points_spent: userData.total_points_spent,
-          plan: userData.plan,
-          subscription_status: userData.subscription_status,
-          subscribed_at: userData.subscribed_at,
-          subscription_expires_at: userData.subscription_expires_at
+          plan: userData.plan
         }
         setUser(authUser)
       }
