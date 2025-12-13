@@ -4,16 +4,39 @@ import { getToken } from 'next-auth/jwt'
 
 export async function POST(request: NextRequest) {
   try {
-    const { planId } = await request.json()
+    // 1. 验证请求体
+    let body;
+    try {
+      const text = await request.text();
+      console.log('Request raw body:', text);
 
-    console.log('Payment creation request:', { planId })
+      if (!text.trim()) {
+        console.error('Empty request body');
+        return NextResponse.json(
+          { error: 'Request body is empty' },
+          { status: 400 }
+        );
+      }
+
+      body = JSON.parse(text);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body' },
+        { status: 400 }
+      );
+    }
+
+    const { planId } = body;
+
+    console.log('Payment creation request:', { planId, receivedBody: body });
 
     if (!planId) {
-      console.error('Missing required parameter: planId')
+      console.error('Missing required parameter: planId');
       return NextResponse.json(
-        { error: 'Missing planId' },
+        { error: 'Missing planId parameter', details: { received: body } },
         { status: 400 }
-      )
+      );
     }
 
     // Get user from JWT token instead of trusting frontend
@@ -101,12 +124,55 @@ export async function POST(request: NextRequest) {
     }
 
     // Create payment with Creem
-    const paymentResult = await createCheckout({
-      requestId: `req_${Date.now()}_${user.id}`,
-      successUrl: `${process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL}/payment/success`
-    })
+    console.log('Attempting to create Creem payment...')
 
+    let paymentResult;
+    try {
+      paymentResult = await createCheckout({
+        requestId: `req_${Date.now()}_${user.id}`,
+        successUrl: `${process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL || request.nextUrl.origin}/payment/success`
+      });
+
+      console.log('Payment checkout created:', {
+        checkout_id: paymentResult.checkout_id,
+        checkout_url: paymentResult.checkout_url ? 'present' : 'missing'
+      });
+    } catch (creemError) {
+      console.error('Creem payment creation failed:', creemError);
+
+      // 检查是否是配置错误
+      if (creemError instanceof Error && creemError.message.includes('CREEM_API_KEY')) {
+        return NextResponse.json(
+          {
+            error: 'Payment service configuration error',
+            details: 'Payment provider not properly configured'
+          },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          error: 'Failed to create payment session',
+          details: creemError instanceof Error ? creemError.message : 'Unknown error'
+        },
+        { status: 500 }
+      );
+    }
+
+    // 验证支付结果
+    if (!paymentResult || !paymentResult.checkout_url) {
+      console.error('Invalid payment result from Creem:', paymentResult);
+      return NextResponse.json(
+        {
+          error: 'Invalid response from payment provider',
+          details: 'No checkout URL received'
+        },
+        { status: 500 }
+      );
+    }
     // Store payment attempt in database using REST API
+    console.log('Storing transaction in database...');
     try {
       const transactionData = {
         user_id: user.id,
@@ -122,7 +188,10 @@ export async function POST(request: NextRequest) {
         // created_at will be set automatically by database default
       }
 
-      console.log('Creating transaction with data:', transactionData)
+      console.log('Creating transaction with data:', {
+        ...transactionData,
+        metadata: JSON.stringify(transactionData.metadata)
+      });
 
       const transactionRes = await fetch(`${baseUrl}/rest/v1/transactions`, {
         method: 'POST',
@@ -136,18 +205,25 @@ export async function POST(request: NextRequest) {
       })
 
       if (!transactionRes.ok) {
-        const errorText = await transactionRes.text()
-        console.error('Failed to store transaction:', errorText)
-        console.error('Response status:', transactionRes.status, transactionRes.statusText)
-        console.log('Payment created successfully, but transaction storage failed')
-        // Continue anyway - payment creation succeeded, just transaction storage failed
+        const errorText = await transactionRes.text();
+        console.error('Failed to store transaction:', {
+          status: transactionRes.status,
+          statusText: transactionRes.statusText,
+          error: errorText
+        });
+
+        // 记录错误但不中断支付流程
+        console.warn('Payment created successfully, but transaction storage failed');
       } else {
-        const createdTransaction = await transactionRes.json()
-        console.log('Transaction stored successfully:', createdTransaction)
+        const createdTransaction = await transactionRes.json();
+        console.log('Transaction stored successfully:', {
+          id: createdTransaction[0]?.id,
+          checkout_id: createdTransaction[0]?.metadata?.checkout_id
+        });
       }
     } catch (transactionError) {
-      console.error('Transaction storage error:', transactionError)
-      // Continue anyway - payment creation succeeded, just transaction storage failed
+      console.error('Transaction storage error:', transactionError);
+      // 继续执行 - 支付已创建，只是事务存储失败
     }
 
     return NextResponse.json({
