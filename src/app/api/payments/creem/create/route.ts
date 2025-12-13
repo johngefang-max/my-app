@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     user = userData
 
-    if (userError) {
+    if (userError && userError.code !== 'PGRST116') { // PGRST116 is "not found" error
       console.error('Database error when finding user:', userError)
       console.error('Error details:', {
         message: userError.message,
@@ -54,27 +54,48 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         {
-          error: 'User not found in database',
-          details: 'Please log out and log back in with your Google account to create your account',
-          email: token.email,
-          requiresReauth: true
+          error: 'Database error',
+          details: userError.message,
+          email: token.email
         },
-        { status: 404 }
+        { status: 500 }
       )
     }
 
+    // If user doesn't exist, create one using token information
     if (!user) {
-      console.error('User not found after database query')
+      console.log('User not found, attempting to create user:', token.email)
 
-      return NextResponse.json(
-        {
-          error: 'User not found',
-          email: token.email,
-          details: 'Please log out and log back in with your Google account to create your account',
-          requiresReauth: true
-        },
-        { status: 404 }
-      )
+      const newUser = {
+        email: token.email,
+        username: token.name || token.email?.split('@')[0] || 'user_' + Date.now(),
+        avatar_url: token.picture || null,
+        plan: 'free',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+
+      const { data: createdUser, error: createError } = await supabase
+        .from('users')
+        .insert(newUser)
+        .select()
+        .single()
+
+      if (createError) {
+        console.error('Error creating user:', createError)
+        return NextResponse.json(
+          {
+            error: 'Failed to create user account',
+            details: createError.message,
+            email: token.email,
+            requiresReauth: true
+          },
+          { status: 500 }
+        )
+      }
+
+      user = createdUser
+      console.log('User created successfully:', { id: user.id, email: user.email })
     }
 
     console.log('User found successfully:', {
