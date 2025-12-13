@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,37 +14,45 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Initialize Supabase configuration
+    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || ''
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || process.env.my_app_SUPABASE_ANON_KEY || ''
+    const bearer = serviceKey || anonKey
+
     // Update transaction if needed
     if (status === 'success') {
-      // Find and update the transaction
-      const { data: transaction } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('metadata->>payment_id', paymentId)
-        .eq('user_id', userId)
-        .single()
+      // Find the transaction using REST API
+      const transactionRes = await fetch(`${baseUrl}/rest/v1/transactions?metadata->>payment_id=eq.${paymentId}&user_id=eq.${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${bearer}`,
+          'apikey': anonKey
+        }
+      })
+
+      const transactions = await transactionRes.json()
+      const transaction = Array.isArray(transactions) && transactions.length > 0 ? transactions[0] : null
 
       if (transaction && transaction.status === 'pending') {
-        await supabase
-          .from('transactions')
-          .update({
+        // Update transaction using REST API
+        const updateRes = await fetch(`${baseUrl}/rest/v1/transactions?id=eq.${transaction.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${bearer}`,
+            'apikey': anonKey,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
             status: 'completed',
             updated_at: new Date().toISOString()
           })
-          .eq('id', transaction.id)
+        })
 
-        // Get user's current subscription status
-        const { data: user } = await supabase
-          .from('users')
-          .select('subscription_status, plan')
-          .eq('id', userId)
-          .single()
-
-        // If subscription is already active, show success page
-        if (user?.subscription_status === 'active') {
-          return NextResponse.redirect(
-            new URL('/payment/success?plan=' + user?.plan, request.url)
-          )
+        if (updateRes.ok) {
+          console.log('Transaction updated to completed:', transaction.id)
+        } else {
+          console.error('Failed to update transaction:', await updateRes.text())
         }
       }
     }

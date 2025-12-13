@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createCheckout } from '@/services/creem'
-import { supabase } from '@/lib/supabase'
 import { getToken } from 'next-auth/jwt'
 
 export async function POST(request: NextRequest) {
@@ -33,69 +32,43 @@ export async function POST(request: NextRequest) {
 
     console.log('Looking up user with email:', token.email)
 
-    // Get user by email (more reliable than ID)
-    let user: any = null
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', token.email)
-      .single()
+    // Use Supabase REST API to find user (same as auth flow)
+    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || ''
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || process.env.my_app_SUPABASE_ANON_KEY || ''
 
-    user = userData
-
-    if (userError && userError.code !== 'PGRST116') { // PGRST116 is "not found" error
-      console.error('Database error when finding user:', userError)
-      console.error('Error details:', {
-        message: userError.message,
-        details: userError.details,
-        hint: userError.hint,
-        code: userError.code
-      })
-
+    if (!baseUrl || !anonKey) {
+      console.error('Missing Supabase configuration')
       return NextResponse.json(
-        {
-          error: 'Database error',
-          details: userError.message,
-          email: token.email
-        },
+        { error: 'Server configuration error' },
         { status: 500 }
       )
     }
 
-    // If user doesn't exist, create one using token information
+    const bearer = serviceKey || anonKey
+
+    // Find user by email using REST API
+    const userRes = await fetch(`${baseUrl}/rest/v1/users?email=eq.${encodeURIComponent(token.email)}&select=*`, {
+      headers: {
+        'Authorization': `Bearer ${bearer}`,
+        'apikey': anonKey
+      }
+    })
+
+    const users = await userRes.json()
+    const user = Array.isArray(users) && users.length > 0 ? users[0] : null
+
     if (!user) {
-      console.log('User not found, attempting to create user:', token.email)
-
-      const newUser = {
-        email: token.email,
-        username: token.name || token.email?.split('@')[0] || 'user_' + Date.now(),
-        avatar_url: token.picture || null,
-        plan: 'free',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-
-      const { data: createdUser, error: createError } = await supabase
-        .from('users')
-        .insert(newUser)
-        .select()
-        .single()
-
-      if (createError) {
-        console.error('Error creating user:', createError)
-        return NextResponse.json(
-          {
-            error: 'Failed to create user account',
-            details: createError.message,
-            email: token.email,
-            requiresReauth: true
-          },
-          { status: 500 }
-        )
-      }
-
-      user = createdUser
-      console.log('User created successfully:', { id: user.id, email: user.email })
+      console.error('User not found in database for email:', token.email)
+      return NextResponse.json(
+        {
+          error: 'User not found in database',
+          details: 'Please log out and log back in with your Google account to create your account',
+          email: token.email,
+          requiresReauth: true
+        },
+        { status: 404 }
+      )
     }
 
     console.log('User found successfully:', {
@@ -133,19 +106,49 @@ export async function POST(request: NextRequest) {
       successUrl: `${process.env.NEXTAUTH_URL || process.env.NEXTAUTH_URL}/payment/success`
     })
 
-    // Store payment attempt in database
-    await supabase.from('transactions').insert({
-      user_id: user.id,
-      type: 'subscription',
-      amount: plan.amount,
-      currency: plan.currency,
-      status: 'pending',
-      metadata: {
-        checkout_id: paymentResult.checkout_id,
-        plan_id: planId,
-        payment_provider: 'creem'
+    // Store payment attempt in database using REST API
+    try {
+      const transactionData = {
+        user_id: user.id,
+        type: 'subscription',
+        amount: plan.amount, // Should be 999 or 9999 (in cents)
+        currency: plan.currency,
+        status: 'pending',
+        metadata: {
+          checkout_id: paymentResult.checkout_id,
+          plan_id: planId,
+          payment_provider: 'creem'
+        }
+        // created_at will be set automatically by database default
       }
-    })
+
+      console.log('Creating transaction with data:', transactionData)
+
+      const transactionRes = await fetch(`${baseUrl}/rest/v1/transactions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${bearer}`,
+          'apikey': anonKey,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(transactionData)
+      })
+
+      if (!transactionRes.ok) {
+        const errorText = await transactionRes.text()
+        console.error('Failed to store transaction:', errorText)
+        console.error('Response status:', transactionRes.status, transactionRes.statusText)
+        console.log('Payment created successfully, but transaction storage failed')
+        // Continue anyway - payment creation succeeded, just transaction storage failed
+      } else {
+        const createdTransaction = await transactionRes.json()
+        console.log('Transaction stored successfully:', createdTransaction)
+      }
+    } catch (transactionError) {
+      console.error('Transaction storage error:', transactionError)
+      // Continue anyway - payment creation succeeded, just transaction storage failed
+    }
 
     return NextResponse.json({
       success: true,
