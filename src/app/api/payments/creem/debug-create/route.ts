@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'Creem service import failed',
-          debug: { error: importError.message }
+          debug: { error: importError instanceof Error ? importError.message : String(importError) }
         },
         { status: 500 }
       )
@@ -138,8 +138,8 @@ export async function POST(request: NextRequest) {
       {
         error: 'Internal server error',
         debug: {
-          error: error.message,
-          stack: error.stack
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined
         }
       },
       { status: 500 }
