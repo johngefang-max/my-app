@@ -40,9 +40,8 @@ export default function Home() {
     try {
       console.log('Creating payment request for user:', user.email)
 
-      // Use absolute URL to avoid proxy issues
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-      const response = await fetch(`${baseUrl}/api/payments/creem/create`, {
+      // Use relative path for API request
+      const response = await fetch('/api/payments/creem/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

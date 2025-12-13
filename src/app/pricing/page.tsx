@@ -21,9 +21,8 @@ export default function Pricing() {
     setLoading(planId)
 
     try {
-      // Use absolute URL to avoid proxy issues
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-      const response = await fetch(`${baseUrl}/api/payments/creem/create`, {
+      // Use relative path for API request to avoid proxy issues
+      const response = await fetch('/api/payments/creem/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
