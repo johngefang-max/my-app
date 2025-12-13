@@ -23,9 +23,7 @@ export default function Pricing() {
     try {
       // Use absolute URL to avoid proxy issues
       const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
-
-      // Temporarily use debug endpoint to get detailed error info
-      const response = await fetch(`${baseUrl}/api/payments/creem/debug-create`, {
+      const response = await fetch(`${baseUrl}/api/payments/creem/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -37,16 +35,19 @@ export default function Pricing() {
 
       const data = await response.json()
 
-      // Log debug info
-      console.log('Payment debug response:', data)
-
-      if (data.success) {
-        // Debug endpoint succeeded, show debug info
-        alert(`Debug Info:\n${JSON.stringify(data.debug, null, 2)}`)
-        return // Don't proceed with actual payment
+      if (data.success && data.paymentUrl) {
+        // Redirect to Creem payment page
+        window.location.href = data.paymentUrl
       } else {
-        // Show detailed error
-        alert(`Payment Error:\n${data.error}\n\nDebug Info:\n${JSON.stringify(data.debug || {}, null, 2)}`)
+        if (data.requiresReauth) {
+          // User needs to re-authenticate with Google
+          if (confirm(data.details || 'Please log out and log back in with your Google account to continue.')) {
+            // Redirect to home with logout
+            window.location.href = '/?logout=1&redirect=/pricing'
+          }
+        } else {
+          alert(data.error || data.details || 'Failed to create payment. Please try again.')
+        }
       }
     } catch (error) {
       console.error('Payment creation error:', error)

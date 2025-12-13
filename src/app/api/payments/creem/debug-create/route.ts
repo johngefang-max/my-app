@@ -46,6 +46,9 @@ export async function POST(request: NextRequest) {
 
     // Check environment variables
     const envVars = {
+      my_app_SUPABASE_URL: process.env.my_app_SUPABASE_URL ? 'set' : 'missing',
+      my_app_SUPABASE_SERVICE_ROLE_KEY: process.env.my_app_SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'missing',
+      NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY ? 'set' : 'missing',
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'set' : 'missing',
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'missing',
       NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'set' : 'missing',
@@ -56,9 +59,9 @@ export async function POST(request: NextRequest) {
     console.log('Environment variables:', envVars)
 
     // Check Supabase connection
-    const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || ''
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || process.env.my_app_SUPABASE_ANON_KEY || ''
+    const baseUrl = process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL
+    const serviceKey = process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    const anonKey = process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.my_app_SUPABASE_ANON_KEY || ''
 
     console.log('Supabase config:', { baseUrl: baseUrl ? 'set' : 'missing', serviceKey: serviceKey ? 'set' : 'missing', anonKey: anonKey ? 'set' : 'missing' })
 
