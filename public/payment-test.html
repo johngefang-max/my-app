@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付接口测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .status.success { background: #28a745; color: white; }
+        .status.error { background: #dc3545; color: white; }
+        .status.pending { background: #ffc107; color: black; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💳 支付接口测试页面</h1>
+        <p>这个页面用于测试生产环境的支付接口是否正常工作。</p>
+
+        <h2>🔍 接口状态检查</h2>
+        <button onclick="checkAllEndpoints()">检查所有支付接口</button>
+        <div id="endpointResults" class="result info" style="display: none;"></div>
+
+        <h2>🚀 创建支付测试</h2>
+        <p>注意：这会尝试创建真实的支付会话，但不会扣费。</p>
+
+        <button onclick="testPayment('pro_monthly')" id="monthlyBtn">
+            测试月度订阅 ($9.99)
+        </button>
+
+        <button onclick="testPayment('pro_yearly')" id="yearlyBtn">
+            测试年度订阅 ($99.99)
+        </button>
+
+        <div id="paymentResults" class="result" style="display: none;"></div>
+
+        <h2>📝 测试说明</h2>
+        <ul>
+            <li><strong>401错误</strong>：接口存在，但需要登录认证（正常）</li>
+            <li><strong>400错误</strong>：接口存在，但缺少必要参数（正常）</li>
+            <li><strong>404错误</strong>：接口不存在（需要重新部署）</li>
+            <li><strong>405错误</strong>：接口存在，但不支持HTTP方法（正常）</li>
+            <li><strong>500错误</strong>：服务器内部错误（可能缺少环境变量）</li>
+        </ul>
+    </div>
+
+    <script>
+        const API_BASE = 'https://imageto3d.site';
+
+        async function checkEndpoint(endpoint) {
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            });
+
+            return {
+                endpoint,
+                status: response.status,
+                statusText: response.statusText,
+                exists: response.status !== 404
+            };
+        }
+
+        async function checkAllEndpoints() {
+            const resultsDiv = document.getElementById('endpointResults');
+            resultsDiv.style.display = 'block';
+            resultsDiv.className = 'result info';
+            resultsDiv.innerHTML = '正在检查接口状态...';
+
+            const endpoints = [
+                '/api/payments/creem/create',
+                '/api/payments/creem/callback',
+                '/api/payments/creem/return'
+            ];
+
+            let results = '\n📊 接口检查结果:\n';
+            results += '='.repeat(50) + '\n\n';
+
+            for (const endpoint of endpoints) {
+                try {
+                    const result = await checkEndpoint(endpoint);
+                    const statusClass = result.exists ? 'success' : 'error';
+                    const statusText = getStatusDescription(result.status);
+
+                    results += `🔍 ${endpoint}\n`;
+                    results += `   状态: ${result.status} ${result.statusText}\n`;
+                    results += `   结果: <span class="status ${statusClass}">${statusText}</span>\n\n`;
+                } catch (error) {
+                    results += `🔍 ${endpoint}\n`;
+                    results += `   错误: ${error.message}\n`;
+                    results += `   结果: <span class="status error">网络错误</span>\n\n`;
+                }
+            }
+
+            resultsDiv.innerHTML = results;
+        }
+
+        function getStatusDescription(status) {
+            const descriptions = {
+                200: '✅ 接口正常',
+                400: '✅ 接口存在（缺少参数）',
+                401: '✅ 接口存在（需要认证）',
+                404: '❌ 接口不存在',
+                405: '✅ 接口存在（方法不允许）',
+                500: '⚠️ 服务器错误'
+            };
+            return descriptions[status] || `未知状态: ${status}`;
+        }
+
+        async function testPayment(planId) {
+            const resultsDiv = document.getElementById('paymentResults');
+            const monthlyBtn = document.getElementById('monthlyBtn');
+            const yearlyBtn = document.getElementById('yearlyBtn');
+
+            // 禁用按钮
+            monthlyBtn.disabled = true;
+            yearlyBtn.disabled = true;
+
+            resultsDiv.style.display = 'block';
+            resultsDiv.className = 'result info';
+            resultsDiv.innerHTML = `正在创建 ${planId} 支付会话...`;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/payments/creem/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        planId: planId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    resultsDiv.className = 'result success';
+                    resultsDiv.innerHTML = `✅ 支付会话创建成功！\n\n` +
+                        `支付URL: ${data.paymentUrl}\n` +
+                        `会话ID: ${data.checkoutId}\n\n` +
+                        `💡 注意：这是一个真实的支付链接，请在新标签页中打开进行测试。\n` +
+                        `不要完成支付，除非你真的想订阅。`;
+
+                    // 可选：在新标签页打开支付链接
+                    // window.open(data.paymentUrl, '_blank');
+                } else {
+                    resultsDiv.className = 'result error';
+                    resultsDiv.innerHTML = `❌ 支付创建失败\n\n` +
+                        `状态: ${response.status} ${response.statusText}\n` +
+                        `错误: ${data.error || '未知错误'}\n` +
+                        `详情: ${data.details || '无详细信息'}\n` +
+                        `需要重新认证: ${data.requiresReauth ? '是' : '否'}`;
+
+                    if (data.requiresReauth) {
+                        resultsDiv.innerHTML += `\n\n💡 解决方案: 请先登出再重新登录应用。`;
+                    }
+                }
+
+            } catch (error) {
+                resultsDiv.className = 'result error';
+                resultsDiv.innerHTML = `❌ 网络错误\n\n` +
+                    `错误信息: ${error.message}\n` +
+                    `请检查网络连接后重试。`;
+            } finally {
+                // 重新启用按钮
+                monthlyBtn.disabled = false;
+                yearlyBtn.disabled = false;
+            }
+        }
+
+        // 页面加载时自动检查接口状态
+        window.onload = function() {
+            checkAllEndpoints();
+        };
+    </script>
+</body>
+</html>
