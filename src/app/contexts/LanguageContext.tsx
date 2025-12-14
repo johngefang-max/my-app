@@ -760,7 +760,7 @@ const translations = {
     'pricing.faq.q1': 'Can I change or cancel my subscription anytime?',
     'pricing.faq.a1': 'Yes, you can upgrade, downgrade, or cancel your subscription anytime. Changes take effect immediately, and we will refund the remaining time proportionally.',
     'pricing.faq.q2': 'What are the limitations of the free plan?',
-    'pricing.faq.a2': 'The free plan provides 10 generations per month with basic model quality and standard render speed. Generated models can be used for personal learning but not for commercial use.',
+    'pricing.faq.a2': 'The free plan provides 5 generations per month with basic model quality and standard render speed. Generated models can be used for personal learning but not for commercial use.',
     'pricing.faq.q3': 'What payment methods are supported?',
     'pricing.faq.a3': 'We support major payment methods including credit cards, PayPal, and bank transfers for enterprise plans.',
     'pricing.faq.q4': 'Can generated models be used for commercial projects?',
