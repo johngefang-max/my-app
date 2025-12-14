@@ -559,7 +559,16 @@ export default function NewGenerator() {
                     {Object.entries(FAL_APIS).map(([modelId, config]) => (
                       <button
                         key={modelId}
-                        onClick={() => setSelectedModel(modelId)}
+                        onClick={() => {
+                          setSelectedModel(modelId)
+                          // 根据模型类型自动切换输入方法
+                          if (config.type === 'image-to-3d') {
+                            setActiveMethod('image')
+                          } else if (config.type === 'text-to-image') {
+                            setActiveMethod('text')
+                          }
+                          // image-edit类型保持当前方法，因为它支持两种输入方式
+                        }}
                         className={`p-4 rounded-xl border-2 transition-all ${
                           selectedModel === modelId
                             ? 'border-purple-500 bg-purple-500/20 text-white'
@@ -583,16 +592,21 @@ export default function NewGenerator() {
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       onClick={() => setActiveMethod('text')}
+                      disabled={currentModelConfig?.type === 'image-to-3d'}
                       className={`p-6 rounded-xl border-2 transition-all ${
                         activeMethod === 'text'
                           ? 'border-purple-500 bg-purple-500/20 text-white'
+                          : currentModelConfig?.type === 'image-to-3d'
+                          ? 'border-gray-700 bg-gray-900/50 text-gray-500 cursor-not-allowed'
                           : 'border-gray-600 bg-gray-800/50 text-gray-300 hover:border-gray-500'
                       }`}
                     >
                       <Type className="h-10 w-10 mx-auto mb-3" />
                       <div className="font-semibold mb-2">{t('generator.input.text')}</div>
                       <div className="text-sm opacity-75">
-                        {t('generator.input.text.desc')}
+                        {currentModelConfig?.type === 'image-to-3d' ? t('generator.input.text.desc.disabled.imageTo3d') :
+                         currentModelConfig?.type === 'image-edit' ? t('generator.input.text.desc.edit') :
+                         t('generator.input.text.desc')}
                       </div>
                     </button>
 
@@ -612,18 +626,83 @@ export default function NewGenerator() {
                       <div className="text-sm opacity-75">
                         {currentModelConfig?.type === 'image-edit' ? t('generator.input.image.desc.edit') :
                          currentModelConfig?.type === 'image-to-3d' ? t('generator.input.image.desc.imageTo3d') :
-                         t('generator.input.image.desc.disabled')}
+                         currentModelConfig?.type === 'text-to-image' ? t('generator.input.image.desc.disabled') :
+                         t('generator.input.image.desc')}
                       </div>
                     </button>
                   </div>
                   {currentModelConfig?.type === 'text-to-image' && activeMethod === 'image' && (
                     <p className="text-yellow-400 text-sm mt-2">{t('generator.warn.nanoBananaTextOnly')}</p>
                   )}
+                  {currentModelConfig?.type === 'image-edit' && (
+                    <p className="text-blue-400 text-sm mt-2">{t('generator.warn.imageEditRequiresBoth')}</p>
+                  )}
                 </div>
 
                 {/* 输入区域 */}
                 <div className="bg-black/30 rounded-2xl p-6 border border-white/10">
-                  {activeMethod === 'text' && (
+                  {/* Nano Banana Pro Edit 的特殊混合输入模式 */}
+                  {currentModelConfig?.type === 'image-edit' && (
+                    <div className="space-y-6">
+                      {/* 文本输入部分 */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white">{t('generator.text.title')}</h3>
+                        <textarea
+                          value={textInput}
+                          onChange={(e) => setTextInput(e.target.value)}
+                          placeholder={t('generator.text.placeholder.edit')}
+                          className="w-full h-32 bg-gray-800/50 border border-gray-600 rounded-lg p-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none"
+                        />
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400 text-sm">{textInput.length}/500 {t('generator.text.characters')}</span>
+                        </div>
+                      </div>
+
+                      {/* 图片输入部分 */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white">{t('generator.image.title')}</h3>
+                        <div
+                          onClick={triggerImageUpload}
+                          className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-purple-500 transition-colors cursor-pointer"
+                        >
+                          <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-white mb-2">{t('generator.image.upload')}</p>
+                          <p className="text-gray-400 text-sm">{t('generator.image.support')}</p>
+                        </div>
+
+                        {/* 显示已上传的图片 */}
+                        {uploadedImages.length > 0 && (
+                          <div className="mt-4 grid grid-cols-3 gap-3">
+                            {uploadedImages.map((url, index) => (
+                              <div key={index} className="relative group">
+                                <Image
+                                  src={url}
+                                  alt={`${t('generator.preview.imageLabel')} ${index + 1}`}
+                                  width={100}
+                                  height={100}
+                                  className="rounded-lg object-cover"
+                                  unoptimized
+                                />
+                                <button
+                                  onClick={() => {
+                                    setUploadedImages(prev => prev.filter((_, i) => i !== index))
+                                    // data URLs不需要revokeObjectURL
+                                  }}
+                                  className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-600 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <span className="sr-only">{t('generator.image.remove')}</span>
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 普通文本输入模式（非image-edit类型） */}
+                  {currentModelConfig?.type !== 'image-edit' && activeMethod === 'text' && (
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-white">{t('generator.text.title')}</h3>
                       <textarea
@@ -638,7 +717,8 @@ export default function NewGenerator() {
                     </div>
                   )}
 
-                  {activeMethod === 'image' && (
+                  {/* 普通图片输入模式（非image-edit类型） */}
+                  {currentModelConfig?.type !== 'image-edit' && activeMethod === 'image' && (
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-white">{t('generator.image.title')}</h3>
                       <div
