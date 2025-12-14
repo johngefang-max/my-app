@@ -238,11 +238,12 @@ export async function POST(request: NextRequest) {
       console.log('User not found in database, attempting to create user...')
 
       try {
-        // 调用用户创建/同步API
+        // 调用用户创建/同步API，传递原始请求的认证信息
         const createResponse = await fetch(`${request.nextUrl.origin}/api/me/user`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Cookie': request.headers.get('cookie') || ''
           }
         })
 
@@ -268,7 +269,7 @@ export async function POST(request: NextRequest) {
             error: '用户验证失败',
             details: '无法创建或找到用户记录，请重新登录',
             userEmail: userEmail,
-            originalError: (userError as any)?.message
+            originalError: createError instanceof Error ? createError.message : String(createError)
           },
           { status: 401 }
         )

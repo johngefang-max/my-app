@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     plan: 'free',
     usage_count: 0,
     storage_used_bytes: 0,
-    max_storage_bytes: 1073741824,
+    max_storage_bytes: 104857600,  // 使用数据库默认值 100MB
     points: 10,           // 首次注册赠送10积分
     total_points_earned: 10,
     total_points_spent: 0,
