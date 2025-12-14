@@ -7,7 +7,7 @@ import DotGridBackground from './components/DotGridBackground'
 import ModelViewer from './components/ModelViewer'
 import { useLanguage } from './contexts/LanguageContext'
 import { useAuth } from './contexts/AuthContext'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 export default function Home() {
@@ -15,11 +15,20 @@ export default function Home() {
   const { isAuthenticated, user, openLogin } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const pathname = usePathname()
   const [imgError, setImgError] = useState(false)
   const [loadingPayment, setLoadingPayment] = useState(false)
   const heroSrc = (process.env.NEXT_PUBLIC_HERO_IMAGE_URL as string) || '/alis.png'
+
+  const stripLangPrefix = (p: string) => p.replace(/^\/(zh|en)(?=\/|$)/, '') || '/'
+  const langPrefix = `/${language}`
+  const langPath = (p: string) => {
+    if (p === '/') return langPrefix
+    return `${langPrefix}${p}`
+  }
+
   const go = (path: string) => {
-    router.push(path)
+    router.push(langPath(path))
   }
 
   // 处理 Creem 支付
@@ -31,7 +40,7 @@ export default function Home() {
     if (!isAuthenticated || !user?.id) {
       console.log('User not authenticated, redirecting to login')
       // 重定向到登录页面
-      router.push('/auth?redirect=/')
+      router.push(langPath('/auth?redirect=/'))
       return
     }
 
@@ -571,7 +580,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {!isAuthenticated ? (
               <button
-                onClick={() => router.push('/generator')}
+                onClick={() => go('/generator')}
                 className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-4 rounded-lg text-lg font-semibold transition-all"
               >
                 {t('home.cta.freeTrial')}
