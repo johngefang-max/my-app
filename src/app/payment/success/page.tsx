@@ -1,24 +1,38 @@
 'use client'
 
-import { CheckCircle, ArrowRight, Download, Headphones, Mail } from 'lucide-react'
+import { CheckCircle, ArrowRight, Download, Headphones, Mail, Receipt } from 'lucide-react'
 import Link from 'next/link'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 export default function PaymentSuccess() {
   const { language, setLanguage, t } = useLanguage()
-  const { user } = useAuth()
+  const { user, refreshUserData } = useAuth()
   const [loading, setLoading] = useState(true)
+  const searchParams = useSearchParams()
+
+  // 从 URL 参数获取支付信息
+  const orderId = searchParams.get('order_id')
+  const checkoutId = searchParams.get('checkout_id')
+  const subscriptionId = searchParams.get('subscription_id')
+  const plan = searchParams.get('plan')
 
   useEffect(() => {
-    // Simulate checking payment status
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 2000)
+    // 刷新用户数据以获取最新的订阅状态
+    const loadData = async () => {
+      if (refreshUserData) {
+        await refreshUserData()
+      }
+      // 模拟检查支付状态
+      setTimeout(() => {
+        setLoading(false)
+      }, 1500)
+    }
 
-    return () => clearTimeout(timer)
-  }, [])
+    loadData()
+  }, [refreshUserData])
 
   if (loading) {
     return (
@@ -56,6 +70,27 @@ export default function PaymentSuccess() {
               }
             </p>
 
+            {/* Order Information */}
+            {(orderId || checkoutId) && (
+              <div className="bg-gray-700/30 rounded-lg p-4 mb-8 border border-gray-600">
+                <h3 className="text-sm font-semibold text-gray-400 mb-2">
+                  {language === 'zh' ? '订单信息' : 'Order Information'}
+                </h3>
+                {orderId && (
+                  <p className="text-xs text-gray-500 mb-1">
+                    {language === 'zh' ? '订单号: ' : 'Order ID: '}
+                    <span className="font-mono text-gray-400">{orderId}</span>
+                  </p>
+                )}
+                {subscriptionId && (
+                  <p className="text-xs text-gray-500">
+                    {language === 'zh' ? '订阅ID: ' : 'Subscription ID: '}
+                    <span className="font-mono text-gray-400">{subscriptionId}</span>
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Plan Details */}
             <div className="bg-purple-900/30 rounded-lg p-6 mb-8 border border-purple-700">
               <h2 className="text-xl font-semibold text-white mb-4">
@@ -67,7 +102,13 @@ export default function PaymentSuccess() {
                   <div className="flex items-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-400" />
                     <span className="text-gray-300">
-                      {language === 'zh' ? '100 次月度生成' : '100 monthly generations'}
+                      {language === 'zh' ? '100 积分订阅奖励' : '100 points subscription bonus'}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-green-400" />
+                    <span className="text-gray-300">
+                      {language === 'zh' ? '无限模型生成' : 'Unlimited model generations'}
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -76,25 +117,19 @@ export default function PaymentSuccess() {
                       {language === 'zh' ? '高质量模型输出' : 'High-quality model output'}
                     </span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-green-400" />
-                    <span className="text-gray-300">
-                      {language === 'zh' ? '优先处理速度' : 'Priority processing speed'}
-                    </span>
-                  </div>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-400" />
                     <span className="text-gray-300">
-                      {language === 'zh' ? '商业使用许可' : 'Commercial use license'}
+                      {language === 'zh' ? '优先处理速度' : 'Priority processing speed'}
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-green-400" />
                     <span className="text-gray-300">
-                      {language === 'zh' ? '所有导出格式' : 'All export formats'}
+                      {language === 'zh' ? '商业使用许可' : 'Commercial use license'}
                     </span>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -110,8 +145,8 @@ export default function PaymentSuccess() {
               <div className="mt-4 pt-4 border-t border-purple-700">
                 <p className="text-purple-300">
                   {language === 'zh'
-                    ? '🎁 您已获得订阅积分奖励，可用于额外生成！'
-                    : '🎁 You have received subscription points bonus for additional generations!'
+                    ? '🎁 您已获得 100 积分奖励，可用于生成更多模型！'
+                    : '🎁 You have received 100 points bonus for generating more models!'
                   }
                 </p>
               </div>
@@ -129,9 +164,9 @@ export default function PaymentSuccess() {
 
               <Link
                 href="/profile"
-                className="w-full bg-gray-700 hover:bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold transition-colors"
+                className="w-full bg-gray-700 hover:bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
               >
-                {language === 'zh' ? '查看账户详情' : 'View Account Details'}
+                <span>{language === 'zh' ? '查看账户详情' : 'View Account Details'}</span>
               </Link>
             </div>
 
