@@ -369,42 +369,14 @@ export async function POST(request: NextRequest) {
         )
     }
 
-    const cost = PointsService.getGenerationCost(generationType)
+    // TODO: 积分系统暂时禁用，直接进行生成
+    console.log('Points system temporarily disabled - proceeding with generation')
 
-    // 检查用户积分
-    if (userData.points < cost) {
-      return NextResponse.json(
-        {
-          error: '积分不足',
-          required: cost,
-          available: userData.points,
-          message: `需要 ${cost} 积分，当前只有 ${userData.points} 积分`
-        },
-        { status: 402 }
-      )
+    // 创建生成记录（不扣除积分）
+    let generation = {
+      id: `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      points_cost: 0
     }
-
-    // 创建生成记录并扣除积分
-    let generation
-    try {
-      const result = await PointsService.createGeneration(userData.id, {
-        title: `${generationType} generation`,
-        description: data.prompt?.substring(0, 100),
-        model_type: type === '3d' ? '3d' : 'image',
-        generation_type: generationType as any,
-        model_id: data.model_id,
-        parameters: data
-      })
-      generation = result.generation
-    } catch (pointsError) {
-      console.error('Points deduction failed:', pointsError)
-      return NextResponse.json(
-        { error: '积分扣除失败，请稍后重试' },
-        { status: 500 }
-      )
-    }
-
-    console.log('Generation created, ID:', generation.id, 'Points deducted:', cost, 'User ID:', userData.id)
 
     let apiResult
 
@@ -421,42 +393,33 @@ export async function POST(request: NextRequest) {
           throw new Error(`不支持的生成类型: ${type}`)
       }
 
-      console.log('API Success, updating generation record')
+      console.log('API Success, generation completed')
 
-      // 更新生成记录为成功
-      await PointsService.completeGeneration(generation.id, {
-        model_url: (apiResult as any).model_url,
-        image_url: (apiResult as any).images?.[0],
-        status: 'completed'
-      })
+      // TODO: 积分系统禁用，不更新数据库记录
+      console.log('Skipping database update due to disabled points system')
 
       return NextResponse.json({
         success: true,
         data: apiResult,
         generation: {
           id: generation.id,
-          points_cost: cost,
-          remaining_points: userData.points - cost
+          points_cost: 0,
+          remaining_points: userData.points,
+          message: '积分系统暂时禁用 - 免费生成'
         }
       })
 
     } catch (apiError) {
       console.error('FAL API调用失败:', apiError)
 
-      // 退还积分
-      try {
-        await PointsService.refundPoints(userData.id, generation.id, cost)
-        console.log('Points refunded:', cost)
-      } catch (refundError) {
-        console.error('积分退还失败:', refundError)
-      }
+      // TODO: 积分系统禁用，无需退还积分
+      console.log('Skipping points refund due to disabled points system')
 
       return NextResponse.json(
         {
           error: apiError instanceof Error ? apiError.message : '生成失败',
           details: apiError,
-          points_refunded: cost,
-          message: '生成失败，积分已退还'
+          message: '生成失败'
         },
         { status: 500 }
       )
