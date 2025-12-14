@@ -20,6 +20,12 @@ export default function ModelViewer({ src = '/test.glb', className = '', style }
   const objectRef = useRef<THREE.Object3D | null>(null)
   const rafRef = useRef<number | null>(null)
   const [currentSrc, setCurrentSrc] = useState<string>(src)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setCurrentSrc(src)
+  }, [src])
 
   useEffect(() => {
     const container = containerRef.current
@@ -52,6 +58,8 @@ export default function ModelViewer({ src = '/test.glb', className = '', style }
     const loader = new GLTFLoader()
 
     const loadSrc = (url: string) => {
+      setIsLoading(true)
+      setError(null)
       loader.load(url, (gltf) => {
         if (objectRef.current) {
           scene.remove(objectRef.current)
@@ -77,10 +85,19 @@ export default function ModelViewer({ src = '/test.glb', className = '', style }
         }
         scene.add(obj)
         objectRef.current = obj
+        setIsLoading(false)
       }, undefined, (err) => {
+        console.error('模型加载失败:', err, 'URL:', url)
+        // 如果是测试模型加载失败，尝试备用路径
         if (url === '/test.glb') {
           loadSrc('/test-models/test.glb')
         }
+        // 对于AI生成的模型，显示错误信息但不隐藏错误
+        if (url && url.startsWith('http')) {
+          console.error('AI生成的模型加载失败，可能是URL无效或网络问题')
+          setError('模型加载失败，请检查网络连接')
+        }
+        setIsLoading(false)
       })
     }
 
@@ -115,25 +132,23 @@ export default function ModelViewer({ src = '/test.glb', className = '', style }
     }
   }, [currentSrc])
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-
-  const importGlb = () => {
-    fileInputRef.current?.click()
-  }
-
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const url = URL.createObjectURL(file)
-    setCurrentSrc(url)
-  }
-
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className}`} style={style}>
-      <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-        <button onClick={importGlb} className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">导入GLB</button>
-      </div>
-      <input ref={fileInputRef} type="file" accept=".glb" onChange={onFileChange} className="hidden" />
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+          <div className="text-white text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
+            <p>正在加载模型...</p>
+          </div>
+        </div>
+      )}
+      {error && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
+          <div className="text-white text-center">
+            <p className="text-red-400">{error}</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
