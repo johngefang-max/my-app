@@ -78,7 +78,24 @@ export async function createCheckout(params: CreateCheckoutParams = {}): Promise
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      let errorMessage = `HTTP error! status: ${response.status}`;
+
+      if (response.status === 403) {
+        errorMessage = 'Payment provider authentication failed (403). Please check your CREEM_API_KEY and CREEM_PRODUCT_ID configuration.';
+        console.error('Creem API 403 Forbidden - Check API key and product ID:', errorText);
+      } else if (response.status === 401) {
+        errorMessage = 'Payment provider authentication failed (401). Invalid API key.';
+        console.error('Creem API 401 Unauthorized - Invalid API key:', errorText);
+      } else {
+        console.error('Creem API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText
+        });
+      }
+
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();

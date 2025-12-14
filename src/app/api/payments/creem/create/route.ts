@@ -145,7 +145,28 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: 'Payment service configuration error',
-            details: 'Payment provider not properly configured'
+            details: 'Payment provider not properly configured. Please contact support.'
+          },
+          { status: 500 }
+        );
+      }
+
+      // Check for authentication/authorization errors
+      if (creemError instanceof Error && creemError.message.includes('403')) {
+        return NextResponse.json(
+          {
+            error: 'Payment service unavailable',
+            details: 'We are experiencing technical difficulties with our payment provider. Please try again later or contact support.'
+          },
+          { status: 503 }
+        );
+      }
+
+      if (creemError instanceof Error && creemError.message.includes('401')) {
+        return NextResponse.json(
+          {
+            error: 'Payment service configuration error',
+            details: 'Payment provider authentication failed. Please contact support.'
           },
           { status: 500 }
         );
