@@ -25,9 +25,14 @@ async function generateImage(data: any) {
       ...otherParams
     }
 
-    // 如果是图像编辑，添加image_url
+    // 如果是图像编辑，添加image_urls（注意：是复数形式）
     if (image_url) {
-      inputParams.image_url = image_url
+      // nano-banana-pro/edit需要image_urls作为数组
+      if (model_id === 'fal-ai/nano-banana-pro/edit') {
+        inputParams.image_urls = [image_url]
+      } else {
+        inputParams.image_url = image_url
+      }
     }
 
     console.log('Running image generation with params:', inputParams)

@@ -74,7 +74,7 @@ export const FAL_APIS = {
       strength: 0.8
     },
     // 实际支持的参数
-    supported_params: ['image_url', 'prompt', 'seed', 'sync_mode', 'num_inference_steps', 'guidance_scale', 'width', 'height', 'negative_prompt', 'strength']
+    supported_params: ['image_urls', 'prompt', 'seed', 'sync_mode', 'num_inference_steps', 'guidance_scale', 'width', 'height', 'negative_prompt', 'strength']
   },
 
   // 3D模型生成模型

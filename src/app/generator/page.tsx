@@ -50,7 +50,7 @@ export default function NewGenerator() {
       name: 'Test Model (GLB)',
       size: 500000,
       type: 'glb',
-      url: '/test-models/test.glb'
+      url: '/test-models/pizza.glb'
     }
     setUploadedFiles([testModel])
     setSelectedFile(testModel)
