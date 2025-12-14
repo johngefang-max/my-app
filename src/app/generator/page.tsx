@@ -63,10 +63,10 @@ export default function NewGenerator() {
       name: 'generator.model.nanoBanana.name',
       desc: 'generator.model.nanoBanana.desc'
     },
-    // 'fal-ai/nano-banana-pro/edit': {
-    //   name: 'generator.model.nanoBananaEdit.name',
-    //   desc: 'generator.model.nanoBananaEdit.desc'
-    // },
+    'fal-ai/nano-banana-pro/edit': {
+      name: 'generator.model.nanoBananaEdit.name',
+      desc: 'generator.model.nanoBananaEdit.desc'
+    },
     'fal-ai/trellis': {
       name: 'generator.model.trellis.name',
       desc: 'generator.model.trellis.desc'
