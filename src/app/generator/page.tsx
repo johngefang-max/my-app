@@ -205,6 +205,7 @@ export default function NewGenerator() {
       const response = await fetch('/api/fal/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',  // 确保发送 Cookie
         body: JSON.stringify({
           type: currentModelConfig.type === 'image-to-3d' ? '3d' : 'image',
           data: requestData,

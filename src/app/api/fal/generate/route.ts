@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { fal } from '@fal-ai/client'
 import { FAL_APIS } from '@/config/fal-api'
 import { PointsService } from '@/lib/points-service-rest'
+import { getToken } from 'next-auth/jwt'
 
 // 检查环境变量
 console.log('FAL_KEY status:', process.env.FAL_KEY ? 'Set' : 'Not set')
@@ -199,16 +200,41 @@ async function generate3D(data: any) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { type, data, userEmail } = await request.json()
+    // 首先验证用户身份
+    const token = await getToken({
+      req: request,
+      secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
+    })
 
-    console.log('API Request received:', { type, data, userEmail })
-
-    if (!type || !data || !userEmail) {
+    if (!token?.email) {
+      console.error('No authenticated user found in token')
       return NextResponse.json(
-        { error: '缺少必要参数: type, data 和 userEmail' },
+        {
+          error: '用户未认证',
+          details: '请先登录后再使用生成功能'
+        },
+        { status: 401 }
+      )
+    }
+
+    // 验证请求体
+    let body;
+    try {
+      const text = await request.text();
+      body = JSON.parse(text);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError)
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body' },
         { status: 400 }
       )
     }
+
+    const { type, data } = body
+    // 使用 token 中的 email，而不是请求体中的
+    const userEmail = token.email
+
+    console.log('Generation request:', { type, userEmail, modelId: data.model_id })
 
     console.log('Validating user by email:', userEmail)
 
@@ -244,43 +270,53 @@ export async function POST(request: NextRequest) {
 
     console.log('User validation result:', { userData, userError: (userError as any)?.message })
 
-    // 如果用户不存在，尝试创建用户
+    // 如果用户不存在，自动创建
     if (!userData || userError) {
-      console.log('User not found in database, attempting to create user...')
+      console.log('User not found, attempting to create user...')
 
       try {
-        // 调用用户创建/同步API，传递原始请求的认证信息
-        const createResponse = await fetch(`${request.nextUrl.origin}/api/me/user`, {
+        // 直接创建用户，因为我们有认证信息
+        const baseName = userEmail.split('@')[0]?.toLowerCase().replace(/[^a-z0-9\-_.]/g, '-') || 'user'
+        const username = baseName || `user-${Math.random().toString(36).slice(2,8)}`
+
+        const createResponse = await fetch(`${baseUrl}/rest/v1/users`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Cookie': request.headers.get('cookie') || ''
-          }
+            'Authorization': `Bearer ${bearer}`,
+            'apikey': anonKey,
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify({
+            email: userEmail,
+            username,
+            avatar_url: null,
+            plan: 'free',
+            usage_count: 0,
+            storage_used_bytes: 0,
+            max_storage_bytes: 104857600,
+            points: 10,  // 首次注册赠送10积分
+            total_points_earned: 10,
+            total_points_spent: 0
+          })
         })
 
         if (createResponse.ok) {
-          const createUserResult = await createResponse.json()
-          console.log('User created successfully:', createUserResult)
-
-          if (createUserResult.user) {
-            userData = createUserResult.user
-            userError = null
-          } else {
-            throw new Error('Failed to create user: No user data returned')
-          }
+          const createdUsers = await createResponse.json()
+          userData = createdUsers[0]
+          userError = null
+          console.log('User created successfully:', userData)
         } else {
           const errorText = await createResponse.text()
-          console.error('Failed to create user:', errorText)
-          throw new Error(`Failed to create user: ${createResponse.status}`)
+          throw new Error(`Failed to create user: ${errorText}`)
         }
       } catch (createError) {
         console.error('Error creating user:', createError)
         return NextResponse.json(
           {
             error: '用户验证失败',
-            details: '无法创建或找到用户记录，请重新登录',
-            userEmail: userEmail,
-            originalError: createError instanceof Error ? createError.message : String(createError)
+            details: '无法创建或找到用户记录，请稍后重试',
+            userEmail: userEmail
           },
           { status: 401 }
         )
