@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fal } from '@fal-ai/client'
 import { FAL_APIS } from '@/config/fal-api'
-import { PointsService } from '@/lib/points-service'
-import { supabase } from '@/lib/supabase'
+import { PointsService } from '@/lib/points-service-rest'
 
 // 检查环境变量
 console.log('FAL_KEY status:', process.env.FAL_KEY ? 'Set' : 'Not set')
@@ -213,19 +212,31 @@ export async function POST(request: NextRequest) {
 
     console.log('Validating user by email:', userEmail)
 
+    // 获取数据库配置
+    const baseUrl = process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL
+    const serviceKey = process.env.my_app_SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+    const anonKey = process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.my_app_SUPABASE_ANON_KEY || ''
+    const bearer = serviceKey || anonKey
+
     // 验证用户身份 - 通过email查找用户
     let userData
     let userError
 
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', userEmail)
-        .maybeSingle()
+      const response = await fetch(`${baseUrl}/rest/v1/users?email=eq.${encodeURIComponent(userEmail)}&select=*`, {
+        headers: {
+          'Authorization': `Bearer ${bearer}`,
+          'apikey': anonKey
+        }
+      })
 
-      userData = data
-      userError = error
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const users = await response.json()
+      userData = users && users.length > 0 ? users[0] : null
+      userError = null
     } catch (err) {
       console.error('Database query error:', err)
       userError = err
