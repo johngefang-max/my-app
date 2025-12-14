@@ -214,24 +214,73 @@ export async function POST(request: NextRequest) {
     console.log('Validating user by email:', userEmail)
 
     // 验证用户身份 - 通过email查找用户
-    const { data: userData, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', userEmail)
-      .maybeSingle()
+    let userData
+    let userError
+
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', userEmail)
+        .maybeSingle()
+
+      userData = data
+      userError = error
+    } catch (err) {
+      console.error('Database query error:', err)
+      userError = err
+    }
 
     console.log('User validation result:', { userData, userError: userError?.message })
 
-    if (userError || !userData) {
-      console.error('User validation failed:', {
-        userEmail,
-        userError: userError?.message,
-        userData
-      })
+    // 如果用户不存在，尝试创建用户
+    if (!userData || userError) {
+      console.log('User not found in database, attempting to create user...')
+
+      try {
+        // 调用用户创建/同步API
+        const createResponse = await fetch(`${request.nextUrl.origin}/api/me/user`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+
+        if (createResponse.ok) {
+          const createUserResult = await createResponse.json()
+          console.log('User created successfully:', createUserResult)
+
+          if (createUserResult.user) {
+            userData = createUserResult.user
+            userError = null
+          } else {
+            throw new Error('Failed to create user: No user data returned')
+          }
+        } else {
+          const errorText = await createResponse.text()
+          console.error('Failed to create user:', errorText)
+          throw new Error(`Failed to create user: ${createResponse.status}`)
+        }
+      } catch (createError) {
+        console.error('Error creating user:', createError)
+        return NextResponse.json(
+          {
+            error: '用户验证失败',
+            details: '无法创建或找到用户记录，请重新登录',
+            userEmail: userEmail,
+            originalError: userError?.message
+          },
+          { status: 401 }
+        )
+      }
+    }
+
+    // 再次验证用户数据
+    if (!userData || !userData.id) {
       return NextResponse.json(
         {
           error: '用户验证失败',
-          details: userError?.message || '用户不存在',
+          details: '用户数据无效，请重新登录',
           userEmail: userEmail
         },
         { status: 401 }
