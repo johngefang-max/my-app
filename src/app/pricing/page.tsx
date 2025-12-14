@@ -202,7 +202,7 @@ export default function Pricing() {
                         <span>{language === 'zh' ? '处理中...' : 'Processing...'}</span>
                       </>
                     ) : (
-                      <span>{language === 'zh' ? '按月订阅 $9.99' : 'Monthly $9.99'}</span>
+                      <span>{language === 'zh' ? '按月订阅 $19.9' : 'Monthly $19.9'}</span>
                     )}
                   </button>
 
@@ -217,7 +217,7 @@ export default function Pricing() {
                         <span>{language === 'zh' ? '处理中...' : 'Processing...'}</span>
                       </>
                     ) : (
-                      <span>{language === 'zh' ? '按年订阅 $99.99 (省17%)' : 'Yearly $99.99 (Save 17%)'}</span>
+                      <span>{language === 'zh' ? '按年订阅 $214.92 (省10%)' : 'Yearly $214.92 (Save 10%)'}</span>
                     )}
                   </button>
                 </div>
@@ -248,8 +248,8 @@ export default function Pricing() {
                 <tbody>
                   <tr className="border-b border-gray-700">
                     <td className="p-6 text-gray-300">{language === 'zh' ? '每月生成次数' : 'Monthly Generations'}</td>
-                    <td className="text-center p-6 text-gray-300">10</td>
-                    <td className="text-center p-6 text-white">100</td>
+                    <td className="text-center p-6 text-gray-300">5</td>
+                    <td className="text-center p-6 text-white">50</td>
                   </tr>
                   <tr className="border-b border-gray-700 bg-gray-800/30">
                     <td className="p-6 text-gray-300">{language === 'zh' ? '模型质量' : 'Model Quality'}</td>

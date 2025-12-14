@@ -15,26 +15,40 @@ export class PointsService {
   static async getUserPoints(userId: string): Promise<number> {
     const { baseUrl, bearer, anonKey } = getDbConfig()
 
-    const response = await fetch(`${baseUrl}/rest/v1/users?id=eq.${userId}&select=points`, {
-      headers: {
-        'Authorization': `Bearer ${bearer}`,
-        'apikey': anonKey
+    try {
+      const response = await fetch(`${baseUrl}/rest/v1/users?id=eq.${userId}&select=points`, {
+        headers: {
+          'Authorization': `Bearer ${bearer}`,
+          'apikey': anonKey
+        }
+      })
+
+      if (!response.ok) {
+        console.error('Failed to fetch user points:', response.status, response.statusText)
+        throw new Error('Failed to fetch user points')
       }
-    })
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch user points')
+      const users = await response.json()
+      const userPoints = users && users.length > 0 ? users[0].points : 0
+      console.log('User points query result:', { userId, points: userPoints })
+      return userPoints
+    } catch (error) {
+      console.error('getUserPoints error:', error)
+      throw error
     }
-
-    const users = await response.json()
-    return users[0]?.points || 0
   }
 
   // Check if user has enough points for a generation
   static async canAffordGeneration(userId: string, generationType: string): Promise<boolean> {
-    const userPoints = await this.getUserPoints(userId)
-    const cost = POINTS_CONFIG.GENERATION_COSTS[generationType as keyof typeof POINTS_CONFIG.GENERATION_COSTS] || 0
-    return userPoints >= cost
+    try {
+      const userPoints = await this.getUserPoints(userId)
+      const cost = POINTS_CONFIG.GENERATION_COSTS[generationType as keyof typeof POINTS_CONFIG.GENERATION_COSTS] || 0
+      console.log('Can afford check:', { userId, userPoints, cost, canAfford: userPoints >= cost })
+      return userPoints >= cost
+    } catch (error) {
+      console.error('canAffordGeneration error:', error)
+      return false
+    }
   }
 
   // Get generation cost
@@ -54,61 +68,70 @@ export class PointsService {
     const { baseUrl, bearer, anonKey } = getDbConfig()
     const cost = this.getGenerationCost(generationData.generation_type)
 
-    // Check if user can afford this generation
-    const canAfford = await this.canAffordGeneration(userId, generationData.generation_type)
-    if (!canAfford) {
-      const userPoints = await this.getUserPoints(userId)
-      throw new Error(`Insufficient points. Required: ${cost}, Available: ${userPoints}`)
-    }
-
-    // Get user current data
-    const userResponse = await fetch(`${baseUrl}/rest/v1/users?id=eq.${userId}&select=points,total_points_spent,total_points_earned`, {
-      headers: {
-        'Authorization': `Bearer ${bearer}`,
-        'apikey': anonKey
-      }
-    })
-
-    if (!userResponse.ok) {
-      throw new Error('Failed to fetch user data')
-    }
-
-    const users = await userResponse.json()
-    const user = users[0]
-
-    if (!user) {
-      throw new Error('User not found')
-    }
-
-    const balanceBefore = user.points
-    const balanceAfter = balanceBefore - cost
-
-    // Create generation record
-    const genResponse = await fetch(`${baseUrl}/rest/v1/generations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${bearer}`,
-        'apikey': anonKey,
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify({
-        ...generationData,
-        user_id: userId,
-        points_cost: cost,
-        status: 'processing'
-      })
-    })
-
-    if (!genResponse.ok) {
-      throw new Error('Failed to create generation record')
-    }
-
-    const generations = await genResponse.json()
-    const generation = generations[0]
+    console.log('Starting createGeneration:', { userId, generationType: generationData.generation_type, cost })
 
     try {
-      // Update user points
+      // Check if user can afford this generation
+      const canAfford = await this.canAffordGeneration(userId, generationData.generation_type)
+      if (!canAfford) {
+        const userPoints = await this.getUserPoints(userId)
+        throw new Error(`Insufficient points. Required: ${cost}, Available: ${userPoints}`)
+      }
+
+      // Get user current data
+      const userResponse = await fetch(`${baseUrl}/rest/v1/users?id=eq.${userId}&select=points,total_points_spent,total_points_earned`, {
+        headers: {
+          'Authorization': `Bearer ${bearer}`,
+          'apikey': anonKey
+        }
+      })
+
+      if (!userResponse.ok) {
+        console.error('Failed to fetch user data:', userResponse.status, userResponse.statusText)
+        throw new Error('Failed to fetch user data')
+      }
+
+      const users = await userResponse.json()
+      const user = users[0]
+
+      if (!user) {
+        console.error('User not found for ID:', userId)
+        throw new Error('User not found')
+      }
+
+      const balanceBefore = user.points
+      const balanceAfter = balanceBefore - cost
+
+      console.log('Point deduction attempt:', { balanceBefore, cost, balanceAfter })
+
+      // First, create generation record
+      const genResponse = await fetch(`${baseUrl}/rest/v1/generations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${bearer}`,
+          'apikey': anonKey,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          ...generationData,
+          user_id: userId,
+          points_cost: cost,
+          status: 'processing'
+        })
+      })
+
+      if (!genResponse.ok) {
+        console.error('Failed to create generation record:', genResponse.status)
+        const errorText = await genResponse.text()
+        throw new Error(`Failed to create generation record: ${errorText}`)
+      }
+
+      const generations = await genResponse.json()
+      const generation = generations[0]
+      console.log('Generation record created:', generation.id)
+
+      // Then, update user points
       const updateResponse = await fetch(`${baseUrl}/rest/v1/users?id=eq.${userId}`, {
         method: 'PATCH',
         headers: {
@@ -119,53 +142,61 @@ export class PointsService {
         },
         body: JSON.stringify({
           points: balanceAfter,
-          total_points_spent: user.total_points_spent + cost
+          total_points_spent: (user.total_points_spent || 0) + cost
         })
       })
 
       if (!updateResponse.ok) {
+        console.error('Failed to update user points:', updateResponse.status)
+        // Delete the generation record since points deduction failed
+        await fetch(`${baseUrl}/rest/v1/generations?id=eq.${generation.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${bearer}`,
+            'apikey': anonKey
+          }
+        })
         throw new Error('Failed to update user points')
       }
 
-      // Record points transaction
-      const transResponse = await fetch(`${baseUrl}/rest/v1/points_transactions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${bearer}`,
-          'apikey': anonKey,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          amount: -cost,
-          type: 'spent',
-          description: `Generation: ${generationData.generation_type}`,
-          related_generation_id: generation.id,
-          balance_before: balanceBefore,
-          balance_after: balanceAfter,
-          created_at: new Date().toISOString()
-        })
-      })
+      console.log('User points updated successfully')
 
-      if (!transResponse.ok) {
-        // Log error but don't fail the entire operation
-        console.error('Failed to record points transaction:', await transResponse.text())
+      // Finally, record points transaction (optional - don't fail if this fails)
+      try {
+        const transResponse = await fetch(`${baseUrl}/rest/v1/points_transactions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${bearer}`,
+            'apikey': anonKey,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            amount: -cost,
+            type: 'spent',
+            description: `Generation: ${generationData.generation_type}`,
+            related_generation_id: generation.id,
+            balance_before: balanceBefore,
+            balance_after: balanceAfter,
+            created_at: new Date().toISOString()
+          })
+        })
+
+        if (!transResponse.ok) {
+          console.warn('Failed to record points transaction:', await transResponse.text())
+        }
+      } catch (transError) {
+        console.warn('Points transaction recording failed:', transError)
+        // Don't fail the operation
       }
 
+      console.log('PointsService.createGeneration completed successfully')
       return { generation, pointsDeducted: true }
 
     } catch (error) {
-      // If points deduction fails, delete the generation record
-      await fetch(`${baseUrl}/rest/v1/generations?id=eq.${generation.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${bearer}`,
-          'apikey': anonKey
-        }
-      })
-
-      throw new Error('Failed to deduct points. Generation cancelled.')
+      console.error('createGeneration error:', error)
+      throw error
     }
   }
 

@@ -314,6 +314,7 @@ export async function POST(request: NextRequest) {
           console.log('User created successfully:', userData)
         } else {
           const errorText = await createResponse.text()
+          console.error('Failed to create user:', errorText)
           throw new Error(`Failed to create user: ${errorText}`)
         }
       } catch (createError) {
@@ -331,6 +332,7 @@ export async function POST(request: NextRequest) {
 
     // 再次验证用户数据
     if (!userData || !userData.id) {
+      console.error('User data invalid:', { userData })
       return NextResponse.json(
         {
           error: '用户验证失败',
@@ -340,6 +342,13 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
+
+    console.log('User validated successfully:', {
+      id: userData.id,
+      email: userData.email,
+      points: userData.points,
+      total_points_spent: userData.total_points_spent
+    })
 
     // 确定生成类型和成本
     let generationType: string

@@ -597,7 +597,7 @@ export default function Home() {
                   </>
                 ) : (
                   <>
-                    <span>{language === 'zh' ? '升级到 Pro - $9.99/月' : 'Upgrade to Pro - $9.99/month'}</span>
+                    <span>{language === 'zh' ? '升级到 Pro - $19.9/月' : 'Upgrade to Pro - $19.9/month'}</span>
                     <ArrowRight className="h-5 w-5" />
                   </>
                 )}

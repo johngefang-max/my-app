@@ -104,12 +104,12 @@ export async function POST(request: NextRequest) {
     // Define pricing plans
     const plans = {
       pro_monthly: {
-        amount: 999, // $9.99 in cents
+        amount: 1990, // $19.90 in cents
         currency: 'USD',
         description: 'Pro Plan - Monthly'
       },
       pro_yearly: {
-        amount: 9999, // $99.99 in cents
+        amount: 21492, // $214.92 in cents (19.9 * 12 * 0.9)
         currency: 'USD',
         description: 'Pro Plan - Yearly'
       }
