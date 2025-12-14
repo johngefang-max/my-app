@@ -380,8 +380,7 @@ const translations = {
     'generator.model.type.textToImage': '文本生成图像',
     'generator.model.type.imageEdit': '图像编辑',
     'generator.model.type.imageTo3d': '图片转 3D 模型',
-    'generator.warn.nanoBananaTextOnly': '⚠️ Nano Banana Pro 仅支持文本生成，请选择文本模式',
-    
+
     // 画廊页
     'gallery.title': '探索AI生成的',
     'gallery.title.highlight': '3D艺术世界',
@@ -907,8 +906,7 @@ const translations = {
     'generator.model.type.textToImage': 'Text to Image',
     'generator.model.type.imageEdit': 'Image Edit',
     'generator.model.type.imageTo3d': 'Image to 3D Model',
-    'generator.warn.nanoBananaTextOnly': 'Nano Banana Pro supports text-generation only. Please select Text mode.',
-    
+
     // Gallery
     'gallery.title': 'Explore AI-Generated',
     'gallery.title.highlight': '3D Art World',
