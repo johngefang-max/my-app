@@ -200,22 +200,11 @@ async function generate3D(data: any) {
 
 export async function POST(request: NextRequest) {
   try {
-    // 首先验证用户身份
+    // 先尝试从 token 获取用户信息
     const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
     })
-
-    if (!token?.email) {
-      console.error('No authenticated user found in token')
-      return NextResponse.json(
-        {
-          error: '用户未认证',
-          details: '请先登录后再使用生成功能'
-        },
-        { status: 401 }
-      )
-    }
 
     // 验证请求体
     let body;
@@ -230,13 +219,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { type, data } = body
-    // 使用 token 中的 email，而不是请求体中的
-    const userEmail = token.email
+    const { type, data, userEmail } = body
 
-    console.log('Generation request:', { type, userEmail, modelId: data.model_id })
+    // 使用 token 中的 email，如果没有则使用请求体中的
+    const finalEmail = token?.email || userEmail
 
-    console.log('Validating user by email:', userEmail)
+    console.log('Generation request:', {
+      type,
+      userEmailFromBody: userEmail,
+      userEmailFromToken: token?.email,
+      finalEmail,
+      modelId: data.model_id
+    })
+
+    if (!type || !data || !finalEmail) {
+      return NextResponse.json(
+        {
+          error: '缺少必要参数',
+          details: { type, data, userEmail: !!userEmail, token: !!token }
+        },
+        { status: 400 }
+      )
+    }
+
+    console.log('Validating user by email:', finalEmail)
 
     // 获取数据库配置
     const baseUrl = process.env.my_app_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_my_app_SUPABASE_URL
@@ -249,7 +255,7 @@ export async function POST(request: NextRequest) {
     let userError
 
     try {
-      const response = await fetch(`${baseUrl}/rest/v1/users?email=eq.${encodeURIComponent(userEmail)}&select=*`, {
+      const response = await fetch(`${baseUrl}/rest/v1/users?email=eq.${encodeURIComponent(finalEmail)}&select=*`, {
         headers: {
           'Authorization': `Bearer ${bearer}`,
           'apikey': anonKey
@@ -276,7 +282,7 @@ export async function POST(request: NextRequest) {
 
       try {
         // 直接创建用户，因为我们有认证信息
-        const baseName = userEmail.split('@')[0]?.toLowerCase().replace(/[^a-z0-9\-_.]/g, '-') || 'user'
+        const baseName = finalEmail.split('@')[0]?.toLowerCase().replace(/[^a-z0-9\-_.]/g, '-') || 'user'
         const username = baseName || `user-${Math.random().toString(36).slice(2,8)}`
 
         const createResponse = await fetch(`${baseUrl}/rest/v1/users`, {
@@ -288,7 +294,7 @@ export async function POST(request: NextRequest) {
             'Prefer': 'return=representation'
           },
           body: JSON.stringify({
-            email: userEmail,
+            email: finalEmail,
             username,
             avatar_url: null,
             plan: 'free',
@@ -316,7 +322,7 @@ export async function POST(request: NextRequest) {
           {
             error: '用户验证失败',
             details: '无法创建或找到用户记录，请稍后重试',
-            userEmail: userEmail
+            userEmail: finalEmail
           },
           { status: 401 }
         )
@@ -329,7 +335,7 @@ export async function POST(request: NextRequest) {
         {
           error: '用户验证失败',
           details: '用户数据无效，请重新登录',
-          userEmail: userEmail
+          userEmail: finalEmail
         },
         { status: 401 }
       )

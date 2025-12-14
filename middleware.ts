@@ -7,10 +7,21 @@ import { getToken } from 'next-auth/jwt'
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const protectedPaths = ['/generator']
-  
+
   // 排除 /admin 路由，不需要认证
   if (pathname.startsWith('/admin')) {
     return NextResponse.next()
+  }
+
+  // 重定向逻辑：访问根路径时重定向到 /en
+  if (pathname === '/') {
+    // 检查是否有语言偏好cookie
+    const languagePreference = req.cookies.get('language')?.value
+    const preferredLocale = languagePreference || 'en' // 默认英语
+
+    const url = req.nextUrl.clone()
+    url.pathname = `/${preferredLocale}`
+    return NextResponse.redirect(url)
   }
 
   if (protectedPaths.some(p => pathname.startsWith(p))) {
@@ -37,5 +48,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/generator']
+  matcher: ['/', '/generator']
 }
