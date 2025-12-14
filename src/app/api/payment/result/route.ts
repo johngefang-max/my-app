@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { headers } from 'next/headers'
 
 // Webhook 密钥（从环境变量获取）
 const WEBHOOK_SECRET = process.env.CREEM_WEBHOOK_SECRET || 'whsec_2k2SVxpBkLK7W80HLpc94W'
@@ -34,8 +33,7 @@ export async function POST(request: NextRequest) {
     console.log('=== Creem Webhook Received ===')
 
     // 获取请求头
-    const headersList = headers()
-    const signature = headersList.get('creem-signature') || headersList.get('x-creem-signature')
+    const signature = request.headers.get('creem-signature') || request.headers.get('x-creem-signature')
 
     if (!signature) {
       console.error('No signature found in webhook headers')

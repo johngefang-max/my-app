@@ -231,7 +231,7 @@ export async function POST(request: NextRequest) {
       userError = err
     }
 
-    console.log('User validation result:', { userData, userError: userError?.message })
+    console.log('User validation result:', { userData, userError: (userError as any)?.message })
 
     // 如果用户不存在，尝试创建用户
     if (!userData || userError) {
@@ -268,7 +268,7 @@ export async function POST(request: NextRequest) {
             error: '用户验证失败',
             details: '无法创建或找到用户记录，请重新登录',
             userEmail: userEmail,
-            originalError: userError?.message
+            originalError: (userError as any)?.message
           },
           { status: 401 }
         )
