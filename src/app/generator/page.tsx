@@ -233,13 +233,28 @@ export default function NewGenerator() {
           }
         } else {
           // 图像生成
-          const images = result.data?.images || result.data || []
+          // 根据实际的API响应结构调整解析逻辑
+          let images = []
+
+          // 尝试从新的响应结构获取图片
+          if (result.data?.images?.images) {
+            images = result.data.images.images
+          } else if (result.data?.images) {
+            images = result.data.images
+          } else if (result.data) {
+            images = result.data
+          } else {
+            images = []
+          }
+
           if (images.length > 0) {
-            setGeneratedImages(images.map((img: any) => img.url || img))
+            const imageUrls = images.map((img: any) => img.url || img)
+            setGeneratedImages(imageUrls)
             setGeneratedModel(null)
-            console.log('图像生成成功:', images.length, '张')
+            console.log('图像生成成功:', images.length, '张', imageUrls)
           } else {
             console.error('未找到图像URL:', result)
+            console.log('完整的API响应结构:', JSON.stringify(result, null, 2))
             alert('生成成功但未获取到图像URL，请检查API响应格式')
           }
         }

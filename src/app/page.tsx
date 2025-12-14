@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react'
 
 export default function Home() {
   const { language, setLanguage, t } = useLanguage()
-  const { isAuthenticated, user, openLogin } = useAuth()
+  const { isAuthenticated, user, openLogin, requireAuth } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const pathname = usePathname()
@@ -28,7 +28,14 @@ export default function Home() {
   }
 
   const go = (path: string) => {
-    router.push(langPath(path))
+    // 如果访问需要认证的页面，检查登录状态
+    if (path === '/generator') {
+      requireAuth(() => {
+        router.push(langPath(path))
+      })
+    } else {
+      router.push(langPath(path))
+    }
   }
 
   // 处理 Creem 支付
