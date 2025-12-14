@@ -1,147 +1,151 @@
-# Creem 支付系统集成完成报告
+2.2 一次性付费（Return URL）
+一句话说逻辑就是：配置规则在这里，我有这些配置信息，我希望实现什么效果，你帮我写
+划重点“配置信息”、“配置规则”、“实现效果”
+就是这3个内容，配置信息上面我们已经搞定，接下来就是配置规则和实现效果
 
-## 🎉 集成完成
+先确定我们这一次的实现效果
 
-我已经成功为您的 imageto3d 应用集成了完整的 Creem 支付系统，包括所有三个核心 API。
+⚠️整个操作，不涉及用户注册和登录，所以也挺容易实现的，别害怕，即使是后面有注册和登录，也都有第三方集成，莫慌！
 
-## ✅ 已完成的功能
+这个实现逻辑，我们是需要有一个使用参数`success_url`和`signature验证`直接看到对应文档官方解释
+1. 您可以为每个 checkout_session 传递一个自定义的success_url，它将覆盖success_url产品上的设置。这使得您可以在每次付款后动态地将用户重定向到自定义页面（对于在付款后将用户引导到他们的特定帐户资源很有用）。
+2. 返回和重定向 URL 是成功付款后您的客户将被重定向到的 URL。它们包含由 creem 签名的重要信息，您可以使用这些信息来验证付款和用户。
+划重点：付款成功，重定向的自定义页面，使用信息验证付款（和用户）
 
-### 1. Creem API 服务封装 (`src/services/creem.ts`)
+一次性付费总共需要3个API：创建checkout、生成signature、验证signature
+API1:创建会话
+const redirectUrl = await axios.post(
+      `https://api.creem.io/v1/checkouts`,
+        {
+          "success_url": "https://example.com",
+          "product_id": "prod_your-product-id",
+        },
+        {
+          headers: { "x-api-key": `creem_123456789` },
+        },
+    );
 
-**包含的三个核心 API：**
+看起来吓人，实际上就4个东西：
+1. https://api.creem.io/v1/checkouts支付连接(固定的，测试和生产2个不同连接)
+2. success_url": "https://example.com 支付成功以后你要去到的页面path（路径）
+3. "product_id": "prod_your-product-id 换成你的产品id
+4. "x-api-key": `creem_123456789 换成你的api key（测试和生产2个不同）
+我的文件如下：
+import axios from 'axios';
 
-#### 🔹 createCheckout API
-- 创建 Creem 支付会话
-- 支持自定义产品ID、请求ID和成功URL
-- 使用 fetch（无需 axios 依赖）
-- 完整的错误处理和日志记录
+export interface CreateCheckoutParams {
+  productId: string;
+  requestId?: string;
+  successUrl?: string;
+}
 
-#### 🔹 generateSignature 工具
-- 生成符合 Creem 规范的 HMAC-SHA256 签名
-- 参数格式：`key1=value1|key2=value2|...|salt=apiKey`
-- 正确处理 null/undefined 值过滤
-- 保持参数顺序（不排序）
+export interface CreateCheckoutResponse {
+  checkout_url: string;
+  [key: string]: any;
+}
 
-#### 🔹 verifySignature 功能
-- 验证从 Creem 回调的签名
-- 自动过滤无效参数
-- 支持可选 API 密钥
-- 详细的验证日志
+/**
+ * 创建Creem结账会话
+ * @param params 结账参数
+ * @returns 包含结账URL的响应
+ */
+export async function createCheckout(params: CreateCheckoutParams): Promise<CreateCheckoutResponse> {
+  try {
+    const API_URL = process.env.CREEM_API_URL || 'https://test-api.creem.io';
+    const API_KEY = process.env.CREEM_API_KEY || 'creem_test_3sioDtbY5ADbmoODbQnNiW';
+    
+    // 获取格式化的API基础URL（确保没有尾部斜杠）
+    const baseUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+    const apiUrl = `${baseUrl}/v1/checkouts`;
 
-### 2. API 端点
+    const response = await axios.post(
+      apiUrl,
+      {
+        product_id: params.productId,
+        request_id: params.requestId,
+        success_url: params.successUrl,
+      },
+      {
+        headers: { 'x-api-key': API_KEY },
+      }
+    );
 
-#### `/api/creem/create-checkout` (POST)
-- 创建支付会话
-- 自动生成请求ID
-- 处理支付会话创建
+    if (!response.data || !response.data.checkout_url) {
+      throw new Error('API response does not contain checkout_url');
+    }
 
-#### `/api/creem/callback` (GET)
-- 处理 Creem 支付回调
-- 验证签名安全
-- 更新用户订阅状态
-- 添加订阅奖励积分
-- 自动重定向到成功/失败页面
+    return response.data;
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('API error response:', error.response.data);
+    }
+    throw error;
+  }
+}
 
-#### `/api/test/creem-signature` (POST)
-- 签名验证测试端点
-- 验证签名生成和验证功能
+[图片]
+(GPT的解读，下面的你也可以发给任意ai去看看写的到底是什么)
 
-### 3. 首页按钮集成
+API2:生成signture
+import crypto from 'crypto';
 
-更新的 CTA 部分现在支持：
-- **未登录用户**: 显示免费试用按钮
-- **已登录的普通用户**: 显示 "升级到 Pro - $9.99/月" 支付按钮
-- **已登录的 Pro 用户**: 显示 "开始使用 Pro 功能" 按钮
-- **支付处理中**: 显示加载状态和进度指示器
+/**
+ * 生成Creem签名
+ * @param params 参数对象
+ * @param apiKey API密钥
+ * @returns 生成的签名
+ */
+export function generateSignature(params: Record<string, string>, apiKey: string): string {
+  // 创建格式为 "key1=value1|key2=value2|...|salt=apiKey" 的数据字符串
+  // 重要：不要对键进行排序 - 按照提供的顺序使用
+  const data = Object.entries(params)
+    .map(([key, value]) => `${key}=${value}`)
+    .concat(`salt=${apiKey}`)
+    .join('|');
 
-### 4. 安全功能
+  // 使用SHA-256哈希算法生成签名
+  const hash = crypto.createHash('sha256').update(data).digest('hex');
+  return hash;
+}
 
-- **HMAC-SHA256 签名验证**: 所有回调都经过严格验证
-- **参数过滤**: 自动过滤 null、undefined 和空字符串
-- **错误处理**: 完整的错误捕获和用户友好的错误消息
-- **环境变量配置**: 敏感信息通过环境变量管理
+API3:验证签名signature
+import { generateSignature } from './signatureUtils';
 
-## 🔧 配置
+export interface RedirectParams {
+  request_id?: string | null;
+  checkout_id?: string | null;
+  order_id?: string | null;
+  customer_id?: string | null;
+  subscription_id?: string | null;
+  product_id?: string | null;
+}
 
-### 环境变量 (已在 .env.local 中配置)
-```env
-# Creem Payment System Configuration
-CREEM_API_KEY=creem_test_7a8a7sVzSwJY6MrtMTLqiE
-CREEM_PRODUCT_ID=prod_5JtwzQinzndziQS0Da8jkn
-CREEM_API_URL=https://api.creem.io
-CREEM_SUCCESS_URL=https://imageto3d.site/api/payments/creem/return
-```
+/**
+ * 验证Creem签名
+ * @param params 重定向参数
+ * @param signature 要验证的签名
+ * @returns 签名是否有效
+ */
+export function verifySignature(params: Record<string, string>, signature: string): boolean {
+  try {
+    const API_KEY = process.env.CREEM_API_KEY || 'creem_test_3sioDtbY5ADbmoODbQnNiW';
 
-### 支付流程
-1. 用户点击 "升级到 Pro" 按钮
-2. 系统调用 `/api/creem/create-checkout` 创建支付会话
-3. 用户重定向到 Creem 支付页面
-4. 支付完成后，Creem 重定向到回调 URL
-5. 系统验证签名并更新用户订阅状态
-6. 用户重定向到成功页面
+    // 过滤掉null/undefined值，并移除signature参数（如果存在）
+    const filteredParams: Record<string, string> = {};
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== null && value !== undefined && key !== 'signature') {
+        filteredParams[key] = value;
+      }
+    });
 
-## 🧪 测试验证
-
-### 签名验证测试 ✅
-运行测试确认所有功能正常：
-- ✅ 签名生成
-- ✅ 正确签名验证
-- ✅ 错误签名拒绝
-- ✅ 参数顺序敏感性
-- ✅ null 值处理
-
-### 测试方式
-可以通过以下方式测试：
-1. 运行 `node test-signature.mjs`（已删除）
-2. 调用 `POST /api/test/creem-signature` 端点
-3. 在首页点击支付按钮测试完整流程
-
-## 📱 用户体验
-
-### 支付按钮状态
-- **默认状态**: "升级到 Pro - $9.99/月"
-- **加载状态**: "处理中..." + 加载动画
-- **Pro 用户**: "开始使用 Pro 功能"
-- **未登录用户**: 重定向到登录页面
-
-### 错误处理
-- 支付创建失败：显示友好的错误消息
-- 网络错误：提示服务不可用
-- 签名验证失败：重定向到失败页面
-
-## 🔐 安全注意事项
-
-1. **环境变量保护**: 确保 CREEM_API_KEY 不泄露
-2. **签名验证**: 所有回调必须验证签名
-3. **参数过滤**: 正确处理特殊值和空值
-4. **错误日志**: 记录详细的错误信息用于调试
-
-## 🚀 下一步
-
-1. **生产环境配置**: 将测试环境变量替换为生产环境值
-2. **支付监控**: 监控支付成功率和错误
-3. **用户体验优化**: 根据实际使用情况优化UI/UX
-4. **测试**: 在生产环境中进行完整的端到端测试
-
-## 📁 相关文件
-
-- `src/services/creem.ts` - 核心 API 封装
-- `src/app/api/creem/create-checkout/route.ts` - 创建支付会话
-- `src/app/api/creem/callback/route.ts` - 处理支付回调
-- `src/app/api/test/creem-signature/route.ts` - 签名验证测试
-- `src/app/page.tsx` - 首页支付按钮集成
-- `.env.local` - 环境变量配置
-
----
-
-## 🎊 总结
-
-Creem 支付系统已完全集成到您的 imageto3d 应用中！所有三个核心 API 都已实现并经过测试验证。用户现在可以安全便捷地升级到 Pro 计划，享受更多功能和服务。
-
-系统具有高度的安全性和良好的用户体验，包括：
-- 完整的签名验证机制
-- 友好的用户界面反馈
-- 详细的错误处理
-- 灵活的配置选项
-
-您可以立即开始测试和使用这个支付系统！
+    // 使用Creem提供的方法生成签名
+    const computedSignature = generateSignature(filteredParams, API_KEY);
+    
+    // 比较计算的签名与接收到的签名
+    return computedSignature === signature;
+  } catch (error) {
+    console.error('Error verifying signature:', error);
+    return false;
+  }
+}

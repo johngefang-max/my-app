@@ -5,10 +5,10 @@
 
 import crypto from 'crypto';
 
-// 环境变量配置
-const CREEM_API_KEY = process.env.CREEM_API_KEY;
-const CREEM_PRODUCT_ID = process.env.CREEM_PRODUCT_ID;
-const CREEM_API_URL = process.env.CREEM_API_URL || 'https://api.creem.io';
+// 环境变量配置 - 使用测试环境
+const CREEM_API_KEY = process.env.CREEM_API_KEY || 'creem_test_3sioDtbY5ADbmoODbQnNiW';
+const CREEM_PRODUCT_ID = process.env.CREEM_PRODUCT_ID || 'prod_5JtwzQinzndziQS0Da8jkn';
+const CREEM_API_URL = process.env.CREEM_API_URL || 'https://test-api.creem.io';
 const CREEM_SUCCESS_URL = process.env.CREEM_SUCCESS_URL;
 
 // 接口定义
@@ -41,14 +41,9 @@ export interface RedirectParams {
  */
 export async function createCheckout(params: CreateCheckoutParams = {}): Promise<CreateCheckoutResponse> {
   try {
-    // 参数验证
-    if (!CREEM_API_KEY) {
-      throw new Error('CREEM_API_KEY is not configured');
-    }
-
-    if (!CREEM_PRODUCT_ID && !params.productId) {
-      throw new Error('CREEM_PRODUCT_ID is not configured');
-    }
+    // 获取格式化的API基础URL（确保没有尾部斜杠）
+    const baseUrl = CREEM_API_URL.endsWith('/') ? CREEM_API_URL.slice(0, -1) : CREEM_API_URL;
+    const apiUrl = `${baseUrl}/v1/checkouts`;
 
     // 构建请求参数
     const requestData: any = {
@@ -68,7 +63,7 @@ export async function createCheckout(params: CreateCheckoutParams = {}): Promise
     console.log('Creating checkout with params:', requestData);
 
     // 发送请求（使用 fetch 替代 axios）
-    const response = await fetch(`${CREEM_API_URL}/v1/checkouts`, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'x-api-key': CREEM_API_KEY,
@@ -126,26 +121,15 @@ export function generateSignature(params: Record<string, string | null | undefin
   try {
     const key = apiKey || CREEM_API_KEY;
 
-    if (!key) {
-      throw new Error('API key is required for signature generation');
-    }
-
     // 创建格式为 "key1=value1|key2=value2|...|salt=apiKey" 的数据字符串
-    // 重要：不要对键进行排序 - 按照提供的顺序使用，并且只包含有效值
-    const validEntries = Object.entries(params).filter(([key, value]) =>
-      value !== null && value !== undefined && value !== ''
-    );
-    const data = validEntries
+    // 重要：不要对键进行排序 - 按照提供的顺序使用
+    const data = Object.entries(params)
       .map(([key, value]) => `${key}=${value}`)
       .concat(`salt=${key}`)
       .join('|');
 
-    console.log('Signature data string:', data);
-
     // 使用SHA-256哈希算法生成签名
     const hash = crypto.createHash('sha256').update(data).digest('hex');
-    console.log('Generated signature:', hash);
-
     return hash;
   } catch (error) {
     console.error('Error generating signature:', error);
@@ -168,31 +152,19 @@ export function verifySignature(
   try {
     const key = apiKey || CREEM_API_KEY;
 
-    if (!key) {
-      console.error('API key is required for signature verification');
-      return false;
-    }
-
-    // 过滤掉null/undefined/空字符串值，并移除signature参数
+    // 过滤掉null/undefined值，并移除signature参数
     const filteredParams: Record<string, string> = {};
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== null && value !== undefined && value !== '' && key !== 'signature') {
+      if (value !== null && value !== undefined && key !== 'signature') {
         filteredParams[key] = value;
       }
     });
-
-    console.log('Filtered params for verification:', filteredParams);
-    console.log('Received signature:', signature);
 
     // 生成预期的签名
     const computedSignature = generateSignature(filteredParams, key);
 
     // 比较计算的签名与接收到的签名
-    const isValid = computedSignature === signature;
-    console.log('Computed signature:', computedSignature);
-    console.log('Signature verification result:', isValid);
-
-    return isValid;
+    return computedSignature === signature;
   } catch (error) {
     console.error('Error verifying signature:', error);
     return false;
