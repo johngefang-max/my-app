@@ -385,7 +385,8 @@ export async function POST(request: NextRequest) {
         description: `Model: ${data.model_id}`,
         model_type: type === '3d' ? '3d' : 'image',
         generation_type: generationType,
-        model_id: data.model_id,
+        model_id: null, // 外键，暂时为null
+        model_name: data.model_id, // 使用model_name存储模型标识符
         parameters: data,
         points_cost: cost,
         status: 'processing'

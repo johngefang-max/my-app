@@ -203,7 +203,8 @@ export type Database = {
           image_url: string | null
           model_type: '3d' | 'image'
           generation_type: 'text-to-image' | 'image-edit' | 'image-to-3d' | 'text-to-3d'
-          model_id: string
+          model_id: string | null
+          model_name: string | null
           parameters: any | null
           points_cost: number
           status: 'pending' | 'processing' | 'completed' | 'failed'
@@ -220,7 +221,8 @@ export type Database = {
           image_url?: string | null
           model_type: '3d' | 'image'
           generation_type: 'text-to-image' | 'image-edit' | 'image-to-3d' | 'text-to-3d'
-          model_id: string
+          model_id?: string | null
+          model_name?: string | null
           parameters?: any | null
           points_cost: number
           status?: 'pending' | 'processing' | 'completed' | 'failed'
@@ -237,7 +239,8 @@ export type Database = {
           image_url?: string | null
           model_type?: '3d' | 'image'
           generation_type?: 'text-to-image' | 'image-edit' | 'image-to-3d' | 'text-to-3d'
-          model_id?: string
+          model_id?: string | null
+          model_name?: string | null
           parameters?: any | null
           points_cost?: number
           status?: 'pending' | 'processing' | 'completed' | 'failed'
