@@ -41,12 +41,6 @@ export class PointsService {
   }): Promise<{ generation: Generation, pointsDeducted: boolean }> {
     const cost = this.getGenerationCost(generationData.generation_type)
 
-    // Check if user can afford this generation
-    const canAfford = await this.canAffordGeneration(userId, generationData.generation_type)
-    if (!canAfford) {
-      throw new Error(`Insufficient points. Required: ${cost}, Available: ${await this.getUserPoints(userId)}`)
-    }
-
     // Start a transaction-like operation
     const { data: user, error: userError } = await supabase
       .from('users')
@@ -59,6 +53,11 @@ export class PointsService {
     }
 
     const balanceBefore = user.points
+
+    // Check if user can afford this generation (using the already fetched balance)
+    if (balanceBefore < cost) {
+      throw new Error(`Insufficient points. Required: ${cost}, Available: ${balanceBefore}`)
+    }
 
     // Create generation record
     const { data: generation, error: genError } = await supabase

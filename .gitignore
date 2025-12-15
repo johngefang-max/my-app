@@ -46,3 +46,7 @@ CLAUDE.md
 
 # windows special file
 /nul
+
+test*
+*.test.ts
+*.test.tsx

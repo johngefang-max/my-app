@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { fal } from '@fal-ai/client'
 import { FAL_APIS } from '@/config/fal-api'
-import { PointsService } from '@/lib/points-service-rest'
 import { getToken } from 'next-auth/jwt'
 
 // 检查环境变量
@@ -255,29 +254,19 @@ export async function POST(request: NextRequest) {
     const anonKey = process.env.NEXT_PUBLIC_my_app_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.my_app_SUPABASE_ANON_KEY || ''
     const bearer = serviceKey || anonKey
 
-    // 验证用户身份 - 通过email查找用户
-    let userData
-    let userError
+    // 先创建一个supabase客户端来访问数据库
+    const { createClient } = await import('@supabase/supabase-js')
+    const supabaseAdmin = createClient(
+      baseUrl || '',
+      serviceKey || anonKey
+    )
 
-    try {
-      const response = await fetch(`${baseUrl}/rest/v1/users?email=eq.${encodeURIComponent(finalEmail)}&select=*`, {
-        headers: {
-          'Authorization': `Bearer ${bearer}`,
-          'apikey': anonKey
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const users = await response.json()
-      userData = users && users.length > 0 ? users[0] : null
-      userError = null
-    } catch (err) {
-      console.error('Database query error:', err)
-      userError = err
-    }
+    // 使用supabase客户端而不是REST调用
+    const { data: userData, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('email', finalEmail)
+      .maybeSingle()
 
     console.log('User validation result:', { userData, userError: (userError as any)?.message })
 
@@ -290,15 +279,9 @@ export async function POST(request: NextRequest) {
         const baseName = finalEmail.split('@')[0]?.toLowerCase().replace(/[^a-z0-9\-_.]/g, '-') || 'user'
         const username = baseName || `user-${Math.random().toString(36).slice(2,8)}`
 
-        const createResponse = await fetch(`${baseUrl}/rest/v1/users`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${bearer}`,
-            'apikey': anonKey,
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify({
+        const { data: createdUser, error: createError } = await supabaseAdmin
+          .from('users')
+          .insert({
             email: finalEmail,
             username,
             avatar_url: null,
@@ -310,17 +293,16 @@ export async function POST(request: NextRequest) {
             total_points_earned: 10,
             total_points_spent: 0
           })
-        })
+          .select()
+          .single()
 
-        if (createResponse.ok) {
-          const createdUsers = await createResponse.json()
-          userData = createdUsers[0]
+        if (!createError && createdUser) {
+          userData = createdUser
           userError = null
           console.log('User created successfully:', userData)
         } else {
-          const errorText = await createResponse.text()
-          console.error('Failed to create user:', errorText)
-          throw new Error(`Failed to create user: ${errorText}`)
+          console.error('Failed to create user:', createError)
+          throw new Error(`Failed to create user: ${createError?.message}`)
         }
       } catch (createError) {
         console.error('Error creating user:', createError)
@@ -374,13 +356,98 @@ export async function POST(request: NextRequest) {
         )
     }
 
-    // TODO: 积分系统暂时禁用，直接进行生成
-    console.log('Points system temporarily disabled - proceeding with generation')
+    // 检查用户积分是否足够 - 使用 supabaseAdmin 客户端
+    const { data: userPoints } = await supabaseAdmin
+      .from('users')
+      .select('points')
+      .eq('id', userData.id)
+      .single()
 
-    // 创建生成记录（不扣除积分）
-    let generation = {
-      id: `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      points_cost: 0
+    const currentPoints = userPoints?.points || 0
+    const cost = 3 // 所有生成都需要3积分
+    if (currentPoints < cost) {
+      return NextResponse.json(
+        {
+          error: '积分不足',
+          details: `需要 ${cost} 积分，当前余额 ${currentPoints} 积分`,
+          current_points: currentPoints,
+          required_points: cost
+        },
+        { status: 402 }
+      )
+    }
+
+    // 创建生成记录并扣除积分 - 使用事务确保数据一致性
+    const { data: generation, error: genError } = await supabaseAdmin
+      .from('generations')
+      .insert({
+        user_id: userData.id,
+        title: `${data.prompt || 'Untitled'} - ${generationType}`,
+        description: `Model: ${data.model_id}`,
+        model_type: type === '3d' ? '3d' : 'image',
+        generation_type: generationType,
+        model_id: data.model_id,
+        parameters: data,
+        points_cost: cost,
+        status: 'processing'
+      })
+      .select()
+      .single()
+
+    if (genError || !generation) {
+      console.error('Failed to create generation record:', genError)
+      return NextResponse.json(
+        {
+          error: '创建生成记录失败',
+          details: genError?.message || '未知错误'
+        },
+        { status: 500 }
+      )
+    }
+
+    // 扣除用户积分
+    const { error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({
+        points: currentPoints - cost,
+        total_points_spent: (userData.total_points_spent || 0) + cost,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userData.id)
+
+    if (updateError) {
+      console.error('Failed to deduct points:', updateError)
+      // 删除生成记录
+      await supabaseAdmin
+        .from('generations')
+        .delete()
+        .eq('id', generation.id)
+
+      return NextResponse.json(
+        {
+          error: '积分扣除失败',
+          details: updateError.message
+        },
+        { status: 500 }
+      )
+    }
+
+    // 记录积分交易
+    const { error: transError } = await supabaseAdmin
+      .from('points_transactions')
+      .insert({
+        user_id: userData.id,
+        amount: -cost,
+        type: 'spent',
+        description: `Generation: ${generationType}`,
+        related_generation_id: generation.id,
+        balance_before: currentPoints,
+        balance_after: currentPoints - cost
+      })
+
+    if (transError) {
+      console.error('Failed to record transaction:', transError)
+      // 不影响主流程，但记录错误
     }
 
     let apiResult
@@ -400,31 +467,97 @@ export async function POST(request: NextRequest) {
 
       console.log('API Success, generation completed')
 
-      // TODO: 积分系统禁用，不更新数据库记录
-      console.log('Skipping database update due to disabled points system')
+      // 更新生成记录为成功状态
+      try {
+        await supabaseAdmin
+          .from('generations')
+          .update({
+            model_url: apiResult.model_url,
+            image_url: apiResult.images?.[0]?.url,
+            status: 'completed',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', generation.id)
+      } catch (error) {
+        console.error('Failed to update generation record:', error)
+        // 不影响返回结果，但记录错误
+      }
+
+      // 获取用户剩余积分
+      const { data: updatedUser } = await supabaseAdmin
+        .from('users')
+        .select('points')
+        .eq('id', userData.id)
+        .single()
 
       return NextResponse.json({
         success: true,
         data: apiResult,
         generation: {
           id: generation.id,
-          points_cost: 0,
-          remaining_points: userData.points,
-          message: '积分系统暂时禁用 - 免费生成'
+          points_cost: generation.points_cost,
+          remaining_points: updatedUser?.points || currentPoints - cost,
+          message: '生成成功'
         }
       })
 
     } catch (apiError) {
       console.error('FAL API调用失败:', apiError)
 
-      // TODO: 积分系统禁用，无需退还积分
-      console.log('Skipping points refund due to disabled points system')
+      // 退还积分
+      try {
+        // 获取当前用户积分
+        const { data: currentUser } = await supabaseAdmin
+          .from('users')
+          .select('points,total_points_spent')
+          .eq('id', userData.id)
+          .single()
+
+        if (currentUser) {
+          const refundAmount = generation.points_cost
+          await supabaseAdmin
+            .from('users')
+            .update({
+              points: currentUser.points + refundAmount,
+              total_points_spent: Math.max(0, currentUser.total_points_spent - refundAmount),
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', userData.id)
+
+          // 记录退款交易
+          await supabaseAdmin
+            .from('points_transactions')
+            .insert({
+              user_id: userData.id,
+              amount: refundAmount,
+              type: 'refunded',
+              description: 'Refund for failed generation',
+              related_generation_id: generation.id,
+              balance_before: currentUser.points,
+              balance_after: currentUser.points + refundAmount
+            })
+        }
+
+        // 更新生成状态为失败
+        await supabaseAdmin
+          .from('generations')
+          .update({
+            status: 'failed',
+            error_message: apiError instanceof Error ? apiError.message : 'Generation failed',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', generation.id)
+
+        console.log('Points refunded successfully')
+      } catch (refundError) {
+        console.error('Failed to refund points:', refundError)
+      }
 
       return NextResponse.json(
         {
           error: apiError instanceof Error ? apiError.message : '生成失败',
           details: apiError,
-          message: '生成失败'
+          message: '生成失败，积分已退还'
         },
         { status: 500 }
       )

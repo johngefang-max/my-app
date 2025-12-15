@@ -261,11 +261,7 @@ export default function NewGenerator() {
 
         // 显示积分消耗信息
         if (result.generation) {
-          if (result.generation.points_cost === 0) {
-            alert(`生成成功！当前为免费测试模式，未扣除积分`)
-          } else {
-            alert(`生成成功！消耗 ${result.generation.points_cost} 积分，剩余 ${result.generation.remaining_points} 积分`)
-          }
+          alert(`生成成功！消耗 ${result.generation.points_cost} 积分，剩余 ${result.generation.remaining_points} 积分`)
         }
       } else {
         console.error('生成失败:', result.error || result)
@@ -273,7 +269,7 @@ export default function NewGenerator() {
 
         // 处理积分不足的情况
         if (response.status === 402) {
-          alert(`积分不足！需要 ${result.required} 积分，当前只有 ${result.available} 积分`)
+          alert(`积分不足！需要 ${result.details?.required_points || 3} 积分，当前只有 ${result.details?.current_points || user.points} 积分`)
         } else if (response.status === 401) {
           // 用户验证失败
           console.error('Authentication failed:', result)
@@ -474,10 +470,14 @@ export default function NewGenerator() {
               {user && isAuthenticated && (
                 <div className="flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-lg">
                   <span className="text-sm text-gray-400">可用积分</span>
-                  <span className="text-lg font-bold text-gray-300">
+                  <span className={`text-lg font-bold ${
+                    user.points >= 10 ? 'text-green-400' :
+                    user.points >= 5 ? 'text-yellow-400' :
+                    'text-red-400'
+                  }`}>
                     {user.points}
                   </span>
-                  <span className="text-xs text-green-400">(当前免费)</span>
+                  <span className="text-xs text-gray-500">每次消耗3积分</span>
                 </div>
               )}
 
@@ -1146,9 +1146,11 @@ export default function NewGenerator() {
                 {/* 生成按钮 */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
-                    <span>{t('generator.cost.label')}: <span className="text-green-400 font-bold">免费测试</span></span>
+                    <span>{t('generator.cost.label')}: <span className="text-yellow-400 font-bold">3 积分/次</span></span>
                     {user && (
-                      <span className="text-gray-400">
+                      <span className={`${
+                        user.points >= 3 ? 'text-green-400' : 'text-red-400'
+                      }`}>
                         {t('generator.cost.remaining')}: {user.points} {t('generator.cost.points')}
                       </span>
                     )}
@@ -1159,7 +1161,8 @@ export default function NewGenerator() {
                     disabled={
                       isGenerating ||
                       ((activeMethod === 'text' && !textInput) && uploadedImages.length === 0) ||
-                      !isAuthenticated
+                      !isAuthenticated ||
+                      (user && user.points < 3)
                     }
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-600 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   >
@@ -1173,7 +1176,8 @@ export default function NewGenerator() {
                         <Grid className="h-5 w-5" />
                         <span>
                           {!isAuthenticated ? t('generator.actions.loginRequired') :
-                           `${t('generator.actions.start')} ${currentModelConfig?.type === 'image-to-3d' ? t('generator.preview.modelTitle') : t('generator.preview.imageTitle')} (免费测试)`}
+                           user.points < 3 ? '积分不足 (需要3积分)' :
+                           `${t('generator.actions.start')} ${currentModelConfig?.type === 'image-to-3d' ? t('generator.preview.modelTitle') : t('generator.preview.imageTitle')}`}
                         </span>
                       </>
                     )}
