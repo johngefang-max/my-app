@@ -173,7 +173,7 @@ export default function NewGenerator() {
         }
         // 使用第一张图片的base64 data URL
         Object.assign(requestData, {
-          image_url: uploadedImages[0], // 现在uploadedImages已经是base64 data URLs
+          image_urls: [uploadedImages[0]], // 使用 image_urls (复数) 而不是 image_url
           seed: params.seed,
           sync_mode: params.sync_mode,
           num_inference_steps: params.num_inference_steps,
@@ -184,11 +184,9 @@ export default function NewGenerator() {
           strength: params.strength
         })
       } else if (selectedModel === 'fal-ai/trellis') {
-        // 3D模型生成
-        if (uploadedImages.length > 0) {
-          requestData.image_url = uploadedImages[0] // 使用base64 data URL而不是blob URL
-        }
+        // 3D模型生成 - 始终包含image_url字段，即使为null
         Object.assign(requestData, {
+          image_url: uploadedImages.length > 0 ? uploadedImages[0] : null, // 始终包含image_url字段
           seed: params.seed,
           sync_mode: params.sync_mode,
           scale: params.scale,

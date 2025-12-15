@@ -13,7 +13,7 @@ fal.config({
 })
 
 async function generateImage(data: any) {
-  const { model_id, prompt, image_url, ...otherParams } = data
+  const { model_id, prompt, image_url, image_urls, ...otherParams } = data
 
   try {
     let result
@@ -24,12 +24,22 @@ async function generateImage(data: any) {
       ...otherParams
     }
 
-    // 如果是图像编辑，添加image_urls（注意：是复数形式）
-    if (image_url) {
-      // nano-banana-pro/edit需要image_urls作为数组
-      if (model_id === 'fal-ai/nano-banana-pro/edit') {
+    // 处理图像参数
+    if (model_id === 'fal-ai/nano-banana-pro/edit') {
+      // 图像编辑模型需要 image_urls 作为数组
+      if (image_urls && Array.isArray(image_urls)) {
+        inputParams.image_urls = image_urls
+      } else if (image_url) {
         inputParams.image_urls = [image_url]
       } else {
+        throw new Error('图像编辑需要提供 image_urls 参数')
+      }
+    } else if (model_id === 'fal-ai/nano-banana-pro') {
+      // 文本转图像模型不需要任何图像参数
+      // 不添加 image_url 或 image_urls 字段
+    } else {
+      // 其他模型使用单个 image_url
+      if (image_url) {
         inputParams.image_url = image_url
       }
     }
@@ -46,9 +56,6 @@ async function generateImage(data: any) {
 
       case 'fal-ai/nano-banana-pro/edit':
         // 图像编辑
-        if (!image_url) {
-          throw new Error('图像编辑需要提供image_url参数')
-        }
         result = await fal.run(model_id, {
           input: inputParams
         })
