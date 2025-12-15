@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
     )
 
     // 使用supabase客户端而不是REST调用
-    const { data: userData, error: userError } = await supabaseAdmin
+    let { data: userData, error: userError } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('email', finalEmail)
@@ -298,7 +298,6 @@ export async function POST(request: NextRequest) {
 
         if (!createError && createdUser) {
           userData = createdUser
-          userError = null
           console.log('User created successfully:', userData)
         } else {
           console.error('Failed to create user:', createError)
@@ -472,8 +471,8 @@ export async function POST(request: NextRequest) {
         await supabaseAdmin
           .from('generations')
           .update({
-            model_url: apiResult.model_url,
-            image_url: apiResult.images?.[0]?.url,
+            model_url: (apiResult as any).model_url || null,
+            image_url: (apiResult as any).images?.[0]?.url || null,
             status: 'completed',
             updated_at: new Date().toISOString()
           })

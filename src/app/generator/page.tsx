@@ -1158,12 +1158,12 @@ export default function NewGenerator() {
 
                   <button
                     onClick={handleGenerate}
-                    disabled={
+                    disabled={Boolean(
                       isGenerating ||
                       ((activeMethod === 'text' && !textInput) && uploadedImages.length === 0) ||
                       !isAuthenticated ||
-                      (user && user.points < 3)
-                    }
+                      ((user?.points ?? 0) < 3)
+                    )}
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-600 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                   >
                     {isGenerating ? (
@@ -1176,7 +1176,7 @@ export default function NewGenerator() {
                         <Grid className="h-5 w-5" />
                         <span>
                           {!isAuthenticated ? t('generator.actions.loginRequired') :
-                           user.points < 3 ? '积分不足 (需要3积分)' :
+                           (user?.points ?? 0) < 3 ? '积分不足 (需要3积分)' :
                            `${t('generator.actions.start')} ${currentModelConfig?.type === 'image-to-3d' ? t('generator.preview.modelTitle') : t('generator.preview.imageTitle')}`}
                         </span>
                       </>
